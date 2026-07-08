@@ -1,0 +1,45 @@
+@model School.Web.Models.GalleryAlbumViewModel
+@{
+    ViewData["Title"] = Model?.Title ?? "Album";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+    var breadcrumbItems = new List<KeyValuePair<string, string>>
+    {
+        new KeyValuePair<string, string>(isRtl ? "গ্যালারি" : "Gallery", Url.Action("Index", "Gallery") ?? ""),
+        new KeyValuePair<string, string>(Model?.Title ?? "Album", "")
+    };
+    ViewData["BreadcrumbItems"] = breadcrumbItems;
+}
+<div class="album-page">
+    <div class="album-header mb-4">
+        <h2>@(isRtl ? Model?.TitleBn ?? Model?.Title : Model?.Title)</h2>
+        @if (!string.IsNullOrEmpty(Model?.Description))
+        {
+            <p class="text-muted">@(isRtl ? Model?.DescriptionBn ?? Model?.Description : Model?.Description)</p>
+        }
+    </div>
+    <div class="album-grid">
+        <div class="row g-3">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <a href="/images/gallery/album/@(Model?.Id ?? 1)/photo@(i).jpg"
+                       data-lightbox="album-@(Model?.Id ?? 1)"
+                       data-title="@(isRtl ? $"ছবি {i}" : $"Photo {i}")"
+                       class="gallery-item">
+                        <div class="gallery-image-wrapper">
+                            <img src="/images/gallery/album/photo@(i).jpg" alt="Photo @i"
+                                 class="img-fluid rounded" onerror="this.src='/images/placeholder.jpg'" />
+                            <div class="gallery-hover">
+                                <i class="fas fa-search-plus"></i>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+    @section Scripts {
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" />
+    }
+</div>

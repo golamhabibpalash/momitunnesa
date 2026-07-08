@@ -1,0 +1,26 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="error-page text-center py-5">
+    <div class="error-code">500</div>
+    <h1 class="error-title">@(isRtl ? "সার্ভার ত্রুটি" : "Server Error")</h1>
+    <p class="error-message">
+        @(isRtl ? "একটি ত্রুটি ঘটেছে। আমরা এটি সমাধানের জন্য কাজ করছি।" : "An error occurred. We are working to fix it.")
+    </p>
+    @if (Model?.ShowRequestId == true)
+    {
+        <p class="error-request-id">
+            <strong>Request ID:</strong> <code>@Model.RequestId</code>
+        </p>
+    }
+    <div class="error-actions mt-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+            <i class="fas fa-home me-2"></i>@(isRtl ? "হোম পেজে ফিরে যান" : "Back to Home")
+        </a>
+        <a asp-controller="Contact" asp-action="Index" class="btn btn-outline-primary ms-2">
+            <i class="fas fa-envelope me-2"></i>@(isRtl ? "আমাদের জানান" : "Report Issue")
+        </a>
+    </div>
+</div>

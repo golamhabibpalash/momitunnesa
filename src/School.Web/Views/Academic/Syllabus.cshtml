@@ -1,0 +1,69 @@
+@{
+    ViewData["Title"] = "Syllabus";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="syllabus-page">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="syllabus-filter mb-4">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label class="fw-bold">@(isRtl ? "শ্রেণি:" : "Class:")</label>
+                        <select class="form-select">
+                            <option>@(isRtl ? "ষষ্ঠ" : "Class 6")</option>
+                            <option>@(isRtl ? "সপ্তম" : "Class 7")</option>
+                            <option>@(isRtl ? "অষ্টম" : "Class 8")</option>
+                            <option>@(isRtl ? "নবম" : "Class 9")</option>
+                            <option>@(isRtl ? "দশম" : "Class 10")</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="fw-bold">@(isRtl ? "বিষয়:" : "Subject:")</label>
+                        <select class="form-select">
+                            <option>@(isRtl ? "সব" : "All")</option>
+                            <option>@(isRtl ? "বাংলা" : "Bengali")</option>
+                            <option>@(isRtl ? "ইংরেজি" : "English")</option>
+                            <option>@(isRtl ? "গণিত" : "Mathematics")</option>
+                            <option>@(isRtl ? "বিজ্ঞান" : "Science")</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <a href="#" class="btn btn-primary"><i class="fas fa-download me-1"></i>@(isRtl ? "পিডিএফ ডাউনলোড" : "Download PDF")</a>
+                    </div>
+                </div>
+            </div>
+            <div class="syllabus-list">
+                <div class="accordion" id="syllabusAccordion">
+                    @for (int i = 1; i <= 6; i++)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button @(i > 1 ? "collapsed" : "")" type="button" data-bs-toggle="collapse" data-bs-target="#syllabus@(i)">
+                                    <span class="badge bg-primary me-2">@(isRtl ? "ষষ্ঠ" : "Class 6")</span>
+                                    @(isRtl ? "বিষয়ের সিলেবাস" : "Subject Syllabus")
+                                </button>
+                            </h2>
+                            <div id="syllabus@(i)" class="accordion-collapse collapse @(i == 1 ? "show" : "")" data-bs-parent="#syllabusAccordion">
+                                <div class="accordion-body">
+                                    <p>@(isRtl ? "এ বিষয়ের সিলেবাসের বিস্তারিত বিবরণ এখানে থাকবে।" : "Detailed syllabus description for this subject will be here.")</p>
+                                    <h6>@(isRtl ? "অধ্যায়সমূহ:" : "Chapters:")</h6>
+                                    <ul>
+                                        <li>@(isRtl ? "প্রথম অধ্যায়" : "Chapter 1")</li>
+                                        <li>@(isRtl ? "দ্বিতীয় অধ্যায়" : "Chapter 2")</li>
+                                        <li>@(isRtl ? "তৃতীয় অধ্যায়" : "Chapter 3")</li>
+                                    </ul>
+                                    <a href="#" class="btn btn-sm btn-primary"><i class="fas fa-download me-1"></i>@(isRtl ? "পিডিএফ ডাউনলোড" : "Download PDF")</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <aside>
+                @await Html.PartialAsync("_ImportantLinks")
+            </aside>
+        </div>
+    </div>
+</div>

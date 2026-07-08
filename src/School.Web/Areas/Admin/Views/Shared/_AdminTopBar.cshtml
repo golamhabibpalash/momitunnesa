@@ -1,0 +1,110 @@
+<header class="topbar">
+    <div class="topbar-left">
+        <button class="topbar-btn d-md-none" type="button" id="mobileSidebarToggle" onclick="$('.sidebar').toggleClass('expanded-mobile')">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h5 class="page-title">@ViewData["Title"]</h5>
+    </div>
+
+    <div class="topbar-right">
+        <div class="topbar-search d-none d-md-block">
+            <i class="fas fa-search"></i>
+            <input type="text" class="form-control" placeholder="Search anything..." id="globalSearch">
+        </div>
+
+        <button class="topbar-btn" onclick="toggleDarkMode()" data-bs-toggle="tooltip" title="Toggle Theme">
+            <i class="fas fa-moon"></i>
+        </button>
+
+        <div class="dropdown">
+            <button class="topbar-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-globe"></i>
+                <span style="font-size:0.75rem; font-weight:600; margin-left:2px;">EN</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li><a class="dropdown-item" href="#"><img src="https://flagcdn.com/16x12/gb.png" alt="EN" class="me-2" style="width:16px;height:12px;">English</a></li>
+                <li><a class="dropdown-item" href="#"><img src="https://flagcdn.com/16x12/bd.png" alt="BN" class="me-2" style="width:16px;height:12px;">বাংলা</a></li>
+            </ul>
+        </div>
+
+        <div class="dropdown">
+            <button class="topbar-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-bell"></i>
+                <span class="badge bg-danger rounded-pill">3</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end shadow-sm" style="width:320px;">
+                <div class="dropdown-header d-flex justify-content-between align-items-center">
+                    <strong>Notifications</strong>
+                    <a href="#" class="text-decoration-none small">Mark all read</a>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item d-flex align-items-start gap-3 py-2">
+                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;min-width:36px;">
+                        <i class="fas fa-envelope text-white" style="font-size:0.8rem;"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <p class="mb-0 small fw-semibold">New Contact Message</p>
+                        <small class="text-muted">John Doe sent a message</small>
+                        <br><small class="text-muted">2 min ago</small>
+                    </div>
+                </a>
+                <a href="#" class="dropdown-item d-flex align-items-start gap-3 py-2">
+                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;min-width:36px;">
+                        <i class="fas fa-user-plus text-white" style="font-size:0.8rem;"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <p class="mb-0 small fw-semibold">New User Registered</p>
+                        <small class="text-muted">Sarah Khan joined</small>
+                        <br><small class="text-muted">1 hour ago</small>
+                    </div>
+                </a>
+                <a href="#" class="dropdown-item d-flex align-items-start gap-3 py-2">
+                    <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;min-width:36px;">
+                        <i class="fas fa-exclamation text-white" style="font-size:0.8rem;"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <p class="mb-0 small fw-semibold">Notice Board Update</p>
+                        <small class="text-muted">New exam notice published</small>
+                        <br><small class="text-muted">3 hours ago</small>
+                    </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-center small" href="#">
+                    View All Notifications
+                </a>
+            </div>
+        </div>
+
+        <div class="dropdown user-dropdown">
+            <button class="topbar-btn d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:auto;padding:4px 12px;border-radius:30px;">
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=667eea&color=fff&size=34" alt="User">
+                <span class="d-none d-md-inline" style="font-size:0.85rem;font-weight:500;">Admin User</span>
+                <i class="fas fa-chevron-down" style="font-size:0.7rem;"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                    <div class="dropdown-header d-flex align-items-center gap-3">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=667eea&color=fff&size=40" alt="User" style="width:40px;height:40px;border-radius:50%;">
+                        <div>
+                            <strong>Admin User</strong>
+                            <br><small class="text-muted">admin@school.com</small>
+                        </div>
+                    </div>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle me-2"></i>My Profile</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-lock me-2"></i>Change Password</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-sliders-h me-2"></i>Preferences</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="dropdown-item text-danger">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>

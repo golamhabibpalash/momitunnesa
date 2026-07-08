@@ -1,0 +1,251 @@
+@{
+    var activeMenu = ViewBag.ActiveMenu as string ?? "";
+    var activeSubMenu = ViewBag.ActiveSubMenu as string ?? "";
+    bool IsActive(string menu, string? subMenu = null)
+    {
+        if (subMenu == null) return activeMenu == menu;
+        return activeMenu == menu && activeSubMenu == subMenu;
+    }
+}
+
+<aside class="sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+        <h4><i class="fas fa-school me-2"></i>Momitu<span style="color: #667eea;">nnesa</span></h4>
+        <button class="sidebar-toggle" id="sidebarToggle" type="button" title="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <ul class="sidebar-menu">
+        <li class="nav-item-title">Main</li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Dashboard") ? "active" : "")"
+               asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                <i class="fas fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        <li class="nav-item-title">Content</li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Pages") ? "active" : "")"
+               asp-area="Admin" asp-controller="Page" asp-action="Index">
+                <i class="fas fa-file-alt"></i>
+                <span>Pages</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Sliders") ? "active" : "")"
+               asp-area="Admin" asp-controller="Slider" asp-action="Index">
+                <i class="fas fa-images"></i>
+                <span>Sliders</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Notices") ? "active" : "")"
+               asp-area="Admin" asp-controller="Notice" asp-action="Index">
+                <i class="fas fa-bullhorn"></i>
+                <span>Notices</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("News") ? "active" : "")"
+               asp-area="Admin" asp-controller="News" asp-action="Index">
+                <i class="fas fa-newspaper"></i>
+                <span>News</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Events") ? "active" : "")"
+               asp-area="Admin" asp-controller="Event" asp-action="Index">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Events</span>
+            </a>
+        </li>
+
+        <li class="nav-item-title">Academic</li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Teachers") ? "active" : "")"
+               asp-area="Admin" asp-controller="Teacher" asp-action="Index">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>Teachers</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Staff") ? "active" : "")"
+               asp-area="Admin" asp-controller="Staff" asp-action="Index">
+                <i class="fas fa-users"></i>
+                <span>Staff</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="fas fa-calendar-check"></i>
+                <span>Academic Calendar</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="fas fa-table"></i>
+                <span>Routine</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="fas fa-book"></i>
+                <span>Syllabus</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="fas fa-book-open"></i>
+                <span>Subjects</span>
+            </a>
+        </li>
+
+        <li class="nav-item-title">Gallery</li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Albums") ? "active" : "")"
+               asp-area="Admin" asp-controller="Gallery" asp-action="Albums">
+                <i class="fas fa-folder"></i>
+                <span>Albums</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Videos") ? "active" : "")"
+               asp-area="Admin" asp-controller="Gallery" asp-action="Videos">
+                <i class="fas fa-video"></i>
+                <span>Videos</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Downloads") ? "active" : "")"
+               asp-area="Admin" asp-controller="Download" asp-action="Index">
+                <i class="fas fa-download"></i>
+                <span>Downloads</span>
+            </a>
+        </li>
+
+        <li class="nav-item-title">Communication</li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Contact") ? "active" : "")"
+               asp-area="Admin" asp-controller="Contact" asp-action="Index">
+                <i class="fas fa-envelope"></i>
+                <span>Contact Messages</span>
+                <span class="badge bg-danger rounded-pill">3</span>
+            </a>
+        </li>
+
+        <li class="nav-item-title">Settings</li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Settings") ? "active" : "")"
+               asp-area="Admin" asp-controller="Settings" asp-action="Index">
+                <i class="fas fa-cog"></i>
+                <span>Site Settings</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="fas fa-school"></i>
+                <span>School Info</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="fas fa-share-alt"></i>
+                <span>Social Links</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Menus") ? "active" : "")"
+               asp-area="Admin" asp-controller="Menu" asp-action="Index">
+                <i class="fas fa-bars"></i>
+                <span>Menus</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="fas fa-search"></i>
+                <span>SEO</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Media") ? "active" : "")"
+               asp-area="Admin" asp-controller="Media" asp-action="Index">
+                <i class="fas fa-photo-video"></i>
+                <span>Media Manager</span>
+            </a>
+        </li>
+
+        <li class="nav-item-title">System</li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Users") ? "active" : "")"
+               asp-area="Admin" asp-controller="User" asp-action="Index">
+                <i class="fas fa-user-shield"></i>
+                <span>Users</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Roles") ? "active" : "")"
+               asp-area="Admin" asp-controller="Role" asp-action="Index">
+                <i class="fas fa-user-tag"></i>
+                <span>Roles</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="fas fa-history"></i>
+                <span>Activity Log</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="fas fa-database"></i>
+                <span>Backup</span>
+            </a>
+        </li>
+
+        <li class="nav-item-title">Other</li>
+
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Achievements") ? "active" : "")"
+               asp-area="Admin" asp-controller="Achievement" asp-action="Index">
+                <i class="fas fa-trophy"></i>
+                <span>Achievements</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" target="_blank">
+                <i class="fas fa-external-link-alt"></i>
+                <span>View Website</span>
+            </a>
+        </li>
+    </ul>
+</aside>

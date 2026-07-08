@@ -1,0 +1,63 @@
+@model School.Web.Models.TeacherViewModel
+@{
+    ViewData["Title"] = Model?.Name ?? "Teacher Profile";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+    var breadcrumbItems = new List<KeyValuePair<string, string>>
+    {
+        new KeyValuePair<string, string>(isRtl ? "শিক্ষকবৃন্দ" : "Teachers", Url.Action("Index", "Teacher") ?? ""),
+        new KeyValuePair<string, string>(Model?.Name ?? "Profile", "")
+    };
+    ViewData["BreadcrumbItems"] = breadcrumbItems;
+}
+<div class="teacher-profile-page">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="teacher-photo-card card shadow-sm">
+                <div class="card-body text-center">
+                    <img src="@(Model?.ImageUrl ?? "/images/avatar.jpg")" alt="@Model?.Name"
+                         class="img-fluid rounded-circle mb-3" width="200" height="200"
+                         onerror="this.src='/images/avatar.jpg'" />
+                    <h4 class="teacher-detail-name">@(isRtl ? Model?.NameBn ?? Model?.Name : Model?.Name)</h4>
+                    <p class="teacher-detail-designation text-primary">@(isRtl ? Model?.DesignationBn ?? Model?.Designation : Model?.Designation)</p>
+                    <p class="teacher-detail-qualification"><i class="fas fa-graduation-cap me-2"></i>@Model?.Qualification</p>
+                    <hr />
+                    <div class="teacher-contact-info text-start">
+                        @if (!string.IsNullOrEmpty(Model?.Email))
+                        {
+                            <p><i class="fas fa-envelope me-2"></i><a href="mailto:@Model.Email">@Model.Email</a></p>
+                        }
+                        @if (!string.IsNullOrEmpty(Model?.Phone))
+                        {
+                            <p><i class="fas fa-phone me-2"></i><a href="tel:@Model.Phone">@Model.Phone</a></p>
+                        }
+                    </div>
+                    <div class="teacher-social-links mt-3">
+                        <a href="#" class="btn btn-outline-primary btn-sm"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-outline-info btn-sm"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="teacher-details-card card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">@(isRtl ? "শিক্ষকের বিবরণ" : "Teacher Details")</h4>
+                    <table class="table table-bordered teacher-info-table">
+                        <tbody>
+                            <tr><th>@(isRtl ? "নাম" : "Name")</th><td>@(isRtl ? Model?.NameBn ?? Model?.Name : Model?.Name)</td></tr>
+                            <tr><th>@(isRtl ? "পদবী" : "Designation")</th><td>@(isRtl ? Model?.DesignationBn ?? Model?.Designation : Model?.Designation)</td></tr>
+                            <tr><th>@(isRtl ? "শিক্ষাগত যোগ্যতা" : "Qualification")</th><td>@Model?.Qualification</td></tr>
+                            <tr><th>@(isRtl ? "যোগদানের তারিখ" : "Joining Date")</th><td>@Model?.JoiningDate?.ToString("dd MMM yyyy")</td></tr>
+                            <tr><th>@(isRtl ? "শিক্ষার মাধ্যম" : "Subject")</th><td>@(isRtl ? Model?.SubjectBn ?? Model?.Subject : Model?.Subject)</td></tr>
+                            <tr><th>@(isRtl ? "অভিজ্ঞতা" : "Experience")</th><td>@Model?.Experience</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="teacher-biography mt-4">
+                        <h5>@(isRtl ? "জীবনী" : "Biography")</h5>
+                        <p>@(isRtl ? Model?.BiographyBn ?? Model?.Biography ?? "শিক্ষকের জীবনী তথ্য..." : Model?.Biography ?? "Teacher biography information...")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

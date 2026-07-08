@@ -1,0 +1,136 @@
+@{
+    ViewData["Title"] = "Achievements";
+    ViewBag.ActiveMenu = "Achievements";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-trophy me-2"></i>Achievements</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Achievements</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="Achievement" asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Add New Achievement
+    </a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <ul class="nav nav-pills" id="categoryTabs">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" data-category="all">All</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-category="Academic">Academic</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-category="Sports">Sports</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-category="Cultural">Cultural</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-category="Science">Science</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="rounded-circle bg-warning bg-opacity-10 d-flex align-items-center justify-content-center" style="width:50px;height:50px;min-width:50px;">
+                        <i class="fas fa-trophy text-warning"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">1st Place - National Science Olympiad</h6>
+                        <small class="text-muted d-block mb-1">Academic • 2026</small>
+                        <p class="small mb-2">Our students secured first position in the National Science Olympiad 2026.</p>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ } })"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="rounded-circle bg-success bg-opacity-10 d-flex align-items-center justify-content-center" style="width:50px;height:50px;min-width:50px;">
+                        <i class="fas fa-medal text-success"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">Champion - Inter-School Debate</h6>
+                        <small class="text-muted d-block mb-1">Cultural • 2026</small>
+                        <p class="small mb-2">Our debate team won the Inter-School Debate Championship.</p>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center" style="width:50px;height:50px;min-width:50px;">
+                        <i class="fas fa-running text-info"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">Runner Up - Annual Sports Meet</h6>
+                        <small class="text-muted d-block mb-1">Sports • 2026</small>
+                        <p class="small mb-2">Overall runner-up position in the Divisional Annual Sports Meet.</p>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width:50px;height:50px;min-width:50px;">
+                        <i class="fas fa-flask text-primary"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">Best Project Award - Science Fair</h6>
+                        <small class="text-muted d-block mb-1">Science • 2025</small>
+                        <p class="small mb-2">Best project award for renewable energy model.</p>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('#categoryTabs .nav-link').forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('#categoryTabs .nav-link').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+}

@@ -1,0 +1,138 @@
+@{
+    ViewData["Title"] = "Create Menu Item";
+    ViewBag.ActiveMenu = "Menus";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-plus-circle me-2"></i>Create Menu Item</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Menu" asp-action="Index">Menus</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="Menu" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to Menus
+    </a>
+</div>
+
+<form asp-area="Admin" asp-controller="Menu" asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-info-circle me-2"></i>Menu Item Details</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label required">Title (English)</label>
+                            <input type="text" name="TitleEn" class="form-control" placeholder="e.g., About Us" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Title (Bangla)</label>
+                            <input type="text" name="TitleBn" class="form-control" placeholder="e.g., আমাদের সম্পর্কে" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 mt-3">
+                        <label class="form-label required">Menu Location</label>
+                        <select name="Location" class="form-select" required>
+                            <option value="">-- Select Location --</option>
+                            <option value="MainNav">Main Navigation</option>
+                            <option value="Footer">Footer Menu</option>
+                            <option value="Sidebar">Sidebar Menu</option>
+                            <option value="QuickLinks">Quick Links</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">Link Type</label>
+                        <select name="LinkType" class="form-select" id="linkTypeSelect" required>
+                            <option value="Page">Internal Page</option>
+                            <option value="Custom">Custom URL</option>
+                            <option value="Dropdown">Dropdown Header</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="pageSelector">
+                        <label class="form-label">Select Page</label>
+                        <select name="PageId" class="form-select">
+                            <option value="">-- Select Page --</option>
+                            <option value="1">Home</option>
+                            <option value="2">About Us</option>
+                            <option value="3">Admission</option>
+                            <option value="4">Contact Us</option>
+                            <option value="5">Academic Programs</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 d-none" id="customUrlField">
+                        <label class="form-label">Custom URL</label>
+                        <input type="url" name="CustomUrl" class="form-control" placeholder="https://example.com/page">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Parent Menu Item</label>
+                        <select name="ParentId" class="form-select">
+                            <option value="">-- None (Top Level) --</option>
+                            <option value="1">Home</option>
+                            <option value="2">About Us</option>
+                            <option value="3">Academics</option>
+                            <option value="4">Gallery</option>
+                            <option value="5">Contact Us</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">CSS Class (optional)</label>
+                        <input type="text" name="CssClass" class="form-control" placeholder="nav-link custom-class">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Icon Class (optional)</label>
+                        <input type="text" name="IconClass" class="form-control" placeholder="fas fa-home">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Display Order</label>
+                        <input type="number" name="DisplayOrder" class="form-control" value="1" min="1">
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="isActive" name="IsActive" value="true" checked>
+                            <label class="form-check-label" for="isActive">Active</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="openNewTab" name="OpenInNewTab" value="true">
+                            <label class="form-check-label" for="openNewTab">Open in New Tab</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <a asp-area="Admin" asp-controller="Menu" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="fas fa-save me-1"></i>Save Menu Item
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById('linkTypeSelect').addEventListener('change', function() {
+            const val = this.value;
+            document.getElementById('pageSelector').classList.toggle('d-none', val !== 'Page');
+            document.getElementById('customUrlField').classList.toggle('d-none', val !== 'Custom');
+        });
+    </script>
+}

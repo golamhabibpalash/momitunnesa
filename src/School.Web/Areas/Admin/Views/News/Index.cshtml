@@ -1,0 +1,93 @@
+@{
+    ViewData["Title"] = "News";
+    ViewBag.ActiveMenu = "News";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-newspaper me-2"></i>News</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">News</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="News" asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Create New News
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-datatable">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Featured</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><img src="https://placehold.co/60x40/667eea/white?text=News" class="preview-img" alt="News"></td>
+                        <td>Annual Science Fair 2026 Winners Announced</td>
+                        <td><span class="badge bg-info">Science</span></td>
+                        <td><i class="fas fa-star text-warning"></i></td>
+                        <td><span class="badge bg-success">Published</span></td>
+                        <td>Jun 10, 2026</td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="News" asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed) { window.location.href='@Url.Action("Delete", "News", new { area = "Admin", id = 1 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><img src="https://placehold.co/60x40/43e97b/white?text=News" class="preview-img" alt="News"></td>
+                        <td>Inter-School Debate Competition Results</td>
+                        <td><span class="badge bg-primary">Co-Curricular</span></td>
+                        <td><i class="far fa-star text-muted"></i></td>
+                        <td><span class="badge bg-success">Published</span></td>
+                        <td>May 28, 2026</td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="News" asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed) { window.location.href='@Url.Action("Delete", "News", new { area = "Admin", id = 2 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><img src="https://placehold.co/60x40/f6d365/white?text=News" class="preview-img" alt="News"></td>
+                        <td>New Library Inauguration Ceremony</td>
+                        <td><span class="badge bg-success">Infrastructure</span></td>
+                        <td><i class="fas fa-star text-warning"></i></td>
+                        <td><span class="badge bg-info">Draft</span></td>
+                        <td>Jun 12, 2026</td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="News" asp-action="Edit" asp-route-id="3" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed) { window.location.href='@Url.Action("Delete", "News", new { area = "Admin", id = 3 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

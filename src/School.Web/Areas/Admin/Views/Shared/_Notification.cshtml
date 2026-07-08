@@ -1,0 +1,43 @@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show animate__animated animate__fadeInDown d-flex align-items-center" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show animate__animated animate__fadeInDown d-flex align-items-center" role="alert">
+        <i class="fas fa-times-circle me-2"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["WarningMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show animate__animated animate__fadeInDown d-flex align-items-center" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        @TempData["WarningMessage"]
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info alert-dismissible fade show animate__animated animate__fadeInDown d-flex align-items-center" role="alert">
+        <i class="fas fa-info-circle me-2"></i>
+        @TempData["InfoMessage"]
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<script>
+    $(document).ready(function() {
+        setTimeout(function() {
+            $('.alert-dismissible').fadeOut(500, function() { $(this).remove(); });
+        }, 5000);
+    });
+</script>

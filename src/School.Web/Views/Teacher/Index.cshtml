@@ -1,0 +1,76 @@
+@model School.Web.Models.TeacherListViewModel
+@{
+    ViewData["Title"] = "Teachers";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="teachers-page">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="teacher-filters mb-4">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="@Url.Action("Index")" class="btn btn-sm btn-primary">@(isRtl ? "সব" : "All")</a>
+                    <a href="@Url.Action("Index", new { designation = "head-teacher" })" class="btn btn-sm btn-outline-primary">@(isRtl ? "প্রধান শিক্ষক" : "Head Teacher")</a>
+                    <a href="@Url.Action("Index", new { designation = "assistant-teacher" })" class="btn btn-sm btn-outline-primary">@(isRtl ? "সহকারী শিক্ষক" : "Assistant Teacher")</a>
+                    <a href="@Url.Action("Index", new { designation = "senior-teacher" })" class="btn btn-sm btn-outline-primary">@(isRtl ? "সিনিয়র শিক্ষক" : "Senior Teacher")</a>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="teacher-card featured-teacher d-flex align-items-center p-4 bg-primary text-white rounded">
+                        <div class="flex-shrink-0">
+                            <img src="/images/teachers/head-teacher.jpg" alt="Head Teacher" class="rounded-circle" width="120" height="120" onerror="this.src='/images/avatar.jpg'" />
+                        </div>
+                        <div class="flex-grow-1 ms-4">
+                            <h4>@(isRtl ? "জনাব [প্রধান শিক্ষকের নাম]" : "Mr. [Head Teacher Name]")</h4>
+                            <p class="mb-1"><strong>@(isRtl ? "প্রধান শিক্ষক" : "Head Teacher")</strong></p>
+                            <p class="mb-0"><i class="fas fa-graduation-cap me-2"></i>M.Ed, B.Ed</p>
+                            <p class="mb-0"><small>@(isRtl ? "৩০ বছরের শিক্ষকতা অভিজ্ঞতা" : "30 years of teaching experience")</small></p>
+                        </div>
+                    </div>
+                </div>
+                @for (int i = 1; i <= 8; i++)
+                {
+                    <div class="col-md-6">
+                        <div class="teacher-card text-center p-4 shadow-sm rounded">
+                            <div class="teacher-image mb-3">
+                                <img src="/images/teachers/teacher@(i).jpg" alt="Teacher @i"
+                                     class="img-fluid rounded-circle" width="150" height="150"
+                                     onerror="this.src='/images/avatar.jpg'" />
+                            </div>
+                            <h5 class="teacher-name">
+                                <a asp-action="Details" asp-route-id="@i">
+                                    @(isRtl ? $"শিক্ষক {i}" : $"Teacher {i}")
+                                </a>
+                            </h5>
+                            <p class="teacher-designation text-primary mb-1">
+                                @(i % 2 == 0 ? (isRtl ? "সহকারী শিক্ষক" : "Assistant Teacher") : (isRtl ? "সিনিয়র শিক্ষক" : "Senior Teacher"))
+                            </p>
+                            <p class="teacher-qualification text-muted small">
+                                <i class="fas fa-graduation-cap me-1"></i>B.Ed, M.Sc
+                            </p>
+                            <div class="teacher-social">
+                                <a href="#" class="btn btn-sm btn-outline-primary"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="btn btn-sm btn-outline-info"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="mailto:teacher@momitunnesa.edu.bd" class="btn btn-sm btn-outline-secondary"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <nav aria-label="Pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-lg-4">
+            <aside>
+                @await Html.PartialAsync("_ImportantLinks")
+            </aside>
+        </div>
+    </div>
+</div>

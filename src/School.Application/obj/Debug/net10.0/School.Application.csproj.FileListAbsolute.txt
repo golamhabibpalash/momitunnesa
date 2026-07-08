@@ -1,0 +1,15 @@
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/bin/Debug/net10.0/School.Application.deps.json
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/bin/Debug/net10.0/School.Application.dll
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/bin/Debug/net10.0/School.Application.pdb
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/bin/Debug/net10.0/School.Domain.dll
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/bin/Debug/net10.0/School.Domain.pdb
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/obj/Debug/net10.0/School.Application.csproj.AssemblyReference.cache
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/obj/Debug/net10.0/School.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/obj/Debug/net10.0/School.Application.AssemblyInfoInputs.cache
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/obj/Debug/net10.0/School.Application.AssemblyInfo.cs
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/obj/Debug/net10.0/School.Application.csproj.CoreCompileInputs.cache
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/obj/Debug/net10.0/School.A.0288516A.Up2Date
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/obj/Debug/net10.0/School.Application.dll
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/obj/Debug/net10.0/refint/School.Application.dll
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/obj/Debug/net10.0/School.Application.pdb
+/Users/golamhabibpalash/Documents/Dev/Projects/Momitunnesa/src/School.Application/obj/Debug/net10.0/ref/School.Application.dll

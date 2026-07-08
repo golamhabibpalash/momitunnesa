@@ -1,0 +1,110 @@
+@{
+    ViewData["Title"] = "Teachers";
+    ViewBag.ActiveMenu = "Teachers";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-chalkboard-teacher me-2"></i>Teachers</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Teachers</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="Teacher" asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Add New Teacher
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-datatable">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Designation</th>
+                        <th>Subject</th>
+                        <th>Head Teacher</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><img src="https://ui-avatars.com/api/?name=Md.+Rahim&background=667eea&color=fff&size=36" class="avatar-sm" alt="Teacher"></td>
+                        <td>Md. Abdul Rahim</td>
+                        <td>Senior Teacher</td>
+                        <td>Mathematics</td>
+                        <td><span class="badge bg-warning">Yes</span></td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Teacher" asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Teacher", new { area = "Admin", id = 1 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><img src="https://ui-avatars.com/api/?name=Fatima+Begum&background=43e97b&color=fff&size=36" class="avatar-sm" alt="Teacher"></td>
+                        <td>Fatima Begum</td>
+                        <td>Assistant Teacher</td>
+                        <td>English</td>
+                        <td><span class="badge bg-secondary">No</span></td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Teacher" asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Teacher", new { area = "Admin", id = 2 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><img src="https://ui-avatars.com/api/?name=Kabir+Hossain&background=f6d365&color=fff&size=36" class="avatar-sm" alt="Teacher"></td>
+                        <td>Kabir Hossain</td>
+                        <td>Associate Teacher</td>
+                        <td>Physics</td>
+                        <td><span class="badge bg-secondary">No</span></td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Teacher" asp-action="Edit" asp-route-id="3" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Teacher", new { area = "Admin", id = 3 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><img src="https://ui-avatars.com/api/?name=Nasrin+Sultana&background=f093fb&color=fff&size=36" class="avatar-sm" alt="Teacher"></td>
+                        <td>Nasrin Sultana</td>
+                        <td>Assistant Teacher</td>
+                        <td>Bangla</td>
+                        <td><span class="badge bg-secondary">No</span></td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Teacher" asp-action="Edit" asp-route-id="4" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Teacher", new { area = "Admin", id = 4 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

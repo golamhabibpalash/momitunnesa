@@ -1,0 +1,214 @@
+@{
+    ViewData["Title"] = "Roles";
+    ViewBag.ActiveMenu = "Roles";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-user-tag me-2"></i>Role Management</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Roles</li>
+            </ol>
+        </nav>
+    </div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createRoleModal">
+        <i class="fas fa-plus me-1"></i>Create New Role
+    </button>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-4 col-md-6">
+        <div class="card border-danger border-2">
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-danger bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width:60px;height:60px;">
+                    <i class="fas fa-crown text-danger" style="font-size:1.5rem;"></i>
+                </div>
+                <h5>Super Admin</h5>
+                <p class="text-muted small">Full system access with all permissions</p>
+                <span class="badge bg-danger mb-2">1 User</span>
+                <div class="d-flex gap-1 justify-content-center">
+                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" disabled title="Cannot delete Super Admin"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="card border-primary border-2">
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width:60px;height:60px;">
+                    <i class="fas fa-user-shield text-primary" style="font-size:1.5rem;"></i>
+                </div>
+                <h5>Admin</h5>
+                <p class="text-muted small">Administrative access to manage content</p>
+                <span class="badge bg-primary mb-2">2 Users</span>
+                <div class="d-flex gap-1 justify-content-center">
+                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ } })"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="card border-info border-2">
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width:60px;height:60px;">
+                    <i class="fas fa-edit text-info" style="font-size:1.5rem;"></i>
+                </div>
+                <h5>Editor</h5>
+                <p class="text-muted small">Can create and edit content</p>
+                <span class="badge bg-info mb-2">3 Users</span>
+                <div class="d-flex gap-1 justify-content-center">
+                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="card border-success border-2">
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-success bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width:60px;height:60px;">
+                    <i class="fas fa-users text-success" style="font-size:1.5rem;"></i>
+                </div>
+                <h5>Moderator</h5>
+                <p class="text-muted small">Can moderate content and comments</p>
+                <span class="badge bg-success mb-2">1 User</span>
+                <div class="d-flex gap-1 justify-content-center">
+                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="card border-secondary border-2">
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width:60px;height:60px;">
+                    <i class="fas fa-pen-nib text-secondary" style="font-size:1.5rem;"></i>
+                </div>
+                <h5>Author</h5>
+                <p class="text-muted small">Can create and manage own content</p>
+                <span class="badge bg-secondary mb-2">1 User</span>
+                <div class="d-flex gap-1 justify-content-center">
+                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="card border-warning border-2">
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-warning bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width:60px;height:60px;">
+                    <i class="fas fa-chalkboard-teacher text-warning" style="font-size:1.5rem;"></i>
+                </div>
+                <h5>Teacher</h5>
+                <p class="text-muted small">Limited access for teacher dashboard</p>
+                <span class="badge bg-warning mb-2">5 Users</span>
+                <div class="d-flex gap-1 justify-content-center">
+                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header"><i class="fas fa-lock me-2"></i>Permission Matrix</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Permission</th>
+                        <th class="text-center">Super Admin</th>
+                        <th class="text-center">Admin</th>
+                        <th class="text-center">Editor</th>
+                        <th class="text-center">Moderator</th>
+                        <th class="text-center">Author</th>
+                        <th class="text-center">Teacher</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Dashboard Access</td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Content Management</td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                    </tr>
+                    <tr>
+                        <td>User Management</td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Settings Access</td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Publish/Unpublish</td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createRoleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-area="Admin" asp-controller="Role" asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Create New Role</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label required">Role Name</label>
+                        <input type="text" name="RoleName" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea name="Description" class="form-control" rows="3" placeholder="Describe the role's purpose and permissions"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Create Role</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

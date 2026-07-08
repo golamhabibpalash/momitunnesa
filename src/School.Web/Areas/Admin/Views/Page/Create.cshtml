@@ -1,0 +1,173 @@
+@{
+    ViewData["Title"] = "Create Page";
+    ViewBag.ActiveMenu = "Pages";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-plus-circle me-2"></i>Create New Page</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Page" asp-action="Index">Pages</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="Page" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<form asp-area="Admin" asp-controller="Page" asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-info-circle me-2"></i>Page Information</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label required">Title (English)</label>
+                        <input type="text" name="TitleEn" class="form-control" placeholder="Enter page title in English" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">Title (Bangla)</label>
+                        <input type="text" name="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম লিখুন" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Slug</label>
+                        <div class="input-group">
+                            <span class="input-group-text">/</span>
+                            <input type="text" name="Slug" class="form-control" placeholder="auto-generated-slug" id="slugInput">
+                            <button type="button" class="btn btn-outline-secondary" onclick="generateSlug()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">Leave empty to auto-generate from title</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">Content (English)</label>
+                        <textarea name="ContentEn" class="form-control tinymce" rows="15"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">Content (Bangla)</label>
+                        <textarea name="ContentBn" class="form-control tinymce" rows="15"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-search me-2"></i>SEO Settings</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Meta Title</label>
+                        <input type="text" name="MetaTitle" class="form-control" placeholder="SEO title (defaults to page title)">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Meta Description</label>
+                        <textarea name="MetaDescription" class="form-control" rows="3" placeholder="Brief description for search engines"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Meta Keywords</label>
+                        <input type="text" name="MetaKeywords" class="form-control" placeholder="keyword1, keyword2, keyword3">
+                        <small class="text-muted">Comma-separated keywords</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-cog me-2"></i>Publish Settings</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="Status" class="form-select">
+                            <option value="Draft">Draft</option>
+                            <option value="Published" selected>Published</option>
+                            <option value="Archived">Archived</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Publish Date</label>
+                        <input type="datetime-local" name="PublishDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")">
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="isHomePage" name="IsHomePage" value="true">
+                            <label class="form-check-label" for="isHomePage">Set as Home Page</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="isPublished" name="IsPublished" value="true" checked>
+                            <label class="form-check-label" for="isPublished">Publish immediately</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-image me-2"></i>Featured Image</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input type="file" name="FeaturedImage" class="form-control" accept="image/*" id="featuredImageInput">
+                        <small class="text-muted">Recommended: 1200x630px, max 2MB</small>
+                    </div>
+                    <div id="imagePreview" class="mt-2 text-center d-none">
+                        <img src="#" alt="Preview" class="img-fluid rounded" style="max-height:200px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <a asp-area="Admin" asp-controller="Page" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="fas fa-save me-1"></i>Save Page
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: '.tinymce',
+            height: 500,
+            plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
+            toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+            promotion: false
+        });
+
+        function generateSlug() {
+            const title = document.querySelector('input[name="TitleEn"]').value;
+            const slug = title.toLowerCase()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            document.getElementById('slugInput').value = slug;
+        }
+
+        document.querySelector('input[name="TitleEn"]').addEventListener('blur', function() {
+            const slug = document.getElementById('slugInput');
+            if (!slug.value) generateSlug();
+        });
+
+        document.getElementById('featuredImageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.classList.remove('d-none');
+                    preview.querySelector('img').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+}

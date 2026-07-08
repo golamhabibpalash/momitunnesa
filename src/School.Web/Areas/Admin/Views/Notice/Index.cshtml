@@ -1,0 +1,157 @@
+@{
+    ViewData["Title"] = "Notices";
+    ViewBag.ActiveMenu = "Notices";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-bullhorn me-2"></i>Notices</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Notices</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="Notice" asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Create New Notice
+    </a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Filter by Category</label>
+                <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    <option value="Academic">Academic</option>
+                    <option value="Exam">Exam</option>
+                    <option value="Holiday">Holiday</option>
+                    <option value="Admission">Admission</option>
+                    <option value="Sports">Sports</option>
+                    <option value="General">General</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All</option>
+                    <option value="Active">Active</option>
+                    <option value="Expired">Expired</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-1"></i>Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-datatable">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Title (English)</th>
+                        <th>Category</th>
+                        <th>Publish Date</th>
+                        <th>Expiry Date</th>
+                        <th>Featured</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Summer Vacation 2026 Notice</td>
+                        <td><span class="badge bg-info">Holiday</span></td>
+                        <td>Jun 01, 2026</td>
+                        <td>Jul 15, 2026</td>
+                        <td><i class="fas fa-star text-warning"></i></td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Notice" asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Notice", new { area = "Admin", id = 1 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Admission Test Schedule</td>
+                        <td><span class="badge bg-primary">Admission</span></td>
+                        <td>Mar 10, 2026</td>
+                        <td>Apr 30, 2026</td>
+                        <td><i class="far fa-star text-muted"></i></td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Notice" asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Notice", new { area = "Admin", id = 2 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Half-Yearly Exam Routine</td>
+                        <td><span class="badge bg-warning">Exam</span></td>
+                        <td>Apr 05, 2026</td>
+                        <td>May 15, 2026</td>
+                        <td><i class="fas fa-star text-warning"></i></td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Notice" asp-action="Edit" asp-route-id="3" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Notice", new { area = "Admin", id = 3 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Annual Sports Day</td>
+                        <td><span class="badge bg-success">Sports</span></td>
+                        <td>Feb 01, 2026</td>
+                        <td>Feb 20, 2026</td>
+                        <td><i class="far fa-star text-muted"></i></td>
+                        <td><span class="badge bg-secondary">Expired</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Notice" asp-action="Edit" asp-route-id="4" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Notice", new { area = "Admin", id = 4 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Parent-Teacher Meeting</td>
+                        <td><span class="badge bg-secondary">General</span></td>
+                        <td>Jan 15, 2026</td>
+                        <td>Jan 25, 2026</td>
+                        <td><i class="far fa-star text-muted"></i></td>
+                        <td><span class="badge bg-secondary">Expired</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Notice" asp-action="Edit" asp-route-id="5" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Notice", new { area = "Admin", id = 5 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

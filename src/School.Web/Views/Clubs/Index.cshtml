@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Clubs";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="clubs-page">
+    <div class="section-header text-center mb-5">
+        <p class="lead">@(isRtl ? "আমাদের বিদ্যালয়ে বিভিন্ন ক্লাব ও সংগঠন রয়েছে যা শিক্ষার্থীদের প্রতিভা বিকাশে সহায়তা করে।" : "Our school has various clubs and organizations that help develop students' talents.")</p>
+    </div>
+    <div class="row g-4">
+        @{
+            var clubs = new[] {
+                new {
+                    Icon = "fas fa-microscope", Color = "#e74c3c",
+                    Name = "Science Club", NameBn = "বিজ্ঞান ক্লাব",
+                    Desc = "Promotes scientific thinking and innovation among students through experiments, science fairs, and workshops.",
+                    DescBn = "পরীক্ষা-নিরীক্ষা, বিজ্ঞান মেলা ও কর্মশালার মাধ্যমে শিক্ষার্থীদের বৈজ্ঞানিক চিন্তাভাবনা ও উদ্ভাবনী ক্ষমতা বিকাশ।"
+                },
+                new {
+                    Icon = "fas fa-music", Color = "#3498db",
+                    Name = "Cultural Club", NameBn = "সাংস্কৃতিক ক্লাব",
+                    Desc = "Nurtures artistic talents through music, dance, drama, and fine arts.",
+                    DescBn = "সংগীত, নৃত্য, নাটক ও চারুকলার মাধ্যমে শিল্পী প্রতিভা বিকাশ।"
+                },
+                new {
+                    Icon = "fas fa-futbol", Color = "#2ecc71",
+                    Name = "Sports Club", NameBn = "ক্রীড়া ক্লাব",
+                    Desc = "Organizes sports activities and competitions for physical fitness and teamwork.",
+                    DescBn = "শারীরিক সুস্থতা ও দলগত কাজের জন্য ক্রীড়া কার্যক্রম ও প্রতিযোগিতা আয়োজন।"
+                },
+                new {
+                    Icon = "fas fa-book-open", Color = "#f39c12",
+                    Name = "Debating Club", NameBn = "বিতর্ক ক্লাব",
+                    Desc = "Enhances public speaking, critical thinking, and argumentation skills.",
+                    DescBn = "জনসমক্ষে বক্তব্য, সমালোচনামূলক চিন্তা ও তর্ক দক্ষতা বৃদ্ধি।"
+                },
+                new {
+                    Icon = "fas fa-hands-helping", Color = "#9b59b6",
+                    Name = "Scout Group", NameBn = "স্কাউট গ্রুপ",
+                    Desc = "Builds leadership, discipline, and community service spirit.",
+                    DescBn = "নেতৃত্ব, শৃঙ্খলা ও সমাজসেবার মনোভাব গঠন।"
+                },
+                new {
+                    Icon = "fas fa-leaf", Color = "#1abc9c",
+                    Name = "Environment Club", NameBn = "পরিবেশ ক্লাব",
+                    Desc = "Creates awareness about environmental conservation and sustainability.",
+                    DescBn = "পরিবেশ সংরক্ষণ ও টেকসই উন্নয়ন সম্পর্কে সচেতনতা তৈরি।"
+                }
+            };
+        }
+        @foreach (var club in clubs)
+        {
+            <div class="col-lg-4 col-md-6">
+                <div class="club-card card h-100 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="club-icon mb-3" style="color: @club.Color">
+                            <i class="@club.Icon fa-4x"></i>
+                        </div>
+                        <h4 class="club-name">@(isRtl ? club.NameBn : club.Name)</h4>
+                        <p class="club-description text-muted">@(isRtl ? club.DescBn : club.Desc)</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

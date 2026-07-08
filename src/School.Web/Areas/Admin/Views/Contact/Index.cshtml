@@ -1,0 +1,119 @@
+@{
+    ViewData["Title"] = "Contact Messages";
+    ViewBag.ActiveMenu = "Contact";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-envelope me-2"></i>Contact Messages</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Contact Messages</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-datatable">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Status</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Subject</th>
+                        <th>Message Preview</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-primary">
+                        <td>1</td>
+                        <td><span class="badge bg-warning">Unread</span></td>
+                        <td>John Doe</td>
+                        <td>john@example.com</td>
+                        <td>Admission Inquiry</td>
+                        <td class="text-truncate" style="max-width:200px;">I would like to know about the admission process for class 1...</td>
+                        <td>Jul 05, 2026</td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="1" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
+                                <button class="btn btn-sm btn-success"><i class="fas fa-reply"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ } })"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><span class="badge bg-warning">Unread</span></td>
+                        <td>Sarah Khan</td>
+                        <td>sarah@example.com</td>
+                        <td>Transfer Certificate</td>
+                        <td class="text-truncate" style="max-width:200px;">I need a transfer certificate for my daughter who is currently...</td>
+                        <td>Jul 04, 2026</td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="2" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
+                                <button class="btn btn-sm btn-success"><i class="fas fa-reply"></i></button>
+                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><span class="badge bg-success">Read</span></td>
+                        <td>Md. Ali</td>
+                        <td>ali@example.com</td>
+                        <td>Fee Structure</td>
+                        <td class="text-truncate" style="max-width:200px;">Could you please share the fee structure for the academic year...</td>
+                        <td>Jul 02, 2026</td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="3" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
+                                <button class="btn btn-sm btn-success"><i class="fas fa-reply"></i></button>
+                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><span class="badge bg-success">Read</span></td>
+                        <td>Fatima Rahman</td>
+                        <td>fatima@example.com</td>
+                        <td>Complaint</td>
+                        <td class="text-truncate" style="max-width:200px;">I would like to raise a concern about the school bus service...</td>
+                        <td>Jun 30, 2026</td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="4" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
+                                <button class="btn btn-sm btn-success"><i class="fas fa-reply"></i></button>
+                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><span class="badge bg-success">Read</span></td>
+                        <td>Kabir Hasan</td>
+                        <td>kabir@example.com</td>
+                        <td>Volunteer Opportunity</td>
+                        <td class="text-truncate" style="max-width:200px;">I am interested in volunteering at the upcoming school event...</td>
+                        <td>Jun 28, 2026</td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="5" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
+                                <button class="btn btn-sm btn-success"><i class="fas fa-reply"></i></button>
+                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,30 @@
+@{
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fas fa-home"></i> @(isRtl ? "হোম" : "Home")
+            </a>
+        </li>
+        @if (ViewData["BreadcrumbItems"] is List<KeyValuePair<string, string>> items)
+        {
+            @foreach (var item in items)
+            {
+                if (!string.IsNullOrEmpty(item.Value))
+                {
+                    <li class="breadcrumb-item"><a href="@item.Value">@item.Key</a></li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item active" aria-current="page">@item.Key</li>
+                }
+            }
+        }
+        else
+        {
+            <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+        }
+    </ol>
+</nav>

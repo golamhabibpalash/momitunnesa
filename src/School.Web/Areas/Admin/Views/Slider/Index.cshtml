@@ -1,0 +1,89 @@
+@{
+    ViewData["Title"] = "Sliders";
+    ViewBag.ActiveMenu = "Sliders";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-images me-2"></i>Sliders</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Sliders</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="Slider" asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Add New Slider
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-datatable">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Image</th>
+                        <th>Title (English)</th>
+                        <th>Title (Bangla)</th>
+                        <th>Status</th>
+                        <th>Sort Order</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><img src="https://placehold.co/120x80/667eea/white?text=Slide+1" class="preview-img" alt="Slide"></td>
+                        <td>Welcome to Our School</td>
+                        <td>আমাদের স্কুলে স্বাগতম</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>1</td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Slider" asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Slider", new { area = "Admin", id = 1 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><img src="https://placehold.co/120x80/43e97b/white?text=Slide+2" class="preview-img" alt="Slide"></td>
+                        <td>Excellence in Education</td>
+                        <td>শিক্ষায় উৎকর্ষতা</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>2</td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Slider" asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Slider", new { area = "Admin", id = 2 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><img src="https://placehold.co/120x80/f6d365/white?text=Slide+3" class="preview-img" alt="Slide"></td>
+                        <td>Admissions Open 2026</td>
+                        <td>ভর্তি চলছে ২০২৬</td>
+                        <td><span class="badge bg-secondary">Inactive</span></td>
+                        <td>3</td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-area="Admin" asp-controller="Slider" asp-action="Edit" asp-route-id="3" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Slider", new { area = "Admin", id = 3 })'; } })">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

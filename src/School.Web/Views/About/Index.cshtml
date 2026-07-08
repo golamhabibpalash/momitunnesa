@@ -1,0 +1,188 @@
+@{
+    ViewData["Title"] = "About Us";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="about-page">
+    <ul class="nav nav-tabs about-tabs mb-4" id="aboutTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
+                @(isRtl ? "ইতিহাস" : "History")
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="mission-tab" data-bs-toggle="tab" data-bs-target="#mission" type="button" role="tab">
+                @(isRtl ? "মিশন" : "Mission")
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="vision-tab" data-bs-toggle="tab" data-bs-target="#vision" type="button" role="tab">
+                @(isRtl ? "ভিশন" : "Vision")
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="objectives-tab" data-bs-toggle="tab" data-bs-target="#objectives" type="button" role="tab">
+                @(isRtl ? "উদ্দেশ্য" : "Objectives")
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="achievements-tab" data-bs-toggle="tab" data-bs-target="#achievements" type="button" role="tab">
+                @(isRtl ? "অর্জন" : "Achievements")
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="future-tab" data-bs-toggle="tab" data-bs-target="#future" type="button" role="tab">
+                @(isRtl ? "ভবিষ্যৎ পরিকল্পনা" : "Future Plan")
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content" id="aboutTabContent">
+        <div class="tab-pane fade show active" id="history" role="tabpanel">
+            <div class="about-section">
+                <h2>@(isRtl ? "আমাদের ইতিহাস" : "Our History")</h2>
+                <div class="timeline mt-4">
+                    <div class="timeline-item">
+                        <div class="timeline-year">1990</div>
+                        <div class="timeline-content">
+                            <h5>@(isRtl ? "প্রতিষ্ঠা" : "Establishment")</h5>
+                            <p>@(isRtl ? "মোমিতুন্নেসা উচ্চ বিদ্যালয় ১৯৯০ সালে প্রতিষ্ঠিত হয়।" : "Momitunnesa High School was established in 1990.")</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2000</div>
+                        <div class="timeline-content">
+                            <h5>@(isRtl ? "উচ্চ বিদ্যালয়ে উন্নীত" : "Upgraded to High School")</h5>
+                            <p>@(isRtl ? "বিদ্যালয়টি উচ্চ বিদ্যালয়ে উন্নীত হয় এবং মাধ্যমিক শিক্ষা বোর্ডের স্বীকৃতি লাভ করে।" : "The school was upgraded to a high school and received recognition from the Secondary Education Board.")</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2010</div>
+                        <div class="timeline-content">
+                            <h5>@(isRtl ? "আধুনিকায়ন" : "Modernization")</h5>
+                            <p>@(isRtl ? "বিদ্যালয়ের অবকাঠামো আধুনিকায়ন ও বিজ্ঞানাগার স্থাপন।" : "Infrastructure modernization and science lab establishment.")</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2020</div>
+                        <div class="timeline-content">
+                            <h5>@(isRtl ? "ডিজিটাল শিক্ষা" : "Digital Education")</h5>
+                            <p>@(isRtl ? "ডিজিটাল শিক্ষা পদ্ধতি চালু ও মাল্টিমিডিয়া ক্লাসরুম স্থাপন।" : "Digital education system introduced and multimedia classrooms established.")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="mission" role="tabpanel">
+            <div class="about-section">
+                <h2>@(isRtl ? "আমাদের মিশন" : "Our Mission")</h2>
+                <div class="mission-content mt-3">
+                    <div class="mission-icon"><i class="fas fa-bullseye fa-3x text-primary mb-3"></i></div>
+                    <p>@(isRtl ? "শিক্ষার্থীদের মধ্যে নৈতিক মূল্যবোধ, জ্ঞান ও দক্ষতা বিকাশের মাধ্যমে তাদেরকে দেশপ্রেমিক, সৃজনশীল ও যোগ্য নাগরিক হিসেবে গড়ে তোলা।" : "To develop students as patriotic, creative, and capable citizens by nurturing moral values, knowledge, and skills.")</p>
+                    <ul class="mission-list mt-3">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>@(isRtl ? "মানসম্মত শিক্ষা নিশ্চিতকরণ" : "Ensure quality education")</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>@(isRtl ? "নৈতিক ও মানবিক মূল্যবোধ বিকাশ" : "Develop moral and human values")</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>@(isRtl ? "সৃজনশীলতা ও উদ্ভাবনী চিন্তার উৎসাহ" : "Encourage creativity and innovative thinking")</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>@(isRtl ? "প্রযুক্তি নির্ভর শিক্ষা পদ্ধতি" : "Technology-based education system")</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="vision" role="tabpanel">
+            <div class="about-section">
+                <h2>@(isRtl ? "আমাদের ভিশন" : "Our Vision")</h2>
+                <div class="vision-content mt-3">
+                    <div class="vision-icon"><i class="fas fa-eye fa-3x text-primary mb-3"></i></div>
+                    <p>@(isRtl ? "একটি আধুনিক, প্রযুক্তিনির্ভর ও মানবিক শিক্ষাপ্রতিষ্ঠান হিসেবে দেশের শীর্ষস্থানীয় বিদ্যালয়ে পরিণত হওয়া।" : "To become a leading school in the country as a modern, technology-driven, and humanitarian educational institution.")</p>
+                    <p>@(isRtl ? "আমাদের লক্ষ্য প্রতিটি শিক্ষার্থীকে বিশ্ব নাগরিক হিসেবে গড়ে তোলা যারা নিজেদের সম্প্রদায় ও দেশের উন্নয়নে অবদান রাখতে সক্ষম হবে।" : "Our goal is to prepare every student as a global citizen capable of contributing to the development of their community and country.")</p>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="objectives" role="tabpanel">
+            <div class="about-section">
+                <h2>@(isRtl ? "আমাদের উদ্দেশ্য" : "Our Objectives")</h2>
+                <div class="row g-4 mt-3">
+                    <div class="col-md-6">
+                        <div class="objective-card">
+                            <div class="objective-number">01</div>
+                            <p>@(isRtl ? "সকল শিক্ষার্থীর জন্য মানসম্মত শিক্ষা নিশ্চিত করা" : "Ensure quality education for all students")</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="objective-card">
+                            <div class="objective-number">02</div>
+                            <p>@(isRtl ? "শিক্ষার্থীদের মধ্যে নেতৃত্বের গুণাবলী বিকাশ" : "Develop leadership qualities among students")</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="objective-card">
+                            <div class="objective-number">03</div>
+                            <p>@(isRtl ? "সহশিক্ষা কার্যক্রমকে উৎসাহিত করা" : "Encourage co-curricular activities")</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="objective-card">
+                            <div class="objective-number">04</div>
+                            <p>@(isRtl ? "প্রযুক্তি ব্যবহার করে শিক্ষাদান পদ্ধতি আধুনিকায়ন" : "Modernize teaching methods using technology")</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="objective-card">
+                            <div class="objective-number">05</div>
+                            <p>@(isRtl ? "পরিবেশ সচেতনতা ও সামাজিক দায়িত্ববোধ গঠন" : "Build environmental awareness and social responsibility")</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="objective-card">
+                            <div class="objective-number">06</div>
+                            <p>@(isRtl ? "অভিভাবক ও সম্প্রদায়ের সাথে অংশীদারিত্ব গড়ে তোলা" : "Build partnership with parents and community")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="achievements" role="tabpanel">
+            <div class="about-section">
+                <h2>@(isRtl ? "আমাদের অর্জন" : "Our Achievements")</h2>
+                <div class="row g-4 mt-3">
+                    <div class="col-md-4">
+                        <div class="achievement-card text-center p-4 shadow-sm rounded">
+                            <i class="fas fa-medal fa-3x text-warning mb-3"></i>
+                            <h4>@(isRtl ? "শীর্ষ ১০ বিদ্যালয়" : "Top 10 School")</h4>
+                            <p>@(isRtl ? "জেলা পর্যায়ে শীর্ষ ১০ বিদ্যালয়ের তালিকায় স্থান" : "Ranked in top 10 schools at district level")</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="achievement-card text-center p-4 shadow-sm rounded">
+                            <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
+                            <div class="achievement-card text-center p-4 shadow-sm rounded">
+                                <h4>@(isRtl ? "১০০% পাস" : "100% Pass")</h4>
+                                <p>@(isRtl ? "টানা ৫ বছর পাবলিক পরীক্ষায় ১০০% পাস" : "100% pass in public exams for 5 consecutive years")</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="achievement-card text-center p-4 shadow-sm rounded">
+                            <i class="fas fa-award fa-3x text-warning mb-3"></i>
+                            <h4>@(isRtl ? "জাতীয় পুরস্কার" : "National Award")</h4>
+                            <p>@(isRtl ? "শিক্ষা মন্ত্রণালয় থেকে শ্রেষ্ঠ বিদ্যালয় পুরস্কার" : "Best School Award from Ministry of Education")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="future" role="tabpanel">
+            <div class="about-section">
+                <h2>@(isRtl ? "ভবিষ্যৎ পরিকল্পনা" : "Future Plan")</h2>
+                <div class="future-content mt-3">
+                    <p>@(isRtl ? "আমাদের ভবিষ্যৎ পরিকল্পনার মধ্যে রয়েছে:" : "Our future plans include:")</p>
+                    <ul class="future-list">
+                        <li><i class="fas fa-arrow-right text-primary me-2"></i>@(isRtl ? "নতুন ভবন নির্মাণ ও বিদ্যমান ভবন সংস্কার" : "New building construction and renovation of existing buildings")</li>
+                        <li><i class="fas fa-arrow-right text-primary me-2"></i>@(isRtl ? "পূর্ণাঙ্গ ডিজিটাল লাইব্রেরি স্থাপন" : "Establishment of a full digital library")</li>
+                        <li><i class="fas fa-arrow-right text-primary me-2"></i>@(isRtl ? "প্রতিটি ক্লাসরুমে স্মার্ট বোর্ড স্থাপন" : "Install smart boards in every classroom")</li>
+                        <li><i class="fas fa-arrow-right text-primary me-2"></i>@(isRtl ? "ক্যারিয়ার কাউন্সেলিং সেন্টার চালু" : "Launch career counseling center")</li>
+                        <li><i class="fas fa-arrow-right text-primary me-2"></i>@(isRtl ? "ক্রীড়া ও সাংস্কৃতিক কেন্দ্র স্থাপন" : "Establish sports and cultural center")</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

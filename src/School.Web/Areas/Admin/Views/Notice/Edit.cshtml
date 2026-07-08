@@ -1,0 +1,117 @@
+@{
+    ViewData["Title"] = "Edit Notice";
+    ViewBag.ActiveMenu = "Notices";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-edit me-2"></i>Edit Notice</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Notice" asp-action="Index">Notices</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="Notice" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<form asp-area="Admin" asp-controller="Notice" asp-action="Edit" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="1">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-info-circle me-2"></i>Notice Information</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label required">Title (English)</label>
+                        <input type="text" name="TitleEn" class="form-control" value="Summer Vacation 2026 Notice" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">Title (Bangla)</label>
+                        <input type="text" name="TitleBn" class="form-control" value="গ্রীষ্মকালীন ছুটির নোটিশ ২০২৬" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description (English)</label>
+                        <textarea name="DescriptionEn" class="form-control" rows="5">Dear Parents and Guardians,
+
+This is to inform you that the school will remain closed for Summer Vacation from June 15 to July 10, 2026. School will reopen on July 11, 2026.
+
+Please ensure that your children complete their holiday assignments during this period.</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description (Bangla)</label>
+                        <textarea name="DescriptionBn" class="form-control" rows="5">প্রিয় অভিভাবকবৃন্দ,
+
+এতদ্বারা জানানো যাচ্ছে যে, আগামী ১৫ জুন থেকে ১০ জুলাই ২০২৬ পর্যন্ত গ্রীষ্মকালীন ছুটির জন্য বিদ্যালয় বন্ধ থাকবে। ১১ জুলাই ২০২৬ থেকে বিদ্যালয় পুনরায় চালু হবে।</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Current Attachment</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-file-pdf text-danger fs-4"></i>
+                            <span>summer_vacation_2026.pdf</span>
+                            <a href="#" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i> Remove</a>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Replace Attachment</label>
+                        <input type="file" name="Attachment" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label required">Category</label>
+                        <select name="Category" class="form-select" required>
+                            <option value="">-- Select Category --</option>
+                            <option value="Academic">Academic</option>
+                            <option value="Exam">Exam</option>
+                            <option value="Holiday" selected>Holiday</option>
+                            <option value="Admission">Admission</option>
+                            <option value="Sports">Sports</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Publish Date</label>
+                        <input type="date" name="PublishDate" class="form-control" value="2026-06-01">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Expiry Date</label>
+                        <input type="date" name="ExpiryDate" class="form-control" value="2026-07-15">
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="isFeatured" name="IsFeatured" value="true" checked>
+                            <label class="form-check-label" for="isFeatured">Featured Notice</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="isActive" name="IsActive" value="true" checked>
+                            <label class="form-check-label" for="isActive">Active</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <a asp-area="Admin" asp-controller="Notice" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="fas fa-save me-1"></i>Update Notice
+        </button>
+    </div>
+</form>

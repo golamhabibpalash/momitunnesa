@@ -1,0 +1,76 @@
+@model School.Web.Models.AcademicCalendarViewModel
+@{
+    ViewData["Title"] = "Academic Calendar";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="academic-calendar-page">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="academic-year-selector mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <label class="fw-bold">@(isRtl ? "শিক্ষাবর্ষ:" : "Academic Year:")</label>
+                    <select class="form-select w-auto">
+                        <option>2026</option>
+                        <option>2025</option>
+                        <option>2024</option>
+                    </select>
+                    <a href="#" class="btn btn-primary btn-sm">
+                        <i class="fas fa-download me-1"></i>@(isRtl ? "পিডিএফ ডাউনলোড" : "Download PDF")
+                    </a>
+                </div>
+            </div>
+            <div class="calendar-months">
+                @for (int m = 1; m <= 12; m++)
+                {
+                    var monthName = new DateTime(2026, m, 1).ToString("MMMM");
+                    <div class="month-section mb-4">
+                        <h3 class="month-title bg-primary text-white p-2 rounded">@monthName</h3>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>@(isRtl ? "তারিখ" : "Date")</th>
+                                        <th>@(isRtl ? "দিন" : "Day")</th>
+                                        <th>@(isRtl ? "বিবরণ" : "Description")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int d = 1; d <= Math.Min(3, DateTime.DaysInMonth(2026, m)); d++)
+                                    {
+                                        <tr>
+                                            <td>@d @monthName</td>
+                                            <td>@(new DateTime(2026, m, d).ToString("dddd"))</td>
+                                            <td>
+                                                @(isRtl ? "একাডেমিক কার্যক্রম" : "Academic Activity")
+                                                @if (d == 1) { <span class="badge bg-danger ms-2">@(isRtl ? "ছুটি" : "Holiday")</span> }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <aside>
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">@(isRtl ? "গুরুত্বপূর্ণ তারিখ" : "Important Dates")</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="important-dates list-unstyled mb-0">
+                            <li class="mb-2"><span class="badge bg-danger me-2">1 Jan</span>@(isRtl ? "নববর্ষ" : "New Year")</li>
+                            <li class="mb-2"><span class="badge bg-warning me-2">21 Feb</span>@(isRtl ? "আন্তর্জাতিক মাতৃভাষা দিবস" : "International Mother Language Day")</li>
+                            <li class="mb-2"><span class="badge bg-success me-2">26 Mar</span>@(isRtl ? "স্বাধীনতা দিবস" : "Independence Day")</li>
+                            <li class="mb-2"><span class="badge bg-info me-2">14 Apr</span>@(isRtl ? "বাংলা নববর্ষ" : "Bengali New Year")</li>
+                            <li class="mb-2"><span class="badge bg-primary me-2">16 Dec</span>@(isRtl ? "বিজয় দিবস" : "Victory Day")</li>
+                        </ul>
+                    </div>
+                </div>
+                @await Html.PartialAsync("_ImportantLinks")
+            </aside>
+        </div>
+    </div>
+</div>

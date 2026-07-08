@@ -1,0 +1,91 @@
+@model School.Web.Models.ContactViewModel
+@{
+    ViewData["Title"] = "Contact";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="contact-page">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="contact-form-wrapper card shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-4">@(isRtl ? "আমাদের একটি বার্তা পাঠান" : "Send Us a Message")</h3>
+                    <form asp-action="Index" asp-controller="Contact" method="post" class="needs-validation" novalidate>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label">@(isRtl ? "আপনার নাম" : "Your Name") *</label>
+                                <input asp-for="Name" class="form-control" required />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label">@(isRtl ? "ইমেইল" : "Email") *</label>
+                                <input asp-for="Email" type="email" class="form-control" required />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Phone" class="form-label">@(isRtl ? "ফোন নম্বর" : "Phone Number")</label>
+                                <input asp-for="Phone" type="tel" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Subject" class="form-label">@(isRtl ? "বিষয়" : "Subject") *</label>
+                                <input asp-for="Subject" class="form-control" required />
+                                <span asp-validation-for="Subject" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Message" class="form-label">@(isRtl ? "বার্তা" : "Message") *</label>
+                                <textarea asp-for="Message" class="form-control" rows="5" required></textarea>
+                                <span asp-validation-for="Message" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg px-5">
+                                    <i class="fas fa-paper-plane me-2"></i>@(isRtl ? "বার্তা পাঠান" : "Send Message")
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="contact-info-cards">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body text-center">
+                        <div class="contact-icon mb-2 text-primary">
+                            <i class="fas fa-map-marker-alt fa-3x"></i>
+                        </div>
+                        <h5>@(isRtl ? "ঠিকানা" : "Address")</h5>
+                        <p class="mb-0">@(isRtl ? "আপনার জেলা, বাংলাদেশ" : "Your District, Bangladesh")</p>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body text-center">
+                        <div class="contact-icon mb-2 text-primary">
+                            <i class="fas fa-phone-alt fa-3x"></i>
+                        </div>
+                        <h5>@(isRtl ? "ফোন" : "Phone")</h5>
+                        <p class="mb-0"><a href="tel:+880XXXXXXXXX">+880-XXX-XXXXXX</a></p>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body text-center">
+                        <div class="contact-icon mb-2 text-primary">
+                            <i class="fas fa-envelope fa-3x"></i>
+                        </div>
+                        <h5>@(isRtl ? "ইমেইল" : "Email")</h5>
+                        <p class="mb-0"><a href="mailto:info@momitunnesa.edu.bd">info@momitunnesa.edu.bd</a></p>
+                    </div>
+                </div>
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="contact-icon mb-2 text-primary">
+                            <i class="fas fa-clock fa-3x"></i>
+                        </div>
+                        <h5>@(isRtl ? "অফিস সময়" : "Office Hours")</h5>
+                        <p class="mb-0">@(isRtl ? "শনি-বৃহস্পতি: ৯:০০ AM - ৪:০০ PM" : "Sat-Thu: 9:00 AM - 4:00 PM")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_GoogleMap")
+</div>

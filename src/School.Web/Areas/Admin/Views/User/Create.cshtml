@@ -1,0 +1,147 @@
+@{
+    ViewData["Title"] = "Create User";
+    ViewBag.ActiveMenu = "Users";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-plus-circle me-2"></i>Create New User</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="User" asp-action="Index">Users</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="User" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<form asp-area="Admin" asp-controller="User" asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-info-circle me-2"></i>Account Information</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label required">Username</label>
+                            <input type="text" name="Username" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Email</label>
+                            <input type="email" name="Email" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label class="form-label required">Full Name</label>
+                            <input type="text" name="FullName" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Phone</label>
+                            <input type="text" name="Phone" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label class="form-label required">Password</label>
+                            <div class="input-group">
+                                <input type="password" name="Password" class="form-control" id="passwordInput" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                                    <i class="fas fa-eye" id="passwordToggle"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">Min 8 characters, 1 uppercase, 1 number</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Confirm Password</label>
+                            <input type="password" name="ConfirmPassword" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-user-tag me-2"></i>Role Assignment</div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Select one or more roles for this user.</p>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="Roles" value="SuperAdmin" id="roleSuperAdmin">
+                        <label class="form-check-label" for="roleSuperAdmin">Super Admin</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="Roles" value="Admin" id="roleAdmin">
+                        <label class="form-check-label" for="roleAdmin">Admin</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="Roles" value="Editor" id="roleEditor" checked>
+                        <label class="form-check-label" for="roleEditor">Editor</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="Roles" value="Moderator" id="roleModerator">
+                        <label class="form-check-label" for="roleModerator">Moderator</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="Roles" value="Author" id="roleAuthor">
+                        <label class="form-check-label" for="roleAuthor">Author</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="Roles" value="Teacher" id="roleTeacher">
+                        <label class="form-check-label" for="roleTeacher">Teacher</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="isActive" name="IsActive" value="true" checked>
+                            <label class="form-check-label" for="isActive">Active</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="emailConfirmed" name="EmailConfirmed" value="true" checked>
+                            <label class="form-check-label" for="emailConfirmed">Email Confirmed</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <a asp-area="Admin" asp-controller="User" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="fas fa-save me-1"></i>Create User
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('passwordInput');
+            const toggle = document.getElementById('passwordToggle');
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.classList.remove('fa-eye');
+                toggle.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                toggle.classList.remove('fa-eye-slash');
+                toggle.classList.add('fa-eye');
+            }
+        }
+    </script>
+}

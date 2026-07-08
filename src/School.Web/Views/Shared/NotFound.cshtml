@@ -1,0 +1,22 @@
+@{
+    ViewData["Title"] = "Page Not Found";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="error-page text-center py-5">
+    <div class="error-code">404</div>
+    <h1 class="error-title">@(isRtl ? "পৃষ্ঠাটি পাওয়া যায়নি" : "Page Not Found")</h1>
+    <div class="error-icon my-4">
+        <i class="fas fa-map-signs fa-4x text-muted"></i>
+    </div>
+    <p class="error-message">
+        @(isRtl ? "আপনি যে পৃষ্ঠাটি খুঁজছেন তা বিদ্যমান নেই বা সরানো হয়েছে।" : "The page you are looking for does not exist or has been moved.")
+    </p>
+    <div class="error-actions mt-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">
+            <i class="fas fa-home me-2"></i>@(isRtl ? "হোম পেজে ফিরে যান" : "Back to Home")
+        </a>
+        <a asp-controller="Search" asp-action="Index" class="btn btn-outline-primary btn-lg ms-2">
+            <i class="fas fa-search me-2"></i>@(isRtl ? "অনুসন্ধান করুন" : "Search")
+        </a>
+    </div>
+</div>

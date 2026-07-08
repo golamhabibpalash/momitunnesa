@@ -1,0 +1,77 @@
+@model School.Web.Models.NewsListViewModel
+@{
+    ViewData["Title"] = "News";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="news-page">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="news-toolbar mb-4">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <div class="category-filter">
+                            <select class="form-select" onchange="window.location.href=this.value">
+                                <option value="@Url.Action("Index")">@(isRtl ? "সব ক্যাটাগরি" : "All Categories")</option>
+                                <option value="@Url.Action("Index", new { category = "academic" })">@(isRtl ? "একাডেমিক" : "Academic")</option>
+                                <option value="@Url.Action("Index", new { category = "sports" })">@(isRtl ? "ক্রীড়া" : "Sports")</option>
+                                <option value="@Url.Action("Index", new { category = "cultural" })">@(isRtl ? "সাংস্কৃতিক" : "Cultural")</option>
+                                <option value="@Url.Action("Index", new { category = "achievement" })">@(isRtl ? "সাফল্য" : "Achievement")</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <form asp-action="Index" method="get" class="d-flex gap-2">
+                            <div class="input-group">
+                                <input type="text" name="q" class="form-control" placeholder="@(isRtl ? "খবর অনুসন্ধান..." : "Search news...")" />
+                                <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="news-grid">
+                <div class="row g-4">
+                    @for (int i = 1; i <= 6; i++)
+                    {
+                        <div class="col-md-6">
+                            <div class="news-card">
+                                <div class="news-image">
+                                    <img src="/images/news/news@(i).jpg" alt="News @i" class="img-fluid" onerror="this.src='/images/placeholder.jpg'" />
+                                    <div class="news-date">
+                                        <span class="day">@(10 + i)</span>
+                                        <span class="month">@(isRtl ? "জুন" : "Jun")</span>
+                                    </div>
+                                </div>
+                                <div class="news-body">
+                                    <h5 class="news-title">
+                                        <a asp-action="Details" asp-route-id="@i">
+                                            @(isRtl ? $"খবর শিরোনাম {i}" : $"News Title {i}")
+                                        </a>
+                                    </h5>
+                                    <p class="news-excerpt">@(isRtl ? "খবরের সংক্ষিপ্ত বিবরণ..." : "Brief description of the news...")</p>
+                                    <a asp-action="Details" asp-route-id="@i" class="news-read-more">
+                                        @(isRtl ? "বিস্তারিত" : "Read More") <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <nav aria-label="News pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-lg-4">
+            <aside class="news-sidebar">
+                @await Html.PartialAsync("_ImportantLinks")
+            </aside>
+        </div>
+    </div>
+</div>

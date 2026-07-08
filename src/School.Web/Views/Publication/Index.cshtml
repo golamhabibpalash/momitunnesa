@@ -1,0 +1,58 @@
+@{
+    ViewData["Title"] = "Publications";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="publications-page">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <ul class="nav nav-tabs mb-4" id="publicationTab">
+                <li class="nav-item"><a class="nav-link active" href="#">@(isRtl ? "ম্যাগাজিন" : "Magazine")</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">@(isRtl ? "নিউজলেটার" : "Newsletter")</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">@(isRtl ? "বার্ষিক প্রতিবেদন" : "Annual Report")</a></li>
+            </ul>
+            <div class="row g-4">
+                @for (int i = 1; i <= 6; i++)
+                {
+                    <div class="col-md-6">
+                        <div class="publication-card card shadow-sm h-100">
+                            <div class="card-body text-center p-4">
+                                <div class="publication-icon mb-3">
+                                    <i class="fas fa-book-open fa-4x text-primary"></i>
+                                </div>
+                                <h5>@(isRtl ? $"প্রকাশনা {i}" : $"Publication {i}")</h5>
+                                <p class="text-muted small">@DateTime.Now.AddMonths(-i).ToString("MMMM yyyy")</p>
+                                <div class="publication-actions">
+                                    <a href="#" class="btn btn-primary btn-sm"><i class="fas fa-eye me-1"></i>@(isRtl ? "দেখুন" : "View")</a>
+                                    <a href="#" class="btn btn-outline-primary btn-sm"><i class="fas fa-download me-1"></i>@(isRtl ? "পিডিএফ" : "PDF")</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <aside>
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">@(isRtl ? "সাম্প্রতিক প্রকাশনা" : "Recent Publications")</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="recent-publications list-unstyled mb-0">
+                            @for (int i = 1; i <= 4; i++)
+                            {
+                                <li class="mb-2">
+                                    <a href="#" class="text-decoration-none">
+                                        <i class="fas fa-file-pdf text-danger me-2"></i>
+                                        @(isRtl ? $"প্রকাশনা {i}" : $"Publication {i}")
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                @await Html.PartialAsync("_ImportantLinks")
+            </aside>
+        </div>
+    </div>
+</div>

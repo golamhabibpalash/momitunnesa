@@ -1,0 +1,89 @@
+@model School.Web.Models.NewsViewModel
+@{
+    ViewData["Title"] = Model?.Title ?? "News Details";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+    var breadcrumbItems = new List<KeyValuePair<string, string>>
+    {
+        new KeyValuePair<string, string>(isRtl ? "খবর" : "News", Url.Action("Index", "News") ?? ""),
+        new KeyValuePair<string, string>(Model?.Title ?? "News Details", "")
+    };
+    ViewData["BreadcrumbItems"] = breadcrumbItems;
+}
+<div class="news-details">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <article class="news-article">
+                @if (!string.IsNullOrEmpty(Model?.ImageUrl))
+                {
+                    <div class="news-featured-image mb-4">
+                        <img src="@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded shadow" />
+                    </div>
+                }
+                <h1 class="news-title-detail">@(isRtl ? Model?.TitleBn ?? Model?.Title : Model?.Title)</h1>
+                <div class="news-meta-detail">
+                    <span class="news-date"><i class="far fa-calendar-alt me-2"></i>@(Model?.PublishDate?.ToString("dd MMMM yyyy") ?? DateTime.Now.ToString("dd MMMM yyyy"))</span>
+                    <span class="news-author ms-3"><i class="far fa-user me-2"></i>@(Model?.Author ?? "Admin")</span>
+                    <span class="news-category ms-3"><i class="far fa-folder me-2"></i>@(isRtl ? Model?.CategoryBn ?? Model?.Category : Model?.Category ?? "General")</span>
+                </div>
+                <div class="news-body mt-4">
+                    @Html.Raw(isRtl ? Model?.ContentBn ?? Model?.Content : Model?.Content)
+                    @if (string.IsNullOrEmpty(Model?.Content))
+                    {
+                        <p>@(isRtl ? "এটি একটি নমুনা খবরের বিস্তারিত বিবরণ। আমাদের বিদ্যালয়ে বিভিন্ন কর্মকাণ্ড নিয়মিতভাবে আয়োজিত হয়।" : "This is a sample news article detail. Various activities are regularly organized in our school.")</p>
+                        <p>@(isRtl ? "আমরা শিক্ষার্থীদের অংশগ্রহণে বিভিন্ন সাংস্কৃতিক, ক্রীড়া ও শিক্ষামূলক অনুষ্ঠানের আয়োজন করি যা তাদের সার্বিক বিকাশে সহায়তা করে।" : "We organize various cultural, sports, and educational events with student participation, which helps in their overall development.")</p>
+                    }
+                </div>
+                <div class="news-tags mt-4">
+                    @if (Model?.Tags != null)
+                    {
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <a href="@Url.Action("Index", new { q = tag })" class="badge bg-secondary text-decoration-none me-1">#@tag</a>
+                        }
+                    }
+                </div>
+                <div class="news-share mt-4 pt-3 border-top">
+                    <strong class="me-2">@(isRtl ? "শেয়ার করুন:" : "Share:")</strong>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=@Context.Request.GetEncodedUrl()" target="_blank" class="btn btn-sm btn-outline-primary" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/intent/tweet?url=@Context.Request.GetEncodedUrl()" target="_blank" class="btn btn-sm btn-outline-info" rel="noopener"><i class="fab fa-twitter"></i></a>
+                    <a href="https://linkedin.com/sharing/share-offsite/?url=@Context.Request.GetEncodedUrl()" target="_blank" class="btn btn-sm btn-outline-secondary" rel="noopener"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://wa.me/?text=@Context.Request.GetEncodedUrl()" target="_blank" class="btn btn-sm btn-outline-success" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+                </div>
+                <div class="news-navigation mt-4 pt-3 border-top d-flex justify-content-between">
+                    <a href="@Url.Action("Details", new { id = (ViewContext.RouteData.Values["id"]?.ToString() is string id && int.TryParse(id, out int nid) && nid > 1 ? nid - 1 : 1) })" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>@(isRtl ? "পূর্ববর্তী" : "Previous")
+                    </a>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                        <i class="fas fa-th me-2"></i>@(isRtl ? "সকল খবর" : "All News")
+                    </a>
+                    <a href="@Url.Action("Details", new { id = (Context.Request.RouteValues["id"]?.ToString() is string id2 && int.TryParse(id2, out int nid2) ? nid2 + 1 : 2) })" class="btn btn-outline-primary">
+                        @(isRtl ? "পরবর্তী" : "Next") <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </article>
+        </div>
+        <div class="col-lg-4">
+            <aside class="news-sidebar">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">@(isRtl ? "সাম্প্রতিক খবর" : "Recent News")</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="recent-posts list-unstyled mb-0">
+                            @for (int i = 1; i <= 4; i++)
+                            {
+                                <li class="recent-post-item">
+                                    <a asp-action="Details" asp-route-id="@i">
+                                        <h6>@(isRtl ? $"খবর শিরোনাম {i}" : $"News Title {i}")</h6>
+                                        <small class="text-muted">@DateTime.Now.AddDays(-i).ToString("dd MMM yyyy")</small>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                @await Html.PartialAsync("_ImportantLinks")
+            </aside>
+        </div>
+    </div>
+</div>

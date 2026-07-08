@@ -1,0 +1,173 @@
+@{
+    ViewData["Title"] = "Album Images";
+    ViewBag.ActiveMenu = "Albums";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-images me-2"></i>Album: Annual Sports Day 2026</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Gallery" asp-action="Albums">Albums</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Album Images</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadImagesModal">
+            <i class="fas fa-upload me-1"></i>Upload Images
+        </button>
+        <a asp-area="Admin" asp-controller="Gallery" asp-action="Albums" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back
+        </a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            <span>Drag and drop images to reorder them. Click on an image to select it for bulk actions.</span>
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
+            <button class="btn btn-sm btn-outline-success" disabled id="selectAllBtn"><i class="fas fa-check-double me-1"></i>Select All</button>
+            <button class="btn btn-sm btn-outline-danger" disabled><i class="fas fa-trash me-1"></i>Delete Selected</button>
+        </div>
+
+        <div class="gallery-grid" id="albumGrid">
+            <div class="gallery-item">
+                <img src="https://placehold.co/400x300/667eea/white?text=Photo+1" alt="Photo 1">
+                <div class="gallery-overlay d-flex justify-content-between align-items-center">
+                    <span>Photo 1</span>
+                    <div>
+                        <button class="btn btn-sm btn-light" onclick="confirmDelete().then(r => { if(r.isConfirmed) { $(this).closest('.gallery-item').remove(); } })">
+                            <i class="fas fa-times text-danger"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://placehold.co/400x300/43e97b/white?text=Photo+2" alt="Photo 2">
+                <div class="gallery-overlay d-flex justify-content-between align-items-center">
+                    <span>Photo 2</span>
+                    <button class="btn btn-sm btn-light" onclick="confirmDelete().then(r => { if(r.isConfirmed) { $(this).closest('.gallery-item').remove(); } })">
+                        <i class="fas fa-times text-danger"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://placehold.co/400x300/f6d365/white?text=Photo+3" alt="Photo 3">
+                <div class="gallery-overlay d-flex justify-content-between align-items-center">
+                    <span>Photo 3</span>
+                    <button class="btn btn-sm btn-light" onclick="confirmDelete().then(r => { if(r.isConfirmed) { $(this).closest('.gallery-item').remove(); } })">
+                        <i class="fas fa-times text-danger"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://placehold.co/400x300/f093fb/white?text=Photo+4" alt="Photo 4">
+                <div class="gallery-overlay d-flex justify-content-between align-items-center">
+                    <span>Photo 4</span>
+                    <button class="btn btn-sm btn-light"><i class="fas fa-times text-danger"></i></button>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://placehold.co/400x300/4facfe/white?text=Photo+5" alt="Photo 5">
+                <div class="gallery-overlay d-flex justify-content-between align-items-center">
+                    <span>Photo 5</span>
+                    <button class="btn btn-sm btn-light"><i class="fas fa-times text-danger"></i></button>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://placehold.co/400x300/434343/white?text=Photo+6" alt="Photo 6">
+                <div class="gallery-overlay d-flex justify-content-between align-items-center">
+                    <span>Photo 6</span>
+                    <button class="btn btn-sm btn-light"><i class="fas fa-times text-danger"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="uploadImagesModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form asp-area="Admin" asp-controller="Gallery" asp-action="UploadImages" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="AlbumId" value="1">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-upload me-2"></i>Upload Images</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="border-2 border-dashed rounded p-5 text-center" id="dropZone" style="border:2px dashed #dee2e6; cursor:pointer;">
+                            <i class="fas fa-cloud-upload-alt text-muted" style="font-size:3rem;"></i>
+                            <h5 class="mt-3">Drop images here or click to upload</h5>
+                            <p class="text-muted mb-0">Supports JPG, PNG, WEBP. Max 5MB each.</p>
+                            <input type="file" name="Images" class="d-none" id="fileInput" multiple accept="image/*">
+                        </div>
+                    </div>
+                    <div id="filePreview" class="row g-2 mt-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-upload me-1"></i>Upload All</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('dropZone').addEventListener('click', function() {
+            document.getElementById('fileInput').click();
+        });
+
+        document.getElementById('dropZone').addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        });
+
+        document.getElementById('dropZone').addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+        });
+
+        document.getElementById('dropZone').addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            document.getElementById('fileInput').files = files;
+            previewFiles(files);
+        });
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            previewFiles(this.files);
+        });
+
+        function previewFiles(files) {
+            const preview = document.getElementById('filePreview');
+            preview.innerHTML = '';
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-3 col-4';
+                    col.innerHTML = `
+                        <div class="border rounded p-1 text-center">
+                            <img src="${e.target.result}" class="img-fluid rounded" style="height:80px;width:100%;object-fit:cover;">
+                            <small class="d-block text-muted text-truncate mt-1">${file.name}</small>
+                        </div>
+                    `;
+                    preview.appendChild(col);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+}

@@ -1,0 +1,55 @@
+@model School.Web.Models.SchoolProfileViewModel
+@{
+    ViewData["Title"] = "School Profile";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+    var profile = Model ?? new School.Web.Models.SchoolProfileViewModel();
+}
+<div class="school-profile-page">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="profile-section mb-4">
+                <h2 class="profile-section-title"><i class="fas fa-school me-2"></i>@(isRtl ? "বিদ্যালয়ের পরিচিতি" : "School Identity")</h2>
+                <table class="table table-bordered profile-table">
+                    <tbody>
+                        <tr><th>@(isRtl ? "বিদ্যালয়ের নাম" : "School Name")</th><td>@(isRtl ? "মোমিতুন্নেসা উচ্চ বিদ্যালয়" : "Momitunnesa High School")</td></tr>
+                        <tr><th>@(isRtl ? "EIIN নম্বর" : "EIIN Number")</th><td>@profile.Eiin</td></tr>
+                        <tr><th>@(isRtl ? "বিদ্যালয় কোড" : "School Code")</th><td>@profile.SchoolCode</td></tr>
+                        <tr><th>@(isRtl ? "প্রতিষ্ঠা" : "Established")</th><td>@profile.EstablishedYear</td></tr>
+                        <tr><th>@(isRtl ? "শিক্ষা বোর্ড" : "Education Board")</th><td>@profile.Board</td></tr>
+                        <tr><th>@(isRtl ? "বিদ্যালয়ের ধরন" : "School Type")</th><td>@(isRtl ? "মাধ্যমিক বিদ্যালয়" : "Secondary School")</td></tr>
+                        <tr><th>@(isRtl ? "শিফট" : "Shift")</th><td>@(isRtl ? "দিবা শিফট" : "Day Shift")</td></tr>
+                        <tr><th>@(isRtl ? "মাধ্যম" : "Medium")</th><td>@(isRtl ? "বাংলা মাধ্যম" : "Bengali Medium")</td></tr>
+                        <tr><th>@(isRtl ? "মোট শিক্ষক" : "Total Teachers")</th><td>@profile.TeacherCount</td></tr>
+                        <tr><th>@(isRtl ? "মোট শিক্ষার্থী" : "Total Students")</th><td>@profile.StudentCount</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="profile-section mb-4">
+                <h2 class="profile-section-title"><i class="fas fa-map-marker-alt me-2"></i>@(isRtl ? "ঠিকানা" : "Address")</h2>
+                <table class="table table-bordered profile-table">
+                    <tbody>
+                        <tr><th>@(isRtl ? "বিভাগ" : "Division")</th><td>@profile.Division</td></tr>
+                        <tr><th>@(isRtl ? "জেলা" : "District")</th><td>@profile.District</td></tr>
+                        <tr><th>@(isRtl ? "উপজেলা" : "Upazila")</th><td>@profile.Upazila</td></tr>
+                        <tr><th>@(isRtl ? "ডাকঘর" : "Post Office")</th><td>@profile.PostOffice</td></tr>
+                        <tr><th>@(isRtl ? "পোস্ট কোড" : "Post Code")</th><td>@profile.PostCode</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="profile-sidebar">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <div class="profile-school-logo mb-3">
+                            <i class="fas fa-school fa-5x text-primary"></i>
+                        </div>
+                        <h4>@(isRtl ? "মোমিতুন্নেসা উচ্চ বিদ্যালয়" : "Momitunnesa High School")</h4>
+                        <p class="text-muted">@(isRtl ? "শিক্ষা, শৃঙ্খলা, উন্নতি" : "Education, Discipline, Progress")</p>
+                    </div>
+                </div>
+                @await Html.PartialAsync("_ImportantLinks")
+            </div>
+        </div>
+    </div>
+</div>

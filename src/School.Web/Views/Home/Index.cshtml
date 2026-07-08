@@ -1,0 +1,464 @@
+﻿@{
+    ViewData["Title"] = "Home";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+@section Hero {
+    <section class="hero-slider-section">
+        <div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="hero-slide" style="background-image: url('/images/slider/slide1.jpg');">
+                        <div class="hero-overlay"></div>
+                        <div class="container">
+                            <div class="hero-content">
+                                <h1 class="hero-title">@(isRtl ? "মোমিতুন্নেসা উচ্চ বিদ্যালয়ে স্বাগতম" : "Welcome to Momitunnesa High School")</h1>
+                                <p class="hero-subtitle">@(isRtl ? "শিক্ষা, শৃঙ্খলা ও নৈতিকতায় উজ্জ্বল ভবিষ্যৎ" : "A Bright Future through Education, Discipline & Morality")</p>
+                                <div class="hero-buttons">
+                                    <a asp-controller="About" asp-action="Index" class="btn btn-primary btn-lg">@(isRtl ? "আরও জানুন" : "Learn More")</a>
+                                    <a asp-controller="Contact" asp-action="Index" class="btn btn-outline-light btn-lg">@(isRtl ? "যোগাযোগ" : "Contact Us")</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="hero-slide" style="background-image: url('/images/slider/slide2.jpg');">
+                        <div class="hero-overlay"></div>
+                        <div class="container">
+                            <div class="hero-content">
+                                <h1 class="hero-title">@(isRtl ? "মানসম্মত শিক্ষা" : "Quality Education")</h1>
+                                <p class="hero-subtitle">@(isRtl ? "আধুনিক শিক্ষা পদ্ধতি ও দক্ষ শিক্ষকমণ্ডলী" : "Modern Teaching Methods & Dedicated Teachers")</p>
+                                <div class="hero-buttons">
+                                    <a asp-controller="Teacher" asp-action="Index" class="btn btn-primary btn-lg">@(isRtl ? "শিক্ষকবৃন্দ" : "Our Teachers")</a>
+                                    <a asp-controller="Facilities" asp-action="Index" class="btn btn-outline-light btn-lg">@(isRtl ? "সুযোগ-সুবিধা" : "Facilities")</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="hero-slide" style="background-image: url('/images/slider/slide3.jpg');">
+                        <div class="hero-overlay"></div>
+                        <div class="container">
+                            <div class="hero-content">
+                                <h1 class="hero-title">@(isRtl ? "ভর্তি চলছে" : "Admission Open")</h1>
+                                <p class="hero-subtitle">@(isRtl ? "নতুন শিক্ষাবর্ষে ভর্তি শুরু হয়েছে। এখনই আবেদন করুন।" : "Admissions for the new academic year are open. Apply now.")</p>
+                                <div class="hero-buttons">
+                                    <a href="#" class="btn btn-primary btn-lg">@(isRtl ? "অনলাইনে আবেদন" : "Apply Online")</a>
+                                    <a asp-controller="Contact" asp-action="Index" class="btn btn-outline-light btn-lg">@(isRtl ? "বিস্তারিত" : "Details")</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </section>
+}
+
+<div class="home-page">
+    <section class="notice-ticker-section">
+        <div class="container">
+            <div class="notice-ticker-wrapper">
+                <div class="ticker-label">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>@(isRtl ? "নোটিশ" : "Notice")</span>
+                </div>
+                <div class="ticker-content" id="noticeTicker">
+                    <div class="ticker-item">
+                        <a asp-controller="Notice" asp-action="Details" asp-route-id="1">
+                            @(isRtl ? "নতুন শিক্ষাবর্ষের ভর্তি বিজ্ঞপ্তি প্রকাশিত হয়েছে" : "New academic year admission notice published")
+                        </a>
+                    </div>
+                    <div class="ticker-item">
+                        <a asp-controller="Notice" asp-action="Details" asp-route-id="2">
+                            @(isRtl ? "বার্ষিক পরীক্ষার সময়সূচী প্রকাশিত" : "Annual exam schedule published")
+                        </a>
+                    </div>
+                    <div class="ticker-item">
+                        <a asp-controller="Notice" asp-action="Details" asp-route-id="3">
+                            @(isRtl ? "অভিভাবক-শিক্ষক সম্মেলনের তারিখ ঘোষণা" : "Parent-Teacher meeting date announced")
+                        </a>
+                    </div>
+                </div>
+                <a asp-controller="Notice" asp-action="Index" class="ticker-view-all">
+                    @(isRtl ? "সব দেখুন" : "All") <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-brief-section section-padding">
+        <div class="container">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-6">
+                    <div class="about-brief-content">
+                        <div class="section-subtitle">@(isRtl ? "আমাদের সম্পর্কে" : "About Us")</div>
+                        <h2 class="section-title">@(isRtl ? "মোমিতুন্নেসা উচ্চ বিদ্যালয়" : "Momitunnesa High School")</h2>
+                        <p>@(isRtl ? "মোমিতুন্নেসা উচ্চ বিদ্যালয় একটি ঐতিহ্যবাহী শিক্ষাপ্রতিষ্ঠান যা মানসম্মত শিক্ষা প্রদানের লক্ষ্যে প্রতিষ্ঠিত। আমরা শিক্ষার্থীদের মধ্যে নৈতিক মূল্যবোধ, জ্ঞান ও দক্ষতা বিকাশে প্রতিশ্রুতিবদ্ধ।" : "Momitunnesa High School is a traditional educational institution established with the aim of providing quality education. We are committed to developing moral values, knowledge, and skills among students.")</p>
+                        <p>@(isRtl ? "আমাদের আধুনিক শিক্ষা পদ্ধতি, দক্ষ শিক্ষকমণ্ডলী ও উন্নত অবকাঠামো শিক্ষার্থীদের সর্বোত্তম শিক্ষা নিশ্চিত করে।" : "Our modern teaching methods, skilled teachers, and excellent infrastructure ensure the best education for students.")</p>
+                        <a asp-controller="About" asp-action="Index" class="btn btn-primary mt-3">
+                            @(isRtl ? "আরও পড়ুন" : "Read More") <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-brief-image">
+                        <img src="/images/about-school.jpg" alt="School" class="img-fluid rounded shadow" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @await Html.PartialAsync("_Statistics")
+
+    @await Html.PartialAsync("_HeadTeacherMessage")
+
+    @await Html.PartialAsync("_ChairmanMessage")
+
+    <section class="news-section section-padding bg-light">
+        <div class="container">
+            <div class="section-header text-center">
+                <div class="section-subtitle">@(isRtl ? "সর্বশেষ খবর" : "Latest News")</div>
+                <h2 class="section-title">@(isRtl ? "আমাদের খবর" : "Our News")</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="news-card">
+                        <div class="news-image">
+                            <img src="/images/news/news1.jpg" alt="News" class="img-fluid" />
+                            <div class="news-date">
+                                <span class="day">15</span>
+                                <span class="month">@(isRtl ? "জুন" : "Jun")</span>
+                            </div>
+                        </div>
+                        <div class="news-body">
+                            <h5 class="news-title">
+                                <a asp-controller="News" asp-action="Details" asp-route-id="1">
+                                    @(isRtl ? "বার্ষিক ক্রীড়া প্রতিযোগিতা অনুষ্ঠিত" : "Annual Sports Competition Held")
+                                </a>
+                            </h5>
+                            <p class="news-excerpt">@(isRtl ? "বিদ্যালয়ের বার্ষিক ক্রীড়া প্রতিযোগিতা অত্যন্ত উৎসাহের সাথে অনুষ্ঠিত হয়েছে।" : "The annual sports competition was held with great enthusiasm.")</p>
+                            <a asp-controller="News" asp-action="Details" asp-route-id="1" class="news-read-more">
+                                @(isRtl ? "বিস্তারিত" : "Read More") <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="news-card">
+                        <div class="news-image">
+                            <img src="/images/news/news2.jpg" alt="News" class="img-fluid" />
+                            <div class="news-date">
+                                <span class="day">10</span>
+                                <span class="month">@(isRtl ? "জুন" : "Jun")</span>
+                            </div>
+                        </div>
+                        <div class="news-body">
+                            <h5 class="news-title">
+                                <a asp-controller="News" asp-action="Details" asp-route-id="2">
+                                    @(isRtl ? "জাতীয় অলিম্পিয়াডে আমাদের শিক্ষার্থীদের সাফল্য" : "Students' Success in National Olympiad")
+                                </a>
+                            </h5>
+                            <p class="news-excerpt">@(isRtl ? "আমাদের বিদ্যালয়ের শিক্ষার্থীরা জাতীয় অলিম্পিয়াডে অসাধারণ সাফল্য অর্জন করেছে।" : "Our school students achieved remarkable success in the National Olympiad.")</p>
+                            <a asp-controller="News" asp-action="Details" asp-route-id="2" class="news-read-more">
+                                @(isRtl ? "বিস্তারিত" : "Read More") <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="news-card">
+                        <div class="news-image">
+                            <img src="/images/news/news3.jpg" alt="News" class="img-fluid" />
+                            <div class="news-date">
+                                <span class="day">05</span>
+                                <span class="month">@(isRtl ? "জুন" : "Jun")</span>
+                            </div>
+                        </div>
+                        <div class="news-body">
+                            <h5 class="news-title">
+                                <a asp-controller="News" asp-action="Details" asp-route-id="3">
+                                    @(isRtl ? "নতুন পাঠাগার উদ্বোধন" : "New Library Inauguration")
+                                </a>
+                            </h5>
+                            <p class="news-excerpt">@(isRtl ? "বিদ্যালয়ের নতুন আধুনিক পাঠাগার উদ্বোধন করা হয়েছে।" : "The new modern library of the school has been inaugurated.")</p>
+                            <a asp-controller="News" asp-action="Details" asp-route-id="3" class="news-read-more">
+                                @(isRtl ? "বিস্তারিত" : "Read More") <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a asp-controller="News" asp-action="Index" class="btn btn-outline-primary">
+                    @(isRtl ? "সব খবর দেখুন" : "View All News") <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="events-section section-padding">
+        <div class="container">
+            <div class="section-header text-center">
+                <div class="section-subtitle">@(isRtl ? "আগামী ইভেন্ট" : "Upcoming Events")</div>
+                <h2 class="section-title">@(isRtl ? "আমাদের ইভেন্ট" : "Our Events")</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="event-card">
+                        <div class="event-date-badge">
+                            <span class="event-day">25</span>
+                            <span class="event-month">@(isRtl ? "জুন" : "Jun")</span>
+                        </div>
+                        <div class="event-details">
+                            <h5 class="event-title">@(isRtl ? "অভিভাবক-শিক্ষক সম্মেলন" : "Parent-Teacher Meeting")</h5>
+                            <p class="event-meta"><i class="fas fa-clock"></i> 10:00 AM - 2:00 PM</p>
+                            <p class="event-desc">@(isRtl ? "বার্ষিক অভিভাবক-শিক্ষক সম্মেলন" : "Annual Parent-Teacher Conference")</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="event-card">
+                        <div class="event-date-badge">
+                            <span class="event-day">30</span>
+                            <span class="event-month">@(isRtl ? "জুন" : "Jun")</span>
+                        </div>
+                        <div class="event-details">
+                            <h5 class="event-title">@(isRtl ? "বার্ষিক সাংস্কৃতিক অনুষ্ঠান" : "Annual Cultural Program")</h5>
+                            <p class="event-meta"><i class="fas fa-clock"></i> 3:00 PM - 7:00 PM</p>
+                            <p class="event-desc">@(isRtl ? "বার্ষিক সাংস্কৃতিক অনুষ্ঠান ও পুরস্কার বিতরণ" : "Annual cultural program and prize giving")</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="event-card">
+                        <div class="event-date-badge">
+                            <span class="event-day">05</span>
+                            <span class="event-month">@(isRtl ? "জুলাই" : "Jul")</span>
+                        </div>
+                        <div class="event-details">
+                            <h5 class="event-title">@(isRtl ? "বিজ্ঞান মেলা" : "Science Fair")</h5>
+                            <p class="event-meta"><i class="fas fa-clock"></i> 9:00 AM - 4:00 PM</p>
+                            <p class="event-desc">@(isRtl ? "বিদ্যালয়ের বার্ষিক বিজ্ঞান মেলা" : "School's annual science fair")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a asp-controller="Event" asp-action="Index" class="btn btn-outline-primary">
+                    @(isRtl ? "সব ইভেন্ট দেখুন" : "View All Events") <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery-section section-padding bg-light">
+        <div class="container">
+            <div class="section-header text-center">
+                <div class="section-subtitle">@(isRtl ? "ফটো গ্যালারি" : "Photo Gallery")</div>
+                <h2 class="section-title">@(isRtl ? "আমাদের গ্যালারি" : "Our Gallery")</h2>
+            </div>
+            <div id="galleryCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <a href="/images/gallery/gallery1.jpg" data-lightbox="home-gallery" class="gallery-item">
+                                    <img src="/images/gallery/gallery1.jpg" class="img-fluid rounded" alt="Gallery Image" />
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="/images/gallery/gallery2.jpg" data-lightbox="home-gallery" class="gallery-item">
+                                    <img src="/images/gallery/gallery2.jpg" class="img-fluid rounded" alt="Gallery Image" />
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="/images/gallery/gallery3.jpg" data-lightbox="home-gallery" class="gallery-item">
+                                    <img src="/images/gallery/gallery3.jpg" class="img-fluid rounded" alt="Gallery Image" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a asp-controller="Gallery" asp-action="Index" class="btn btn-outline-primary">
+                    @(isRtl ? "সব ছবি দেখুন" : "View All Photos") <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="video-gallery-section section-padding">
+        <div class="container">
+            <div class="section-header text-center">
+                <div class="section-subtitle">@(isRtl ? "ভিডিও গ্যালারি" : "Video Gallery")</div>
+                <h2 class="section-title">@(isRtl ? "আমাদের ভিডিও" : "Our Videos")</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="video-item">
+                        <div class="video-thumbnail">
+                            <img src="/images/video-thumb1.jpg" class="img-fluid rounded" alt="Video" />
+                            <a href="https://www.youtube.com/watch?v=example1" class="video-play-btn" data-lity>
+                                <i class="fas fa-play-circle"></i>
+                            </a>
+                        </div>
+                        <h6 class="video-title mt-2">@(isRtl ? "বিদ্যালয়ের বার্ষিক অনুষ্ঠান" : "School Annual Program")</h6>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="video-item">
+                        <div class="video-thumbnail">
+                            <img src="/images/video-thumb2.jpg" class="img-fluid rounded" alt="Video" />
+                            <a href="https://www.youtube.com/watch?v=example2" class="video-play-btn" data-lity>
+                                <i class="fas fa-play-circle"></i>
+                            </a>
+                        </div>
+                        <h6 class="video-title mt-2">@(isRtl ? "ক্রীড়া প্রতিযোগিতা" : "Sports Competition")</h6>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="video-item">
+                        <div class="video-thumbnail">
+                            <img src="/images/video-thumb3.jpg" class="img-fluid rounded" alt="Video" />
+                            <a href="https://www.youtube.com/watch?v=example3" class="video-play-btn" data-lity>
+                                <i class="fas fa-play-circle"></i>
+                            </a>
+                        </div>
+                        <h6 class="video-title mt-2">@(isRtl ? "বিজ্ঞান মেলা" : "Science Fair")</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="achievements-section section-padding bg-primary text-white">
+        <div class="container">
+            <div class="section-header text-center text-white">
+                <div class="section-subtitle text-white-50">@(isRtl ? "আমাদের সাফল্য" : "Our Achievements")</div>
+                <h2 class="section-title text-white">@(isRtl ? "গর্বিত অর্জন" : "Proud Achievements")</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="achievement-item text-center">
+                        <div class="achievement-icon"><i class="fas fa-medal"></i></div>
+                        <div class="achievement-number" data-target="5">0</div>
+                        <p class="achievement-label">@(isRtl ? "জাতীয় পুরস্কার" : "National Awards")</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="achievement-item text-center">
+                        <div class="achievement-icon"><i class="fas fa-trophy"></i></div>
+                        <div class="achievement-number" data-target="25">0</div>
+                        <p class="achievement-label">@(isRtl ? "বিভাগীয় পুরস্কার" : "Divisional Awards")</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="achievement-item text-center">
+                        <div class="achievement-icon"><i class="fas fa-award"></i></div>
+                        <div class="achievement-number" data-target="100">0</div>
+                        <p class="achievement-label">@(isRtl ? "এ+ প্রাপ্ত শিক্ষার্থী" : "A+ Students")</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="achievement-item text-center">
+                        <div class="achievement-icon"><i class="fas fa-star"></i></div>
+                        <div class="achievement-number" data-target="50">0</div>
+                        <p class="achievement-label">@(isRtl ? "বৃত্তি প্রাপ্ত" : "Scholarship Winners")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="downloads-section section-padding">
+        <div class="container">
+            <div class="section-header text-center">
+                <div class="section-subtitle">@(isRtl ? "ডাউনলোড" : "Downloads")</div>
+                <h2 class="section-title">@(isRtl ? "গুরুত্বপূর্ণ ডকুমেন্ট" : "Important Documents")</h2>
+            </div>
+            <div class="row g-3">
+                <div class="col-lg-4 col-md-6">
+                    <div class="download-item">
+                        <div class="download-icon"><i class="fas fa-file-pdf text-danger"></i></div>
+                        <div class="download-info">
+                            <h6>@(isRtl ? "ভর্তি ফর্ম" : "Admission Form")</h6>
+                            <span class="file-size">2.5 MB</span>
+                        </div>
+                        <a href="#" class="btn btn-sm btn-primary"><i class="fas fa-download"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="download-item">
+                        <div class="download-icon"><i class="fas fa-file-pdf text-danger"></i></div>
+                        <div class="download-info">
+                            <h6>@(isRtl ? "একাডেমিক ক্যালেন্ডার" : "Academic Calendar")</h6>
+                            <span class="file-size">1.2 MB</span>
+                        </div>
+                        <a href="#" class="btn btn-sm btn-primary"><i class="fas fa-download"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="download-item">
+                        <div class="download-icon"><i class="fas fa-file-pdf text-danger"></i></div>
+                        <div class="download-info">
+                            <h6>@(isRtl ? "শিক্ষক তালিকা" : "Teacher List")</h6>
+                            <span class="file-size">0.8 MB</span>
+                        </div>
+                        <a href="#" class="btn btn-sm btn-primary"><i class="fas fa-download"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-home-section section-padding bg-light">
+        <div class="container">
+            <div class="section-header text-center">
+                <div class="section-subtitle">@(isRtl ? "যোগাযোগ" : "Contact")</div>
+                <h2 class="section-title">@(isRtl ? "আমাদের সাথে যোগাযোগ করুন" : "Get In Touch")</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="contact-card text-center">
+                        <div class="contact-card-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <h5>@(isRtl ? "ঠিকানা" : "Address")</h5>
+                        <p>@(isRtl ? "আপনার জেলা, বাংলাদেশ" : "Your District, Bangladesh")</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="contact-card text-center">
+                        <div class="contact-card-icon"><i class="fas fa-phone-alt"></i></div>
+                        <h5>@(isRtl ? "ফোন" : "Phone")</h5>
+                        <p><a href="tel:+880XXXXXXXXX">+880-XXX-XXXXXX</a></p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="contact-card text-center">
+                        <div class="contact-card-icon"><i class="fas fa-envelope"></i></div>
+                        <h5>@(isRtl ? "ইমেইল" : "Email")</h5>
+                        <p><a href="mailto:info@momitunnesa.edu.bd">info@momitunnesa.edu.bd</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @await Html.PartialAsync("_GoogleMap")
+</div>

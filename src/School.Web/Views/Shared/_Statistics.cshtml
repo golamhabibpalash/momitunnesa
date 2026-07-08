@@ -1,0 +1,46 @@
+@model School.Web.Models.StatisticsViewModel
+@{
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<section class="statistics-section section-padding">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="stat-number" data-target="@(Model?.Teachers ?? 45)">0</div>
+                    <div class="stat-label">@(isRtl ? "শিক্ষক" : "Teachers")</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="stat-number" data-target="@(Model?.Students ?? 1200)">0</div>
+                    <div class="stat-label">@(isRtl ? "শিক্ষার্থী" : "Students")</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number" data-target="@(Model?.Staff ?? 25)">0</div>
+                    <div class="stat-label">@(isRtl ? "কর্মচারী" : "Staff")</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-number" data-target="@(Model?.Achievements ?? 150)">0</div>
+                    <div class="stat-label">@(isRtl ? "সাফল্য" : "Achievements")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,149 @@
+@{
+    ViewData["Title"] = "Add Staff";
+    ViewBag.ActiveMenu = "Staff";
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-plus-circle me-2"></i>Add New Staff Member</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Staff" asp-action="Index">Staff</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="Staff" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<form asp-area="Admin" asp-controller="Staff" asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-info-circle me-2"></i>Staff Information</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label required">Name (English)</label>
+                            <input type="text" name="NameEn" class="form-control" placeholder="Full name in English" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Name (Bangla)</label>
+                            <input type="text" name="NameBn" class="form-control" placeholder="বাংলায় নাম" required>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label class="form-label required">Designation</label>
+                            <input type="text" name="Designation" class="form-control" placeholder="e.g., Office Assistant, Librarian" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Department</label>
+                            <select name="Department" class="form-select" required>
+                                <option value="">-- Select Department --</option>
+                                <option value="Administration">Administration</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Library">Library</option>
+                                <option value="IT">IT</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Security">Security</option>
+                                <option value="Cafeteria">Cafeteria</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="Email" class="form-control" placeholder="staff@school.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            <input type="text" name="Phone" class="form-control" placeholder="+880 1XXX-XXXXXX">
+                        </div>
+                    </div>
+                    <div class="mb-3 mt-3">
+                        <label class="form-label">Address</label>
+                        <textarea name="Address" class="form-control" rows="2" placeholder="Full address"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">About</label>
+                        <textarea name="About" class="form-control" rows="3" placeholder="Brief description about the staff member"></textarea>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Joining Date</label>
+                            <input type="date" name="JoiningDate" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Salary</label>
+                            <input type="number" name="Salary" class="form-control" placeholder="Monthly salary" step="0.01">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-image me-2"></i>Photo</div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="border rounded d-flex align-items-center justify-content-center mx-auto" style="width:150px;height:150px;overflow:hidden;background:#f4f6f9;">
+                            <img id="photoPreview" src="#" class="img-fluid d-none" style="width:100%;height:100%;object-fit:cover;">
+                            <i class="fas fa-user-circle text-muted" style="font-size:4rem;" id="photoPlaceholder"></i>
+                        </div>
+                    </div>
+                    <input type="file" name="Photo" class="form-control" accept="image/*" id="photoInput">
+                    <small class="text-muted">Recommended: 300x300px, max 1MB</small>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="isActive" name="IsActive" value="true" checked>
+                            <label class="form-check-label" for="isActive">Active</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Display Order</label>
+                        <input type="number" name="DisplayOrder" class="form-control" value="1" min="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <a asp-area="Admin" asp-controller="Staff" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="fas fa-save me-1"></i>Save Staff
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById('photoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('photoPreview').src = e.target.result;
+                    document.getElementById('photoPreview').classList.remove('d-none');
+                    document.getElementById('photoPlaceholder').classList.add('d-none');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+}

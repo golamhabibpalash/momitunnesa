@@ -1,0 +1,39 @@
+@model School.Web.Models.StaffListViewModel
+@{
+    ViewData["Title"] = "Staff";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="staff-page">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="row g-4">
+                @for (int i = 1; i <= 6; i++)
+                {
+                    <div class="col-md-4 col-sm-6">
+                        <div class="staff-card text-center p-3 shadow-sm rounded">
+                            <div class="staff-image mb-3">
+                                <img src="/images/staff/staff@(i).jpg" alt="Staff @i"
+                                     class="img-fluid rounded-circle" width="120" height="120"
+                                     onerror="this.src='/images/avatar.jpg'" />
+                            </div>
+                            <h6 class="staff-name">@(isRtl ? $"কর্মচারী {i}" : $"Staff {i}")</h6>
+                            <p class="staff-designation text-primary small mb-1">
+                                @(i == 1 ? (isRtl ? "অফিস সহকারী" : "Office Assistant") :
+                                  i == 2 ? (isRtl ? "প্রহরী" : "Guard") :
+                                  i == 3 ? (isRtl ? "পরিচ্ছন্নতা কর্মী" : "Cleaner") :
+                                  i == 4 ? (isRtl ? "লাইব্রেরিয়ান" : "Librarian") :
+                                  i == 5 ? (isRtl ? "কম্পিউটার অপারেটর" : "Computer Operator") :
+                                             (isRtl ? "সহায়ক কর্মচারী" : "Support Staff"))
+                            </p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <aside>
+                @await Html.PartialAsync("_ImportantLinks")
+            </aside>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,96 @@
+@model School.Web.Models.DownloadListViewModel
+@{
+    ViewData["Title"] = "Downloads";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+    var categories = new[] {
+        new { Name = "All", NameBn = "সব" },
+        new { Name = "Forms", NameBn = "ফর্ম" },
+        new { Name = "Syllabus", NameBn = "সিলেবাস" },
+        new { Name = "Routine", NameBn = "রুটিন" },
+        new { Name = "Notice", NameBn = "নোটিশ" },
+        new { Name = "Results", NameBn = "ফলাফল" }
+    };
+}
+<div class="downloads-page">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="download-toolbar mb-4">
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <ul class="nav nav-pills">
+                            @foreach (var cat in categories)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @(cat.Name == "All" ? "active" : "")" href="#">
+                                        @(isRtl ? cat.NameBn : cat.Name)
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="col-md-4 offset-md-2">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="@(isRtl ? "ফাইল অনুসন্ধান..." : "Search files...")" />
+                            <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="download-list">
+                @for (int i = 1; i <= 8; i++)
+                {
+                    <div class="download-item d-flex align-items-center p-3 border rounded mb-2">
+                        <div class="download-icon flex-shrink-0 me-3">
+                            <i class="fas fa-file-pdf fa-2x text-danger"></i>
+                        </div>
+                        <div class="download-info flex-grow-1">
+                            <h6 class="mb-1">
+                                <a href="#">@(isRtl ? $"ডাউনলোড ফাইল {i}" : $"Download File {i}")</a>
+                            </h6>
+                            <small class="text-muted">
+                                <span><i class="fas fa-file me-1"></i>PDF</span>
+                                <span class="ms-2"><i class="fas fa-weight me-1"></i>@((new Random().Next(100, 5000) / 1000.0).ToString("F1")) MB</span>
+                                <span class="ms-2"><i class="fas fa-calendar me-1"></i>@DateTime.Now.AddDays(-i).ToString("dd MMM yyyy")</span>
+                            </small>
+                        </div>
+                        <a href="#" class="btn btn-primary btn-sm flex-shrink-0">
+                            <i class="fas fa-download me-1"></i> @(isRtl ? "ডাউনলোড" : "Download")
+                        </a>
+                    </div>
+                }
+            </div>
+            <nav aria-label="Download pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-lg-4">
+            <aside>
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">@(isRtl ? " জনপ্রিয় ডাউনলোড" : "Popular Downloads")</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="popular-downloads list-unstyled mb-0">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <li class="mb-2">
+                                    <a href="#" class="text-decoration-none">
+                                        <i class="fas fa-file-pdf text-danger me-2"></i>
+                                        @(isRtl ? $"ফাইল {i}" : $"File {i}")
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                @await Html.PartialAsync("_ImportantLinks")
+            </aside>
+        </div>
+    </div>
+</div>

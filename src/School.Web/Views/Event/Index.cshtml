@@ -1,0 +1,72 @@
+@model School.Web.Models.EventListViewModel
+@{
+    ViewData["Title"] = "Events";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="events-page">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="events-header mb-4">
+                <ul class="nav nav-pills" id="eventFilter">
+                    <li class="nav-item"><a class="nav-link active" href="#">@(isRtl ? "আসন্ন" : "Upcoming")</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">@(isRtl ? "চলমান" : "Ongoing")</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">@(isRtl ? "অতীত" : "Past")</a></li>
+                </ul>
+            </div>
+            <div class="events-list">
+                <div class="row g-4">
+                    @for (int i = 1; i <= 6; i++)
+                    {
+                        <div class="col-md-6">
+                            <div class="event-card-horizontal d-flex">
+                                <div class="event-date-box flex-shrink-0">
+                                    <span class="event-day">@(15 + i)</span>
+                                    <span class="event-month">@(isRtl ? "জুন" : "Jun")</span>
+                                </div>
+                                <div class="event-info flex-grow-1">
+                                    <h5 class="event-title">
+                                        <a asp-action="Details" asp-route-id="@i">
+                                            @(isRtl ? $"ইভেন্ট শিরোনাম {i}" : $"Event Title {i}")
+                                        </a>
+                                    </h5>
+                                    <p class="event-meta">
+                                        <span><i class="fas fa-clock me-1"></i>10:00 AM - 12:00 PM</span>
+                                        <span class="ms-2"><i class="fas fa-map-marker-alt me-1"></i>@(isRtl ? "বিদ্যালয় প্রাঙ্গণ" : "School Campus")</span>
+                                    </p>
+                                    <p class="event-description">@(isRtl ? "ইভেন্টের সংক্ষিপ্ত বিবরণ..." : "Brief event description...")</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <nav aria-label="Event pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-lg-4">
+            <aside class="events-sidebar">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">@(isRtl ? "চলতি মাস" : "Current Month")</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mini-calendar text-center">
+                            <div class="calendar-header">
+                                <i class="fas fa-calendar-alt fa-3x text-primary mb-2"></i>
+                                <h6>@DateTime.Now.ToString("MMMM yyyy")</h6>
+                            </div>
+                            <p class="text-muted mb-0">@(isRtl ? "এই মাসে ৫টি ইভেন্ট" : "5 events this month")</p>
+                        </div>
+                    </div>
+                </div>
+                @await Html.PartialAsync("_ImportantLinks")
+            </aside>
+        </div>
+    </div>
+</div>

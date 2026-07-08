@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Access Denied";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="error-page text-center py-5">
+    <div class="error-code">403</div>
+    <h1 class="error-title">@(isRtl ? "প্রবেশাধিকার অস্বীকৃত" : "Access Denied")</h1>
+    <div class="error-icon my-4">
+        <i class="fas fa-lock fa-4x text-danger"></i>
+    </div>
+    <p class="error-message">
+        @(isRtl ? "আপনার এই পৃষ্ঠাটি দেখার অনুমতি নেই।" : "You do not have permission to view this page.")
+    </p>
+    <div class="error-actions mt-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+            <i class="fas fa-home me-2"></i>@(isRtl ? "হোম পেজে ফিরে যান" : "Back to Home")
+        </a>
+    </div>
+</div>

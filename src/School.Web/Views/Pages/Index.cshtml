@@ -1,0 +1,54 @@
+@model School.Web.Models.PageViewModel
+@{
+    ViewData["Title"] = Model?.Title ?? "Page";
+    ViewData["MetaDescription"] = Model?.MetaDescription;
+    ViewData["MetaKeywords"] = Model?.MetaKeywords;
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+    var items = new List<KeyValuePair<string, string>>
+    {
+        new KeyValuePair<string, string>(Model?.Title ?? "Page", "")
+    };
+    ViewData["BreadcrumbItems"] = items;
+}
+<div class="page-view">
+    <div class="row">
+        <div class="col-lg-8">
+            <article class="page-content-wrapper">
+                @if (!string.IsNullOrEmpty(Model?.FeaturedImage))
+                {
+                    <div class="page-featured-image mb-4">
+                        <img src="@Model.FeaturedImage" alt="@Model.Title" class="img-fluid rounded shadow" />
+                    </div>
+                }
+                <h1 class="page-main-title">@(isRtl ? Model?.TitleBn ?? Model?.Title : Model?.Title)</h1>
+                <div class="page-content">
+                    @Html.Raw(isRtl ? Model?.ContentBn ?? Model?.Content : Model?.Content)
+                </div>
+                <div class="page-meta d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                    <div class="page-updated">
+                        <i class="fas fa-calendar-alt me-1"></i>
+                        <strong>@(isRtl ? "সর্বশেষ আপডেট:" : "Last Updated:")</strong>
+                        <span>@(Model?.UpdatedAt?.ToString("dd MMM yyyy") ?? DateTime.Now.ToString("dd MMM yyyy"))</span>
+                    </div>
+                    <div class="page-share">
+                        <span class="me-2">@(isRtl ? "শেয়ার করুন:" : "Share:")</span>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=@Context.Request.GetEncodedUrl()" target="_blank" class="btn btn-sm btn-outline-primary" rel="noopener">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url=@Context.Request.GetEncodedUrl()" target="_blank" class="btn btn-sm btn-outline-info" rel="noopener">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://wa.me/?text=@Context.Request.GetEncodedUrl()" target="_blank" class="btn btn-sm btn-outline-success" rel="noopener">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div class="col-lg-4">
+            <aside class="page-sidebar">
+                @await Html.PartialAsync("_ImportantLinks")
+            </aside>
+        </div>
+    </div>
+</div>
