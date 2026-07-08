@@ -1,0 +1,61 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+## NuGet
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nupkg
+**/packages/*/
+
+## Build
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio
+.vs/
+*.sln.ide/
+
+## JetBrains Rider
+.idea/
+*.sln.iml
+
+## macOS
+.DS_Store
+*.swp
+*.lock
+~$*
+
+## ASP.NET Core
+appsettings.*.local.json
+wwwroot/lib/
+node_modules/
+
+## Serilog logs
+logs/
+
+## Secret
+appsettings.Development.json
+
+## SQLite (if used)
+*.db
+*.db-shm
+*.db-wal
+
+## Docker
+.docker/
