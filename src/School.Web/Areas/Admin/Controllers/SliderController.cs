@@ -9,14 +9,17 @@ namespace School.Web.Areas.Admin.Controllers;
 public class SliderController : BaseAdminController
 {
     private readonly ISliderService _sliderService;
+    private readonly IMediaService _mediaService;
 
     public SliderController(
         ISliderService sliderService,
+        IMediaService mediaService,
         ILogger<BaseAdminController> logger,
         IHttpContextAccessor httpContextAccessor)
         : base(logger, httpContextAccessor)
     {
         _sliderService = sliderService;
+        _mediaService = mediaService;
     }
 
     public async Task<IActionResult> Index()
@@ -29,7 +32,7 @@ public class SliderController : BaseAdminController
             return View(new List<SliderDto>());
         }
 
-        return View(result.Data.OrderBy(s => s.SortOrder));
+        return View(result.Data.OrderBy(s => s.SortOrder).ToList());
     }
 
     [HttpGet]
@@ -40,8 +43,23 @@ public class SliderController : BaseAdminController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(SliderCreateDto model)
+    public async Task<IActionResult> Create(SliderCreateDto model, IFormFile? Image)
     {
+        if (Image is not null && Image.Length > 0)
+        {
+            var uploadResult = await _mediaService.UploadAsync(Image, "sliders");
+            if (uploadResult.Success)
+            {
+                model.ImageUrl = uploadResult.Url ?? "";
+                ModelState.Remove("ImageUrl");
+            }
+            else
+            {
+                SetErrorNotification(uploadResult.Error ?? "Failed to upload image.");
+                return View(model);
+            }
+        }
+
         if (!ModelState.IsValid)
             return View(model);
 
@@ -87,8 +105,34 @@ public class SliderController : BaseAdminController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, SliderCreateDto model)
+    public async Task<IActionResult> Edit(int id, SliderCreateDto model, IFormFile? Image, string? removeImage)
     {
+        if (removeImage == "true")
+        {
+            if (!string.IsNullOrEmpty(model.ImageUrl))
+                await _mediaService.DeleteAsync(model.ImageUrl);
+            model.ImageUrl = "";
+            ModelState.Remove("ImageUrl");
+        }
+
+        if (Image is not null && Image.Length > 0)
+        {
+            var uploadResult = await _mediaService.UploadAsync(Image, "sliders");
+            if (uploadResult.Success)
+            {
+                if (!string.IsNullOrEmpty(model.ImageUrl))
+                    await _mediaService.DeleteAsync(model.ImageUrl);
+                model.ImageUrl = uploadResult.Url ?? "";
+                ModelState.Remove("ImageUrl");
+            }
+            else
+            {
+                SetErrorNotification(uploadResult.Error ?? "Failed to upload image.");
+                ViewBag.SliderId = id;
+                return View(model);
+            }
+        }
+
         if (!ModelState.IsValid)
         {
             ViewBag.SliderId = id;

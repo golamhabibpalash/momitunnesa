@@ -1,3 +1,4 @@
+@model List<School.Application.Services.Interfaces.MenuDto>
 @{
     ViewData["Title"] = "Menus";
     ViewBag.ActiveMenu = "Menus";
@@ -18,189 +19,121 @@
     </a>
 </div>
 
-<div class="row g-3">
-    <div class="col-lg-3">
-        <div class="card">
-            <div class="card-header"><i class="fas fa-list me-2"></i>Menu Locations</div>
-            <div class="list-group list-group-flush">
-                <a href="#" class="list-group-item list-group-item-action active d-flex justify-content-between align-items-center">
-                    Main Navigation
-                    <span class="badge bg-primary rounded-pill">6</span>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                    Footer Menu
-                    <span class="badge bg-secondary rounded-pill">4</span>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                    Sidebar Menu
-                    <span class="badge bg-secondary rounded-pill">3</span>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                    Quick Links
-                    <span class="badge bg-secondary rounded-pill">5</span>
-                </a>
-            </div>
-        </div>
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-sitemap me-2"></i>All Menus</span>
+        <button class="btn btn-sm btn-outline-success" id="saveOrderBtn" onclick="saveMenuOrder()">
+            <i class="fas fa-save me-1"></i>Save Order
+        </button>
     </div>
+    <div class="card-body">
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="fas fa-arrows-alt me-2"></i>
+            <span>Drag and drop menu items to reorder them.</span>
+        </div>
 
-    <div class="col-lg-9">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="fas fa-sitemap me-2"></i>Main Navigation</span>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-success" onclick="showToast('Menu order saved successfully!', 'success')">
-                        <i class="fas fa-save me-1"></i>Save Order
-                    </button>
-                    <a asp-area="Admin" asp-controller="Menu" asp-action="Create" class="btn btn-sm btn-primary">
-                        <i class="fas fa-plus me-1"></i>Add Item
-                    </a>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="alert alert-info d-flex align-items-center" role="alert">
-                    <i class="fas fa-arrows-alt me-2"></i>
-                    <span>Drag and drop menu items to reorder them. Drop an item on another to make it a child.</span>
-                </div>
-
-                <div class="menu-tree">
-                    <div class="list-group sortable-menu">
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="fas fa-grip-vertical text-muted" style="cursor:grab;"></i>
-                                <i class="fas fa-home"></i>
-                                <div>
-                                    <strong>Home</strong>
-                                    <small class="text-muted ms-2">/</small>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-1">
-                                <span class="badge bg-info">Internal</span>
-                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="fas fa-grip-vertical text-muted" style="cursor:grab;"></i>
-                                <i class="fas fa-info-circle"></i>
-                                <div>
-                                    <strong>About Us</strong>
-                                    <small class="text-muted ms-2">/about</small>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-1">
-                                <span class="badge bg-info">Internal</span>
-                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center" style="padding-left:50px;">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="fas fa-grip-vertical text-muted" style="cursor:grab;"></i>
-                                <i class="fas fa-user-graduate"></i>
-                                <div>
-                                    <strong>Our Mission</strong>
-                                    <small class="text-muted ms-2">/about/mission</small>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-1">
-                                <span class="badge bg-info">Internal</span>
-                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="fas fa-grip-vertical text-muted" style="cursor:grab;"></i>
-                                <i class="fas fa-book-open"></i>
-                                <div>
-                                    <strong>Academics</strong>
-                                    <small class="text-muted ms-2">/academics</small>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-1">
-                                <span class="badge bg-info">Internal</span>
-                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center" style="padding-left:50px;">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="fas fa-grip-vertical text-muted" style="cursor:grab;"></i>
-                                <i class="fas fa-calendar-alt"></i>
-                                <div>
-                                    <strong>Academic Calendar</strong>
-                                    <small class="text-muted ms-2">/academics/calendar</small>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-1">
-                                <span class="badge bg-info">Internal</span>
-                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center" style="padding-left:50px;">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="fas fa-grip-vertical text-muted" style="cursor:grab;"></i>
-                                <i class="fas fa-table"></i>
-                                <div>
-                                    <strong>Class Routine</strong>
-                                    <small class="text-muted ms-2">/academics/routine</small>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-1">
-                                <span class="badge bg-info">Internal</span>
-                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="fas fa-grip-vertical text-muted" style="cursor:grab;"></i>
-                                <i class="fas fa-images"></i>
-                                <div>
-                                    <strong>Gallery</strong>
-                                    <small class="text-muted ms-2">/gallery</small>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-1">
-                                <span class="badge bg-info">Internal</span>
-                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="fas fa-grip-vertical text-muted" style="cursor:grab;"></i>
-                                <i class="fas fa-envelope"></i>
-                                <div>
-                                    <strong>Contact Us</strong>
-                                    <small class="text-muted ms-2">/contact</small>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-1">
-                                <span class="badge bg-info">Internal</span>
-                                <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div id="menuTree" class="sortable-menu list-group">
+            @if (Model != null && Model.Any())
+            {
+                await RenderMenu(Model, 0);
+            }
+            else
+            {
+                <div class="text-center text-muted py-4">No menu items found.</div>
+            }
         </div>
     </div>
 </div>
 
+@{
+    async Task RenderMenu(List<School.Application.Services.Interfaces.MenuDto> items, int depth)
+    {
+        foreach (var item in items)
+        {
+            <div class="list-group-item menu-item d-flex justify-content-between align-items-center" data-id="@item.Id" data-parent-id="@(item.ParentMenuId?.ToString() ?? "")" data-sort-order="@item.SortOrder" style="padding-left: @(20 + depth * 30)px;">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="fas fa-grip-vertical text-muted menu-handle" style="cursor:grab;"></i>
+                    @if (!string.IsNullOrEmpty(item.Icon))
+                    {
+                        <i class="@item.Icon"></i>
+                    }
+                    else
+                    {
+                        <i class="fas fa-circle text-muted" style="font-size:8px;"></i>
+                    }
+                    <div>
+                        <strong>@item.Title</strong>
+                        <small class="text-muted ms-2">@item.Url</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-1 align-items-center">
+                    <span class="badge bg-@(item.IsExternal ? "secondary" : "info") me-2">@item.MenuType</span>
+                    <span class="badge bg-@(item.IsActive ? "success" : "secondary") me-2">@(item.IsActive ? "Active" : "Inactive")</span>
+                    <a asp-area="Admin" asp-controller="Menu" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
+                    <form asp-area="Admin" asp-controller="Menu" asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Delete this menu item?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                    </form>
+                </div>
+            </div>
+            if (item.Children != null && item.Children.Any())
+            {
+                await RenderMenu(item.Children, depth + 1);
+            }
+        }
+    }
+}
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
-        new Sortable(document.querySelector('.sortable-menu'), {
+        new Sortable(document.getElementById('menuTree'), {
             animation: 150,
-            handle: '.fa-grip-vertical',
+            handle: '.menu-handle',
             ghostClass: 'sortable-placeholder',
             onEnd: function() {
                 showToast('Menu order updated. Click "Save Order" to persist.', 'info');
             }
         });
+
+        function saveMenuOrder() {
+            const btn = document.getElementById('saveOrderBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
+
+            const items = [];
+            document.querySelectorAll('.menu-item').forEach(function(el, index) {
+                items.push({
+                    id: parseInt(el.dataset.id),
+                    parentMenuId: null,
+                    sortOrder: index + 1
+                });
+            });
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['RequestVerificationToken'] = token.value;
+
+            fetch('@Url.Action("Reorder", "Menu", new { area = "Admin" })', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(items)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                } else {
+                    showToast(data.message || 'Failed to save order.', 'error');
+                }
+            })
+            .catch(() => {
+                showToast('Failed to save order.', 'error');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save me-1"></i>Save Order';
+            });
+        }
     </script>
 }

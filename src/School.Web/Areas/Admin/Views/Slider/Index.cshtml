@@ -1,3 +1,4 @@
+@model List<School.Application.DTOs.Slider.SliderDto>
 @{
     ViewData["Title"] = "Sliders";
     ViewBag.ActiveMenu = "Sliders";
@@ -34,54 +35,47 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td><img src="https://placehold.co/120x80/667eea/white?text=Slide+1" class="preview-img" alt="Slide"></td>
-                        <td>Welcome to Our School</td>
-                        <td>আমাদের স্কুলে স্বাগতম</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>1</td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Slider" asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Slider", new { area = "Admin", id = 1 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td><img src="https://placehold.co/120x80/43e97b/white?text=Slide+2" class="preview-img" alt="Slide"></td>
-                        <td>Excellence in Education</td>
-                        <td>শিক্ষায় উৎকর্ষতা</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>2</td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Slider" asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Slider", new { area = "Admin", id = 2 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td><img src="https://placehold.co/120x80/f6d365/white?text=Slide+3" class="preview-img" alt="Slide"></td>
-                        <td>Admissions Open 2026</td>
-                        <td>ভর্তি চলছে ২০২৬</td>
-                        <td><span class="badge bg-secondary">Inactive</span></td>
-                        <td>3</td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Slider" asp-action="Edit" asp-route-id="3" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Slider", new { area = "Admin", id = 3 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    @if (Model != null && Model.Any())
+                    {
+                        var sl = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@(sl++)</td>
+                                <td>
+                                    <img src="@item.ImageUrl" class="preview-img" alt="@item.TitleEn" style="width:120px;height:80px;object-fit:cover;">
+                                </td>
+                                <td>@item.TitleEn</td>
+                                <td>@item.TitleBn</td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td>@item.SortOrder</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a asp-area="Admin" asp-controller="Slider" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                        <form asp-area="Admin" asp-controller="Slider" asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Are you sure you want to delete this slider?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">No sliders found.</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>

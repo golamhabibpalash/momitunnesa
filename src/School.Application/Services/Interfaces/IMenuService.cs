@@ -52,4 +52,12 @@ public interface IMenuService
     Task<ResponseDto<bool>> DeleteAsync(int id);
     Task<ResponseDto<IEnumerable<MenuDto>>> GetMenusByLocationAsync(MenuLocation location);
     Task<ResponseDto<IEnumerable<MenuDto>>> GetNavigationMenuAsync();
+    Task<ResponseDto<bool>> UpdateSortOrderAsync(List<MenuSortOrderDto> items);
+}
+
+public class MenuSortOrderDto
+{
+    public int Id { get; set; }
+    public int? ParentMenuId { get; set; }
+    public int SortOrder { get; set; }
 }

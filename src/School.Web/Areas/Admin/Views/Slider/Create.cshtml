@@ -1,3 +1,4 @@
+@model School.Application.DTOs.Slider.SliderCreateDto
 @{
     ViewData["Title"] = "Create Slider";
     ViewBag.ActiveMenu = "Sliders";
@@ -29,28 +30,26 @@
                 <div class="card-header"><i class="fas fa-info-circle me-2"></i>Slider Information</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label required">Title (English)</label>
-                        <input type="text" name="TitleEn" class="form-control" placeholder="Enter slider title in English" required>
+                        <label asp-for="TitleEn" class="form-label required"></label>
+                        <input asp-for="TitleEn" class="form-control" required>
+                        <span asp-validation-for="TitleEn" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label required">Title (Bangla)</label>
-                        <input type="text" name="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম লিখুন" required>
+                        <label asp-for="TitleBn" class="form-label required"></label>
+                        <input asp-for="TitleBn" class="form-control" required>
+                        <span asp-validation-for="TitleBn" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Subtitle (English)</label>
-                        <input type="text" name="SubtitleEn" class="form-control" placeholder="Short subtitle in English">
+                        <label asp-for="SubtitleEn" class="form-label"></label>
+                        <input asp-for="SubtitleEn" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Subtitle (Bangla)</label>
-                        <input type="text" name="SubtitleBn" class="form-control" placeholder="সংক্ষিপ্ত বিবরণ বাংলায়">
+                        <label asp-for="SubtitleBn" class="form-label"></label>
+                        <input asp-for="SubtitleBn" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Button Text (English)</label>
-                        <input type="text" name="ButtonTextEn" class="form-control" placeholder="Learn More">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Button URL</label>
-                        <input type="url" name="ButtonUrl" class="form-control" placeholder="https://example.com/page">
+                        <label asp-for="LinkUrl" class="form-label"></label>
+                        <input asp-for="LinkUrl" class="form-control">
                     </div>
                 </div>
             </div>
@@ -61,13 +60,13 @@
                 <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label">Sort Order</label>
-                        <input type="number" name="SortOrder" class="form-control" value="1" min="1">
+                        <label asp-for="SortOrder" class="form-label"></label>
+                        <input asp-for="SortOrder" class="form-control" type="number" value="1" min="1">
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isActive" name="IsActive" value="true" checked>
-                            <label class="form-check-label" for="isActive">Active</label>
+                            <input asp-for="IsActive" class="form-check-input" role="switch" />
+                            <label asp-for="IsActive" class="form-check-label"></label>
                         </div>
                     </div>
                 </div>

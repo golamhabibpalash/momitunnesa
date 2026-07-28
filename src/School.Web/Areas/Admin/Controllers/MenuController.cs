@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using School.Application.DTOs.Common;
 using School.Application.Services.Interfaces;
 
 namespace School.Web.Areas.Admin.Controllers;
@@ -28,7 +29,19 @@ public class MenuController : BaseAdminController
             return View(new List<MenuDto>());
         }
 
-        return View(result.Data.OrderBy(m => m.SortOrder));
+        return View(result.Data.ToList());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reorder([FromBody] List<MenuSortOrderDto> items)
+    {
+        var result = await _menuService.UpdateSortOrderAsync(items);
+
+        if (!result.Success)
+            return Json(new { success = false, message = result.Message ?? "Failed to reorder menus." });
+
+        return Json(new { success = true, message = "Menu order saved successfully." });
     }
 
     [HttpGet]

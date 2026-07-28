@@ -139,6 +139,27 @@ public class MenuService : IMenuService
         }
     }
 
+    public async Task<ResponseDto<bool>> UpdateSortOrderAsync(List<MenuSortOrderDto> items)
+    {
+        try
+        {
+            foreach (var item in items)
+            {
+                var menu = await _repository.GetByIdAsync(item.Id);
+                if (menu is null) continue;
+                menu.SortOrder = item.SortOrder;
+                menu.ParentMenuId = item.ParentMenuId;
+                _repository.Update(menu);
+            }
+            await _repository.SaveChangesAsync();
+            return ResponseDto<bool>.Ok(true, "Menu order updated successfully.");
+        }
+        catch (Exception ex)
+        {
+            return ResponseDto<bool>.Fail(ex);
+        }
+    }
+
     private List<MenuDto> BuildHierarchy(IEnumerable<Menu> parentMenus)
     {
         var dtos = _mapper.Map<List<MenuDto>>(parentMenus);
