@@ -6,6 +6,9 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using School.Web.Middleware;
+using Microsoft.AspNetCore.Identity;
+using School.Domain.Entities;
+using School.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,16 +39,6 @@ builder.Services.AddResponseCompression(options =>
     options.EnableForHttps = true;
 });
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddAuthentication()
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Admin/Account/Login";
-        options.LogoutPath = "/Admin/Account/Logout";
-        options.AccessDeniedPath = "/Admin/Account/AccessDenied";
-        options.SlidingExpiration = true;
-        options.ExpireTimeSpan = TimeSpan.FromDays(7);
-    });
-
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
@@ -56,6 +49,64 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    if (!db.SchoolInfos.Any())
+    {
+        db.SchoolInfos.Add(new SchoolInfo
+        {
+            SchoolNameEn = "Momitunnesa Secondary School",
+            SchoolNameBn = "মমিতুন্নেছা মাধ্যমিক বিদ্যালয়",
+            SloganEn = "Education for Enlightenment",
+            SloganBn = "শিক্ষাই আলোর পথ",
+            FooterTextEn = "&copy; 2024 Momitunnesa Secondary School. All rights reserved.",
+            FooterTextBn = "&copy; ২০২৪ মমিতুন্নেছা মাধ্যমিক বিদ্যালয়। সর্বস্বত্ত্ব সংরক্ষিত।"
+        });
+    }
+
+    if (!db.SiteSettings.Any())
+    {
+        db.SiteSettings.AddRange(
+            new SiteSetting { Key = "SiteName", Value = "Momitunnesa Secondary School" },
+            new SiteSetting { Key = "SiteNameBn", Value = "মমিতুন্নেছা মাধ্যমিক বিদ্যালয়" },
+            new SiteSetting { Key = "SiteDescription", Value = "Official website of Momitunnesa Secondary School" },
+            new SiteSetting { Key = "DefaultLanguage", Value = "Bangla" },
+            new SiteSetting { Key = "ItemsPerPage", Value = "20" },
+            new SiteSetting { Key = "MaintenanceMode", Value = "False" },
+            new SiteSetting { Key = "EnableRegistration", Value = "True" }
+        );
+    }
+
+    await db.SaveChangesAsync();
+
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    if (!await roleManager.RoleExistsAsync("SuperAdmin"))
+        await roleManager.CreateAsync(new IdentityRole("SuperAdmin"));
+    if (!await roleManager.RoleExistsAsync("Admin"))
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+    if (!await roleManager.RoleExistsAsync("Editor"))
+        await roleManager.CreateAsync(new IdentityRole("Editor"));
+
+    if (await userManager.FindByEmailAsync("admin@school.com") is null)
+    {
+        var adminUser = new ApplicationUser
+        {
+            UserName = "admin@school.com",
+            Email = "admin@school.com",
+            FullName = "Super Admin",
+            IsActive = true,
+            EmailConfirmed = true
+        };
+        var result = await userManager.CreateAsync(adminUser, "Admin@123");
+        if (result.Succeeded)
+            await userManager.AddToRoleAsync(adminUser, "SuperAdmin");
+    }
+}
 
 if (!app.Environment.IsDevelopment())
 {
