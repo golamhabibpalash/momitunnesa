@@ -19,22 +19,27 @@
     </div>
     <div class="album-grid">
         <div class="row g-3">
-            @for (int i = 1; i <= 12; i++)
+            @if (Model?.Images != null)
             {
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <a href="/images/gallery/album/@(Model?.Id ?? 1)/photo@(i).jpg"
-                       data-lightbox="album-@(Model?.Id ?? 1)"
-                       data-title="@(isRtl ? $"ছবি {i}" : $"Photo {i}")"
-                       class="gallery-item">
-                        <div class="gallery-image-wrapper">
-                            <img src="/images/gallery/album/photo@(i).jpg" alt="Photo @i"
-                                 class="img-fluid rounded" onerror="this.src='/images/placeholder.jpg'" />
-                            <div class="gallery-hover">
-                                <i class="fas fa-search-plus"></i>
+                int index = 1;
+                foreach (var image in Model.Images)
+                {
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <a href="@image"
+                           data-lightbox="album-@Model.Id"
+                           data-title="@(isRtl ? $"ছবি {index}" : $"Photo {index}")"
+                           class="gallery-item">
+                            <div class="gallery-image-wrapper">
+                                <img src="@image" alt="@(isRtl ? $"ছবি {index}" : $"Photo {index}")"
+                                     class="img-fluid rounded" onerror="this.src='/images/placeholder.jpg'" />
+                                <div class="gallery-hover">
+                                    <i class="fas fa-search-plus"></i>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
+                    index++;
+                }
             }
         </div>
     </div>

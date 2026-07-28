@@ -26,40 +26,50 @@
                 </div>
             </div>
             <div class="notice-list">
-                @for (int i = 1; i <= 6; i++)
+                @if (Model.Notices != null && Model.Notices.Any())
                 {
-                    <div class="notice-card @(i == 1 ? "featured" : "")">
-                        <div class="notice-header">
-                            @if (i == 1) { <span class="badge bg-danger mb-2">@(isRtl ? "গুরুত্বপূর্ণ" : "Featured")</span> }
-                            <h5 class="notice-title">
-                                <a asp-action="Details" asp-route-id="@i">
-                                    @(isRtl ? $"নোটিশ শিরোনাম {i}" : $"Notice Title {i}")
-                                </a>
-                            </h5>
-                            <div class="notice-meta">
-                                <span><i class="far fa-calendar-alt me-1"></i>@DateTime.Now.AddDays(-i).ToString("dd MMM yyyy")</span>
-                                <span class="ms-3"><i class="far fa-folder me-1"></i>@(isRtl ? "নোটিশ" : "Notice")</span>
+                    @foreach (var notice in Model.Notices)
+                    {
+                        <div class="notice-card @(notice.IsFeatured ? "featured" : "")">
+                            <div class="notice-header">
+                                @if (notice.IsFeatured) { <span class="badge bg-danger mb-2">@(isRtl ? "গুরুত্বপূর্ণ" : "Featured")</span> }
+                                <h5 class="notice-title">
+                                    <a asp-action="Details" asp-route-id="@notice.Id">
+                                        @(isRtl ? notice.TitleBn ?? notice.Title : notice.Title)
+                                    </a>
+                                </h5>
+                                <div class="notice-meta">
+                                    <span><i class="far fa-calendar-alt me-1"></i>@notice.PublishDate?.ToString("dd MMM yyyy")</span>
+                                    <span class="ms-3"><i class="far fa-folder me-1"></i>@(isRtl ? notice.CategoryBn ?? notice.Category : notice.Category)</span>
+                                </div>
                             </div>
+                            <p class="notice-excerpt">@notice.Description</p>
+                            @if (notice.Attachments != null && notice.Attachments.Any())
+                            {
+                                <div class="notice-attachments">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-file-pdf"></i> @(isRtl ? "ডাউনলোড" : "Download")
+                                    </a>
+                                </div>
+                            }
                         </div>
-                        <p class="notice-excerpt">@(isRtl ? "এটি নোটিশের বিবরণ। বিস্তারিত জানতে ক্লিক করুন..." : "This is the notice description. Click for details...")</p>
-                        @if (i % 2 == 0)
-                        {
-                            <div class="notice-attachments">
-                                <a href="#" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-file-pdf"></i> @(isRtl ? "ডাউনলোড" : "Download") (PDF, 250 KB)
-                                </a>
-                            </div>
-                        }
-                    </div>
+                    }
                 }
             </div>
             <nav aria-label="Notice pagination" class="mt-4">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+                    <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-category="@Model.Category"><i class="fas fa-chevron-left"></i></a>
+                    </li>
+                    @for (int p = 1; p <= Model.TotalPages; p++)
+                    {
+                        <li class="page-item @(p == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@p" asp-route-category="@Model.Category">@p</a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-category="@Model.Category"><i class="fas fa-chevron-right"></i></a>
+                    </li>
                 </ul>
             </nav>
         </div>

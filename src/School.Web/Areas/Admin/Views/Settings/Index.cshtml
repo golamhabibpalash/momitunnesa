@@ -48,7 +48,7 @@
         <div class="card">
             <div class="card-header"><i class="fas fa-sliders-h me-2"></i>General Settings</div>
             <div class="card-body">
-                <form asp-area="Admin" asp-controller="Settings" asp-action="SaveGeneral" method="post" enctype="multipart/form-data">
+                <form asp-area="Admin" asp-controller="Settings" asp-action="UpdateSeo" method="post">
                     @Html.AntiForgeryToken()
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -58,25 +58,6 @@
                         <div class="col-md-6">
                             <label class="form-label">Site Tagline</label>
                             <input type="text" name="SiteTagline" class="form-control" value="Nurturing Bright Futures">
-                        </div>
-                    </div>
-                    <div class="mb-3 mt-3">
-                        <label class="form-label">Footer Text</label>
-                        <textarea name="FooterText" class="form-control" rows="2">&copy; @DateTime.Now.Year Momitunnesa School. All rights reserved.</textarea>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Site Logo</label>
-                            <input type="file" name="Logo" class="form-control" accept="image/*">
-                            <small class="text-muted">Recommended: 200x60px, PNG format</small>
-                            <div class="mt-2">
-                                <img src="https://placehold.co/200x60/667eea/white?text=Logo" alt="Logo" style="max-height:40px;">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Favicon</label>
-                            <input type="file" name="Favicon" class="form-control" accept="image/x-icon,image/png">
-                            <small class="text-muted">Recommended: 32x32px, ICO or PNG</small>
                         </div>
                     </div>
                     <div class="mt-3">
@@ -143,69 +124,46 @@
         <div class="card">
             <div class="card-header"><i class="fas fa-school me-2"></i>School Information</div>
             <div class="card-body">
-                <form asp-area="Admin" asp-controller="Settings" asp-action="SaveSchoolInfo" method="post">
-                    @Html.AntiForgeryToken()
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">School Name (English)</label>
-                            <input type="text" name="SchoolNameEn" class="form-control" value="Momitunnesa School">
+                    <form asp-area="Admin" asp-controller="Settings" asp-action="UpdateGeneral" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">School Name (English)</label>
+                                <input type="text" name="SchoolNameEn" class="form-control" value="Momitunnesa School">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">School Name (Bangla)</label>
+                                <input type="text" name="SchoolNameBn" class="form-control" value="মমিতুন্নেসা স্কুল">
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">School Name (Bangla)</label>
-                            <input type="text" name="SchoolNameBn" class="form-control" value="মমিতুন্নেসা স্কুল">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Phone</label>
+                                <input type="text" name="Phone" class="form-control" value="+880 2-1234567">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="Email" class="form-control" value="info@momitunnesa.edu.bd">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Website</label>
+                                <input type="url" name="Website" class="form-control" value="https://momitunnesa.edu.bd">
+                            </div>
                         </div>
-                    </div>
-                    <div class="mb-3 mt-3">
-                        <label class="form-label">Address</label>
-                        <textarea name="Address" class="form-control" rows="2">123, School Road, Dhaka - 1205, Bangladesh</textarea>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Phone</label>
-                            <input type="text" name="Phone" class="form-control" value="+880 2-1234567">
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Footer Text (English)</label>
+                                <textarea name="FooterTextEn" class="form-control" rows="2">&copy; @DateTime.Now.Year Momitunnesa School. All rights reserved.</textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Footer Text (Bangla)</label>
+                                <textarea name="FooterTextBn" class="form-control" rows="2">&copy; @DateTime.Now.Year মমিতুন্নেসা স্কুল। সর্বস্বত্ব সংরক্ষিত।</textarea>
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="Email" class="form-control" value="info@momitunnesa.edu.bd">
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save School Info</button>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Website</label>
-                            <input type="url" name="Website" class="form-control" value="https://momitunnesa.edu.bd">
-                        </div>
-                    </div>
-                    <div class="row g-3 mt-2">
-                        <div class="col-md-3">
-                            <label class="form-label">Established Year</label>
-                            <input type="number" name="EstablishedYear" class="form-control" value="1995">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">EIIN Number</label>
-                            <input type="text" name="EiinNumber" class="form-control" value="123456">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">School Code</label>
-                            <input type="text" name="SchoolCode" class="form-control" value="SCH-001">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Education Board</label>
-                            <select name="EducationBoard" class="form-select">
-                                <option value="Dhaka" selected>Dhaka</option>
-                                <option value="Comilla">Comilla</option>
-                                <option value="Rajshahi">Rajshahi</option>
-                                <option value="Jessore">Jessore</option>
-                                <option value="Chittagong">Chittagong</option>
-                                <option value="Barisal">Barisal</option>
-                                <option value="Sylhet">Sylhet</option>
-                                <option value="Dinajpur">Dinajpur</option>
-                                <option value="Madrasah">Madrasah</option>
-                                <option value="Technical">Technical</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save School Info</button>
-                    </div>
-                </form>
+                    </form>
             </div>
         </div>
     </div>
@@ -214,7 +172,7 @@
         <div class="card">
             <div class="card-header"><i class="fas fa-search me-2"></i>SEO Settings</div>
             <div class="card-body">
-                <form asp-area="Admin" asp-controller="Settings" asp-action="SaveSEO" method="post">
+                <form asp-area="Admin" asp-controller="Settings" asp-action="UpdateSeo" method="post">
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
                         <label class="form-label">Google Analytics Tracking ID</label>
@@ -310,7 +268,7 @@
 <div class="modal fade" id="addSocialModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-area="Admin" asp-controller="Settings" asp-action="AddSocialLink" method="post">
+            <form asp-area="Admin" asp-controller="Settings" asp-action="UpdateSocialLink" method="post">
                 @Html.AntiForgeryToken()
                 <div class="modal-header">
                     <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Add Social Link</h5>

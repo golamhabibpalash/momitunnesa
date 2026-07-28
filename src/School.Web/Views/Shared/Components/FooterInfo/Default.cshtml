@@ -1,0 +1,14 @@
+@model School.Application.DTOs.Settings.SchoolInfoDto?
+@{
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+    var name = isRtl ? (Model?.SchoolNameBn ?? "মোমিতুন্নেসা মাধ্যমিক বিদ্যালয়") : (Model?.SchoolNameEn ?? "Momitunnesa Secondary School");
+    var footerText = isRtl ? Model?.FooterTextBn : Model?.FooterTextEn;
+}
+@if (!string.IsNullOrEmpty(footerText))
+{
+    <p class="copyright mb-0">@Html.Raw(footerText)</p>
+}
+else
+{
+    <p class="copyright mb-0">&copy; @DateTime.Now.Year @name. @(isRtl ? "সর্বস্বত্ব সংরক্ষিত।" : "All Rights Reserved.")</p>
+}

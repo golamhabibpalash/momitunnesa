@@ -59,6 +59,11 @@ public class AboutController : BaseController
         return View();
     }
 
+    public async Task<IActionResult> History()
+    {
+        return await Index();
+    }
+
     public async Task<IActionResult> SchoolProfile()
     {
         var schoolInfoResult = await _settingsService.GetSchoolInfoAsync();

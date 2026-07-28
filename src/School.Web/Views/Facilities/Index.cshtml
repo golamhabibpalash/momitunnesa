@@ -4,33 +4,20 @@
 }
 <div class="facilities-page">
     <div class="row g-4">
-        @{
-            var facilities = new[] {
-                new { Icon = "fas fa-flask", Title = "Science Lab", TitleBn = "বিজ্ঞানাগার", Desc = "Well-equipped physics, chemistry & biology labs", DescBn = "পদার্থ, রসায়ন ও জীববিজ্ঞানের আধুনিক ল্যাব" },
-                new { Icon = "fas fa-book", Title = "Library", TitleBn = "পাঠাগার", Desc = "Rich collection of books & digital resources", DescBn = "বই ও ডিজিটাল সম্পদের সমৃদ্ধ সংগ্রহ" },
-                new { Icon = "fas fa-laptop", Title = "Computer Lab", TitleBn = "কম্পিউটার ল্যাব", Desc = "Modern computer lab with internet", DescBn = "ইন্টারনেট সহ আধুনিক কম্পিউটার ল্যাব" },
-                new { Icon = "fas fa-futbol", Title = "Playground", TitleBn = "খেলার মাঠ", Desc = "Large playground for sports & athletics", DescBn = "ক্রীড়া ও অ্যাথলেটিক্সের জন্য বড় মাঠ" },
-                new { Icon = "fas fa-church", Title = "Auditorium", TitleBn = "মিলনায়তন", Desc = "Spacious auditorium for events", DescBn = "অনুষ্ঠানের জন্য প্রশস্ত মিলনায়তন" },
-                new { Icon = "fas fa-bus", Title = "Transport", TitleBn = "পরিবহন", Desc = "School bus service available", DescBn = "স্কুল বাস সার্ভিস" },
-                new { Icon = "fas fa-shield-alt", Title = "Security", TitleBn = "নিরাপত্তা", Desc = "24/7 security & CCTV surveillance", DescBn = "২৪/৭ নিরাপত্তা ও সিসিটিভি" },
-                new { Icon = "fas fa-heartbeat", Title = "Medical", TitleBn = "চিকিৎসা", Desc = "First aid & health checkup facilities", DescBn = "প্রাথমিক চিকিৎসা ও স্বাস্থ্য পরীক্ষা" },
-                new { Icon = "fas fa-wifi", Title = "Wi-Fi Campus", TitleBn = "ওয়াই-ফাই ক্যাম্পাস", Desc = "High-speed internet across campus", DescBn = "ক্যাম্পাস জুড়ে হাই-স্পিড ইন্টারনেট" },
-                new { Icon = "fas fa-water", Title = "Clean Water", TitleBn = "বিশুদ্ধ পানি", Desc = "Pure drinking water facility", DescBn = "বিশুদ্ধ পানীয় জলের ব্যবস্থা" },
-            };
-        }
-        @foreach (var facility in facilities)
-        {
-            <div class="col-lg-4 col-md-6">
-                <div class="facility-card card h-100 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="facility-icon mb-3">
-                            <i class="@facility.Icon fa-3x text-primary"></i>
-                        </div>
-                        <h4 class="facility-title">@(isRtl ? facility.TitleBn : facility.Title)</h4>
-                        <p class="facility-description text-muted">@(isRtl ? facility.DescBn : facility.Desc)</p>
-                    </div>
+        <div class="col-12">
+            @if (!string.IsNullOrEmpty(ViewBag.Content))
+            {
+                <div class="page-content">
+                    @Html.Raw(ViewBag.Content)
                 </div>
-            </div>
-        }
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    @(isRtl ? "সুযোগ-সুবিধার তথ্য শীঘ্রই যুক্ত করা হবে।" : "Facilities information will be available soon.")
+                </div>
+            }
+        </div>
     </div>
 </div>

@@ -1,14 +1,13 @@
-@model List<School.Web.Models.LinkItem>
 @{
     var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
-    var links = Model ?? new List<School.Web.Models.LinkItem>
+    var links = new List<School.Web.Models.LinkItem>
     {
-        new School.Web.Models.LinkItem { Title = "Notice Board", TitleBn = "নোটিশ বোর্ড", Url = "/notice", Icon = "fas fa-bullhorn" },
-        new School.Web.Models.LinkItem { Title = "Academic Calendar", TitleBn = "একাডেমিক ক্যালেন্ডার", Url = "/academic/calendar", Icon = "fas fa-calendar-alt" },
-        new School.Web.Models.LinkItem { Title = "Class Routine", TitleBn = "ক্লাস রুটিন", Url = "/academic/routine", Icon = "fas fa-clock" },
-        new School.Web.Models.LinkItem { Title = "Syllabus", TitleBn = "সিলেবাস", Url = "/academic/syllabus", Icon = "fas fa-book" },
-        new School.Web.Models.LinkItem { Title = "Results", TitleBn = "ফলাফল", Url = "/results", Icon = "fas fa-chart-bar" },
-        new School.Web.Models.LinkItem { Title = "Admission", TitleBn = "ভর্তি", Url = "/admission", Icon = "fas fa-user-plus" },
+        new() { Title = "Notice Board", TitleBn = "নোটিশ বোর্ড", Url = "/notice", Icon = "fas fa-bullhorn" },
+        new() { Title = "Academic Calendar", TitleBn = "একাডেমিক ক্যালেন্ডার", Url = "/academic/calendar", Icon = "fas fa-calendar-alt" },
+        new() { Title = "Class Routine", TitleBn = "ক্লাস রুটিন", Url = "/academic/routine", Icon = "fas fa-clock" },
+        new() { Title = "Syllabus", TitleBn = "সিলেবাস", Url = "/academic/syllabus", Icon = "fas fa-book" },
+        new() { Title = "Results", TitleBn = "ফলাফল", Url = "/results", Icon = "fas fa-chart-bar" },
+        new() { Title = "Admission", TitleBn = "ভর্তি", Url = "/admission", Icon = "fas fa-user-plus" },
     };
 }
 <div class="important-links-widget">

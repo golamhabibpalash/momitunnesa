@@ -15,6 +15,12 @@ public abstract class BaseController : Controller
         return LocalizationHelper.GetCurrentLanguage();
     }
 
+    public override void OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext context)
+    {
+        base.OnActionExecuting(context);
+        ViewData["CurrentLanguage"] = GetCurrentLanguage();
+    }
+
     protected IActionResult ServerError(string? message = null)
     {
         message ??= "An unexpected error occurred. Please try again later.";

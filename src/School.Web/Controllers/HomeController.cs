@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using School.Application.Services.Interfaces;
 using School.Web.Models;
@@ -26,6 +27,23 @@ public class HomeController : BaseController
         _teacherService = teacherService;
     }
 
+    public IActionResult SwitchLanguage(string lang, string returnUrl = "/")
+    {
+        var culture = lang switch
+        {
+            "bn" => "bn",
+            _ => "en"
+        };
+
+        HttpContext.Response.Cookies.Append(
+            CookieRequestCultureProvider.DefaultCookieName,
+            CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+            new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+        );
+
+        return LocalRedirect(returnUrl);
+    }
+
     public async Task<IActionResult> Index()
     {
         var slidersResult = await _sliderService.GetActiveSlidersAsync();
@@ -44,7 +62,16 @@ public class HomeController : BaseController
         ViewBag.Notices = notices?.Take(5);
         ViewBag.News = news?.Take(3);
         ViewBag.Events = events?.Take(4);
-        ViewBag.HeadTeacher = headTeacher;
+
+        if (headTeacher is not null)
+        {
+            ViewBag.HeadTeacher = new HeadTeacherMessageViewModel
+            {
+                Name = headTeacher.NameEn,
+                NameBn = headTeacher.NameBn,
+                ImageUrl = headTeacher.ImageUrl
+            };
+        }
 
         return View();
     }

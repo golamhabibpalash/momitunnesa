@@ -14,38 +14,49 @@
                 </ul>
             </div>
             <div class="events-list">
-                <div class="row g-4">
-                    @for (int i = 1; i <= 6; i++)
-                    {
-                        <div class="col-md-6">
-                            <div class="event-card-horizontal d-flex">
-                                <div class="event-date-box flex-shrink-0">
-                                    <span class="event-day">@(15 + i)</span>
-                                    <span class="event-month">@(isRtl ? "জুন" : "Jun")</span>
-                                </div>
-                                <div class="event-info flex-grow-1">
-                                    <h5 class="event-title">
-                                        <a asp-action="Details" asp-route-id="@i">
-                                            @(isRtl ? $"ইভেন্ট শিরোনাম {i}" : $"Event Title {i}")
-                                        </a>
-                                    </h5>
-                                    <p class="event-meta">
-                                        <span><i class="fas fa-clock me-1"></i>10:00 AM - 12:00 PM</span>
-                                        <span class="ms-2"><i class="fas fa-map-marker-alt me-1"></i>@(isRtl ? "বিদ্যালয় প্রাঙ্গণ" : "School Campus")</span>
-                                    </p>
-                                    <p class="event-description">@(isRtl ? "ইভেন্টের সংক্ষিপ্ত বিবরণ..." : "Brief event description...")</p>
+                @if (Model.Events != null && Model.Events.Any())
+                {
+                    <div class="row g-4">
+                        @foreach (var evt in Model.Events)
+                        {
+                            <div class="col-md-6">
+                                <div class="event-card-horizontal d-flex">
+                                    <div class="event-date-box flex-shrink-0">
+                                        <span class="event-day">@evt.EventDate?.ToString("dd")</span>
+                                        <span class="event-month">@evt.EventDate?.ToString("MMM")</span>
+                                    </div>
+                                    <div class="event-info flex-grow-1">
+                                        <h5 class="event-title">
+                                            <a asp-action="Details" asp-route-id="@evt.Id">
+                                                @(isRtl ? evt.TitleBn ?? evt.Title : evt.Title)
+                                            </a>
+                                        </h5>
+                                        <p class="event-meta">
+                                            <span><i class="fas fa-clock me-1"></i>@evt.StartTime - @evt.EndTime</span>
+                                            <span class="ms-2"><i class="fas fa-map-marker-alt me-1"></i>@(isRtl ? evt.LocationBn ?? evt.Location : evt.Location)</span>
+                                        </p>
+                                        <p class="event-description">@evt.Description</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    }
-                </div>
+                        }
+                    </div>
+                }
             </div>
             <nav aria-label="Event pagination" class="mt-4">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+                    <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-filter="@Model.Filter"><i class="fas fa-chevron-left"></i></a>
+                    </li>
+                    @for (int p = 1; p <= Model.TotalPages; p++)
+                    {
+                        <li class="page-item @(p == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@p" asp-route-filter="@Model.Filter">@p</a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-filter="@Model.Filter"><i class="fas fa-chevron-right"></i></a>
+                    </li>
                 </ul>
             </nav>
         </div>

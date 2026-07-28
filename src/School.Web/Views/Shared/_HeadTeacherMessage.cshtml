@@ -1,15 +1,17 @@
-@model School.Web.Models.HeadTeacherMessageViewModel
+@model School.Web.Models.HeadTeacherMessageViewModel?
 @{
     var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
 }
+@if (Model is not null)
+{
 <section class="head-teacher-section section-padding">
     <div class="container">
         <div class="row align-items-center g-4">
             <div class="col-lg-5 col-md-6">
                 <div class="head-teacher-image text-center">
                     <div class="teacher-photo-wrapper">
-                        <img src="@(Model?.ImageUrl ?? "/images/head-teacher.jpg")"
-                             alt="@(Model?.Name ?? (isRtl ? "প্রধান শিক্ষক" : "Head Teacher"))"
+                        <img src="@(Model.ImageUrl ?? "/images/head-teacher.jpg")"
+                             alt="@(Model.Name ?? (isRtl ? "প্রধান শিক্ষক" : "Head Teacher"))"
                              class="img-fluid rounded-circle shadow" />
                     </div>
                 </div>
@@ -17,13 +19,11 @@
             <div class="col-lg-7 col-md-6">
                 <div class="head-teacher-content">
                     <div class="section-subtitle">@(isRtl ? "প্রধান শিক্ষকের বাণী" : "Head Teacher's Message")</div>
-                    <h2 class="section-title">@(Model?.Name ?? (isRtl ? "জনাব [নাম]" : "Mr. [Name]"))</h2>
+                    <h2 class="section-title">@(Model.Name ?? (isRtl ? "জনাব [নাম]" : "Mr. [Name]"))</h2>
                     <p class="teacher-designation">@(isRtl ? "প্রধান শিক্ষক" : "Head Teacher")</p>
                     <div class="message-quote">
                         <i class="fas fa-quote-left quote-icon"></i>
-                        <p class="message-text">
-                            @(Model?.Message ?? (isRtl ? "আমাদের বিদ্যালয়ের লক্ষ্য হল শিক্ষার্থীদের মধ্যে নৈতিক মূল্যবোধ, জ্ঞান ও দক্ষতা বিকাশ ঘটানো..." : "Our school's goal is to develop moral values, knowledge, and skills among students..."))
-                        </p>
+                        <p class="message-text">@(Model.Message ?? (isRtl ? "আমাদের বিদ্যালয়ের লক্ষ্য হল শিক্ষার্থীদের মধ্যে নৈতিক মূল্যবোধ, জ্ঞান ও দক্ষতা বিকাশ ঘটানো..." : "Our school's goal is to develop moral values, knowledge, and skills among students..."))</p>
                     </div>
                     <a asp-controller="About" asp-action="Index" class="btn btn-primary">
                         @(isRtl ? "আরও পড়ুন" : "Read More") <i class="fas fa-arrow-right ms-2"></i>
@@ -33,3 +33,4 @@
         </div>
     </div>
 </section>
+}

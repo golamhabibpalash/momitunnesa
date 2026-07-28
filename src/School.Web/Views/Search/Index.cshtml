@@ -2,7 +2,9 @@
 @{
     ViewData["Title"] = "Search Results";
     var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
-    var query = Context.Request.Query["q"].ToString();
+    var results = Model?.Results;
+    var totalResults = Model?.TotalResults ?? 0;
+    var query = Model?.Query ?? Context.Request.Query["q"].ToString();
 }
 <div class="search-page">
     <div class="row g-4">
@@ -17,62 +19,43 @@
                         </button>
                     </div>
                 </form>
-                <p class="search-stats mt-2 text-muted">
-                    @(isRtl ? "অনুসন্ধান ফলাফল:" : "Search results for:") <strong>"@query"</strong>
-                    &mdash; @(isRtl ? "প্রায় ১২টি ফলাফল পাওয়া গেছে" : "About 12 results found")
-                </p>
+                @if (!string.IsNullOrEmpty(query))
+                {
+                    <p class="search-stats mt-2 text-muted">
+                        @(isRtl ? "অনুসন্ধান ফলাফল:" : "Search results for:") <strong>"@query"</strong>
+                        &mdash; @(isRtl ? $"মোট {totalResults}টি ফলাফল পাওয়া গেছে" : $"Total {totalResults} results found")
+                    </p>
+                }
             </div>
-            <ul class="nav nav-tabs search-tabs mb-4" id="searchTab" role="tablist">
-                <li class="nav-item"><a class="nav-link active" href="#all">@(isRtl ? "সব" : "All") <span class="badge bg-secondary ms-1">12</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="#pages">@(isRtl ? "পৃষ্ঠা" : "Pages") <span class="badge bg-secondary ms-1">3</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="#notices">@(isRtl ? "নোটিশ" : "Notices") <span class="badge bg-secondary ms-1">2</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="#news">@(isRtl ? "খবর" : "News") <span class="badge bg-secondary ms-1">3</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="#teachers">@(isRtl ? "শিক্ষক" : "Teachers") <span class="badge bg-secondary ms-1">2</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="#downloads">@(isRtl ? "ডাউনলোড" : "Downloads") <span class="badge bg-secondary ms-1">2</span></a></li>
-            </ul>
-            <div class="search-results">
-                <div class="result-item p-3 border-bottom">
-                    <h5><a asp-controller="About" asp-action="Index">@(isRtl ? "আমাদের সম্পর্কে" : "About Us")</a></h5>
-                    <p class="result-snippet">@(isRtl ? "মোমিতুন্নেসা উচ্চ বিদ্যালয় একটি ঐতিহ্যবাহী শিক্ষাপ্রতিষ্ঠান..." : "Momitunnesa High School is a traditional educational institution...")</p>
-                    <div class="result-meta">
-                        <span class="badge bg-primary">@(isRtl ? "পৃষ্ঠা" : "Page")</span>
-                        <small class="text-muted ms-2">@Url.Action("Index", "About")</small>
-                    </div>
+            @if (results != null && results.Any())
+            {
+                <div class="search-results">
+                    @foreach (var item in results)
+                    {
+                        <div class="result-item p-3 border-bottom">
+                            <h5><a href="@item.Url">@(isRtl && !string.IsNullOrEmpty(item.TypeBn) ? item.Title : item.Title)</a></h5>
+                            @if (!string.IsNullOrEmpty(item.Description))
+                            {
+                                <p class="result-snippet">@item.Description</p>
+                            }
+                            <div class="result-meta">
+                                <span class="badge bg-primary">@(isRtl && !string.IsNullOrEmpty(item.TypeBn) ? item.TypeBn : item.Type)</span>
+                                @if (!string.IsNullOrEmpty(item.Date))
+                                {
+                                    <small class="text-muted ms-2">@item.Date</small>
+                                }
+                            </div>
+                        </div>
+                    }
                 </div>
-                <div class="result-item p-3 border-bottom">
-                    <h5><a asp-controller="Notice" asp-action="Details" asp-route-id="1">@(isRtl ? "নোটিশ শিরোনাম" : "Notice Title")</a></h5>
-                    <p class="result-snippet">@(isRtl ? "নোটিশের বিবরণ..." : "Notice description...")</p>
-                    <div class="result-meta">
-                        <span class="badge bg-success">@(isRtl ? "নোটিশ" : "Notice")</span>
-                        <small class="text-muted ms-2">@DateTime.Now.ToString("dd MMM yyyy")</small>
-                    </div>
+            }
+            else if (!string.IsNullOrEmpty(query))
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    @(isRtl ? "কোনো ফলাফল পাওয়া যায়নি।" : "No results found.")
                 </div>
-                <div class="result-item p-3 border-bottom">
-                    <h5><a asp-controller="News" asp-action="Details" asp-route-id="1">@(isRtl ? "খবরের শিরোনাম" : "News Title")</a></h5>
-                    <p class="result-snippet">@(isRtl ? "খবরের বিবরণ..." : "News description...")</p>
-                    <div class="result-meta">
-                        <span class="badge bg-info">@(isRtl ? "খবর" : "News")</span>
-                        <small class="text-muted ms-2">@DateTime.Now.AddDays(-1).ToString("dd MMM yyyy")</small>
-                    </div>
-                </div>
-                <div class="result-item p-3 border-bottom">
-                    <h5><a asp-controller="Teacher" asp-action="Details" asp-route-id="1">@(isRtl ? "শিক্ষকের নাম" : "Teacher Name")</a></h5>
-                    <p class="result-snippet">@(isRtl ? "শিক্ষকের বিস্তারিত তথ্য..." : "Teacher detailed information...")</p>
-                    <div class="result-meta">
-                        <span class="badge bg-warning">@(isRtl ? "শিক্ষক" : "Teacher")</span>
-                        <small class="text-muted ms-2">@(isRtl ? "প্রধান শিক্ষক" : "Head Teacher")</small>
-                    </div>
-                </div>
-            </div>
-            <nav aria-label="Search pagination" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
-                </ul>
-            </nav>
+            }
         </div>
     </div>
 </div>

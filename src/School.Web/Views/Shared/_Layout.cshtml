@@ -1,14 +1,19 @@
 ﻿@using System.Globalization
+@using School.Application.Services.Interfaces
+@inject ISettingsService SettingsService
 @{
     var currentLang = ViewData["CurrentLanguage"]?.ToString() ?? "en";
     var isRtl = currentLang == "bn";
-    var direction = isRtl ? "rtl" : "ltr";
+    var direction = "ltr";
     var langAttr = isRtl ? "bn" : "en";
-    var siteName = "মোমিতুন্নেসা উচ্চ বিদ্যালয়";
-    var siteNameEn = "Momitunnesa High School";
-    var displayName = isRtl ? siteName : siteNameEn;
     var currentYear = DateTime.Now.Year;
     var canonicalUrl = Context.Request.Scheme + "://" + Context.Request.Host + Context.Request.Path;
+    var schoolInfo = await SettingsService.GetSchoolInfoAsync();
+    var schoolName = schoolInfo.Success ? schoolInfo.Data?.SchoolNameEn : "Momitunnesa Secondary School";
+    var schoolNameBn = schoolInfo.Success ? schoolInfo.Data?.SchoolNameBn : "মোমিতুন্নেছা মাধ্যমিক বিদ্যালয়";
+    var displayName = isRtl ? schoolNameBn : schoolName;
+    var schoolPhone = schoolInfo.Success ? schoolInfo.Data?.Phone : null;
+    var schoolEmail = schoolInfo.Success ? schoolInfo.Data?.Email : null;
 }
 <!DOCTYPE html>
 <html lang="@langAttr" dir="@direction">
@@ -68,20 +73,26 @@
 
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body class="@(isRtl ? "rtl-mode" : "ltr-mode")">
+<body class="ltr-mode">
     <div class="school-wrapper">
         <div id="top-bar" class="top-bar">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-md-7 col-lg-8 top-bar-left">
-                        <span class="top-bar-item">
-                            <i class="fas fa-phone-alt"></i>
-                            <a href="tel:+880XXXXXXXXX">+880-XXX-XXXXXX</a>
-                        </span>
-                        <span class="top-bar-item">
-                            <i class="fas fa-envelope"></i>
-                            <a href="mailto:info@momitunnesa.edu.bd">info@momitunnesa.edu.bd</a>
-                        </span>
+                        @if (!string.IsNullOrEmpty(schoolPhone))
+                        {
+                            <span class="top-bar-item">
+                                <i class="fas fa-phone-alt"></i>
+                                <a href="tel:@schoolPhone">@schoolPhone</a>
+                            </span>
+                        }
+                        @if (!string.IsNullOrEmpty(schoolEmail))
+                        {
+                            <span class="top-bar-item">
+                                <i class="fas fa-envelope"></i>
+                                <a href="mailto:@schoolEmail">@schoolEmail</a>
+                            </span>
+                        }
                     </div>
                     <div class="col-md-5 col-lg-4 top-bar-right">
                         <div class="top-bar-social">
@@ -301,9 +312,7 @@
                 <div class="container">
                     <div class="row align-items-center">
                         <div class="col-md-6">
-                            <p class="copyright mb-0">
-                                &copy; @currentYear @displayName. @(isRtl ? "সর্বস্বত্ব সংরক্ষিত।" : "All Rights Reserved.")
-                            </p>
+                            @await Component.InvokeAsync("FooterInfo")
                         </div>
                         <div class="col-md-6 text-md-end">
                             <ul class="footer-bottom-links">

@@ -54,7 +54,7 @@
                     </table>
                     <div class="teacher-biography mt-4">
                         <h5>@(isRtl ? "জীবনী" : "Biography")</h5>
-                        <p>@(isRtl ? Model?.BiographyBn ?? Model?.Biography ?? "শিক্ষকের জীবনী তথ্য..." : Model?.Biography ?? "Teacher biography information...")</p>
+                        <p>@(isRtl ? Model?.BiographyBn ?? Model?.Biography : Model?.Biography ?? Model?.BiographyBn)</p>
                     </div>
                 </div>
             </div>

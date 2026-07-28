@@ -1,15 +1,17 @@
-@model School.Web.Models.ChairmanMessageViewModel
+@model School.Web.Models.ChairmanMessageViewModel?
 @{
     var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
 }
+@if (Model is not null)
+{
 <section class="chairman-section section-padding bg-light">
     <div class="container">
         <div class="row align-items-center g-4 flex-lg-row-reverse">
             <div class="col-lg-5 col-md-6">
                 <div class="chairman-image text-center">
                     <div class="teacher-photo-wrapper">
-                        <img src="@(Model?.ImageUrl ?? "/images/chairman.jpg")"
-                             alt="@(Model?.Name ?? (isRtl ? "সভাপতি" : "Chairman"))"
+                        <img src="@(Model.ImageUrl ?? "/images/chairman.jpg")"
+                             alt="@(Model.Name ?? (isRtl ? "সভাপতি" : "Chairman"))"
                              class="img-fluid rounded-circle shadow" />
                     </div>
                 </div>
@@ -17,13 +19,11 @@
             <div class="col-lg-7 col-md-6">
                 <div class="chairman-content">
                     <div class="section-subtitle">@(isRtl ? "সভাপতি/ম্যানেজিং কমিটির বাণী" : "Chairman's Message")</div>
-                    <h2 class="section-title">@(Model?.Name ?? (isRtl ? "জনাব [নাম]" : "Mr. [Name]"))</h2>
+                    <h2 class="section-title">@(Model.Name ?? (isRtl ? "জনাব [নাম]" : "Mr. [Name]"))</h2>
                     <p class="teacher-designation">@(isRtl ? "সভাপতি, পরিচালনা পর্ষদ" : "Chairman, Managing Committee")</p>
                     <div class="message-quote">
                         <i class="fas fa-quote-left quote-icon"></i>
-                        <p class="message-text">
-                            @(Model?.Message ?? (isRtl ? "শিক্ষার আলোয় সমাজকে আলোকিত করাই আমাদের মূল লক্ষ্য..." : "Our main goal is to illuminate society with the light of education..."))
-                        </p>
+                        <p class="message-text">@(Model.Message ?? (isRtl ? "শিক্ষার আলোয় সমাজকে আলোকিত করাই আমাদের মূল লক্ষ্য..." : "Our main goal is to illuminate society with the light of education..."))</p>
                     </div>
                     <a asp-controller="About" asp-action="Index" class="btn btn-primary">
                         @(isRtl ? "আরও পড়ুন" : "Read More") <i class="fas fa-arrow-right ms-2"></i>
@@ -33,3 +33,4 @@
         </div>
     </div>
 </section>
+}

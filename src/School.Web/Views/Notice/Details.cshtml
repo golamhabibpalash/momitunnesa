@@ -25,11 +25,9 @@
                     </div>
                 </div>
                 <div class="notice-body mt-4">
-                    @Html.Raw(isRtl ? Model?.ContentBn ?? Model?.Content : Model?.Content)
-                    @if (string.IsNullOrEmpty(Model?.Content))
+                    @if (!string.IsNullOrEmpty(Model?.Content) || !string.IsNullOrEmpty(Model?.ContentBn))
                     {
-                        <p>@(isRtl ? "নোটিশের বিস্তারিত বিবরণ এখানে থাকবে।" : "Detailed notice description will be here.")</p>
-                        <p>@(isRtl ? "প্রিয় শিক্ষার্থী ও অভিভাবকবৃন্দ, আপনাদের জানানো যাচ্ছে যে..." : "Dear students and guardians, this is to inform you that...")</p>
+                        @Html.Raw(isRtl ? (Model?.ContentBn ?? Model?.Content) : Model?.Content)
                     }
                 </div>
                 @if (Model?.Attachments != null && Model.Attachments.Count > 0)

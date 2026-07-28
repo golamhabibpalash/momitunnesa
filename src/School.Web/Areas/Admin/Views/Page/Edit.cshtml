@@ -1,6 +1,8 @@
+@model School.Application.DTOs.Page.PageCreateDto
 @{
     ViewData["Title"] = "Edit Page";
     ViewBag.ActiveMenu = "Pages";
+    var pageId = ViewBag.PageId as int? ?? 0;
 }
 
 <div class="page-header">
@@ -19,9 +21,9 @@
     </a>
 </div>
 
-<form asp-area="Admin" asp-controller="Page" asp-action="Edit" method="post" enctype="multipart/form-data">
+<form asp-area="Admin" asp-controller="Page" asp-action="Edit" asp-route-id="@pageId" method="post" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
-    <input type="hidden" name="Id" value="1">
+    <input type="hidden" asp-for="FeaturedImage" />
     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
     <div class="row g-3">
@@ -30,30 +32,22 @@
                 <div class="card-header"><i class="fas fa-info-circle me-2"></i>Page Information</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label required">Title (English)</label>
-                        <input type="text" name="TitleEn" class="form-control" value="About Us" required>
+                        <label asp-for="TitleEn" class="form-label required"></label>
+                        <input asp-for="TitleEn" class="form-control" required>
+                        <span asp-validation-for="TitleEn" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label required">Title (Bangla)</label>
-                        <input type="text" name="TitleBn" class="form-control" value="আমাদের সম্পর্কে" required>
+                        <label asp-for="TitleBn" class="form-label required"></label>
+                        <input asp-for="TitleBn" class="form-control" required>
+                        <span asp-validation-for="TitleBn" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Slug</label>
-                        <div class="input-group">
-                            <span class="input-group-text">/</span>
-                            <input type="text" name="Slug" class="form-control" value="about-us" id="slugInput">
-                            <button type="button" class="btn btn-outline-secondary" onclick="generateSlug()">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
+                        <label class="form-label">Content (English)</label>
+                        <textarea asp-for="ContentEn" class="form-control tinymce"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label required">Content (English)</label>
-                        <textarea name="ContentEn" class="form-control tinymce"><h2>About Our School</h2><p>Momitunnesa School has been providing quality education since its establishment. We are committed to nurturing young minds and building future leaders.</p><p>Our mission is to create a supportive and challenging learning environment that encourages students to reach their full potential.</p></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label required">Content (Bangla)</label>
-                        <textarea name="ContentBn" class="form-control tinymce"><h2>আমাদের বিদ্যালয় সম্পর্কে</h2><p>প্রতিষ্ঠার পর থেকে মমিতুন্নেসা স্কুল মানসম্মত শিক্ষা প্রদান করে আসছে। আমরা তরুণ মনের বিকাশ এবং ভবিষ্যৎ নেতা গঠনে প্রতিশ্রুতিবদ্ধ।</p></textarea>
+                        <label class="form-label">Content (Bangla)</label>
+                        <textarea asp-for="ContentBn" class="form-control tinymce"></textarea>
                     </div>
                 </div>
             </div>
@@ -62,16 +56,16 @@
                 <div class="card-header"><i class="fas fa-search me-2"></i>SEO Settings</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label">Meta Title</label>
-                        <input type="text" name="MetaTitle" class="form-control" value="About Us - Momitunnesa School">
+                        <label asp-for="MetaTitle" class="form-label"></label>
+                        <input asp-for="MetaTitle" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Meta Description</label>
-                        <textarea name="MetaDescription" class="form-control" rows="3">Learn about Momitunnesa School's history, mission, and values. Discover our commitment to quality education.</textarea>
+                        <label asp-for="MetaDescription" class="form-label"></label>
+                        <textarea asp-for="MetaDescription" class="form-control" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Meta Keywords</label>
-                        <input type="text" name="MetaKeywords" class="form-control" value="about us, school history, mission, momitunnesa">
+                        <label asp-for="MetaKeywords" class="form-label"></label>
+                        <input asp-for="MetaKeywords" class="form-control">
                     </div>
                 </div>
             </div>
@@ -82,28 +76,24 @@
                 <div class="card-header"><i class="fas fa-cog me-2"></i>Publish Settings</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select name="Status" class="form-select">
-                            <option value="Draft">Draft</option>
-                            <option value="Published" selected>Published</option>
-                            <option value="Archived">Archived</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Publish Date</label>
-                        <input type="datetime-local" name="PublishDate" class="form-control" value="2026-01-15T09:00">
+                        <label asp-for="TemplateType" class="form-label"></label>
+                        <select asp-for="TemplateType" class="form-select" asp-items="Html.GetEnumSelectList<School.Domain.Enums.TemplateType>()"></select>
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isHomePage" name="IsHomePage" value="true">
-                            <label class="form-check-label" for="isHomePage">Set as Home Page</label>
+                            <input asp-for="IsHomePage" class="form-check-input" role="switch" />
+                            <label asp-for="IsHomePage" class="form-check-label"></label>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isPublished" name="IsPublished" value="true" checked>
-                            <label class="form-check-label" for="isPublished">Published</label>
+                            <input asp-for="IsPublished" class="form-check-input" role="switch" />
+                            <label asp-for="IsPublished" class="form-check-label"></label>
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SortOrder" class="form-label"></label>
+                        <input asp-for="SortOrder" class="form-control" type="number" />
                     </div>
                 </div>
             </div>
@@ -111,14 +101,17 @@
             <div class="card mb-3">
                 <div class="card-header"><i class="fas fa-image me-2"></i>Featured Image</div>
                 <div class="card-body">
-                    <div class="mb-3 text-center">
-                        <img src="https://placehold.co/600x400/667eea/white?text=About+Us" class="img-fluid rounded mb-2" style="max-height:150px;">
-                        <br>
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="document.getElementById('removeImage').value='true';this.parentElement.querySelector('img').remove();">
-                            <i class="fas fa-times"></i> Remove
-                        </button>
-                        <input type="hidden" name="RemoveImage" id="removeImage" value="">
-                    </div>
+                    @if (!string.IsNullOrEmpty(Model.FeaturedImage))
+                    {
+                        <div class="mb-3 text-center">
+                            <img src="@Model.FeaturedImage" class="img-fluid rounded mb-2" style="max-height:150px;" />
+                            <br />
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="document.getElementById('removeImage').value='true';this.closest('.text-center').querySelector('img').remove();">
+                                <i class="fas fa-times"></i> Remove
+                            </button>
+                            <input type="hidden" name="RemoveImage" id="removeImage" value="">
+                        </div>
+                    }
                     <div class="mb-3">
                         <label class="form-label">Change Image</label>
                         <input type="file" name="FeaturedImage" class="form-control" accept="image/*">
@@ -147,14 +140,5 @@
             toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
             promotion: false
         });
-
-        function generateSlug() {
-            const title = document.querySelector('input[name="TitleEn"]').value;
-            const slug = title.toLowerCase()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/[\s_]+/g, '-')
-                .replace(/^-+|-+$/g, '');
-            document.getElementById('slugInput').value = slug;
-        }
     </script>
 }

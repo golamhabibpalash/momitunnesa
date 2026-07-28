@@ -36,9 +36,9 @@ public static class DependencyInjection
         {
             options.Cookie.HttpOnly = true;
             options.ExpireTimeSpan = TimeSpan.FromDays(7);
-            options.LoginPath = "/Account/Login";
-            options.LogoutPath = "/Account/Logout";
-            options.AccessDeniedPath = "/Account/AccessDenied";
+            options.LoginPath = "/Admin/Account/Login";
+            options.LogoutPath = "/Admin/Account/Logout";
+            options.AccessDeniedPath = "/Admin/Account/AccessDenied";
             options.SlidingExpiration = true;
         });
 

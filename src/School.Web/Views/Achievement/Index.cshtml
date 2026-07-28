@@ -1,3 +1,4 @@
+@model List<School.Application.DTOs.Achievement.AchievementDto>
 @{
     ViewData["Title"] = "Achievements";
     var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
@@ -11,43 +12,37 @@
         <li class="nav-item"><a class="nav-link" href="#">@(isRtl ? "বিজ্ঞান" : "Science")</a></li>
     </ul>
     <div class="row g-4">
-        @for (int i = 1; i <= 9; i++)
+        @if (Model != null)
         {
-            var categories = new[] { "Academic", "Sports", "Cultural" };
-            var category = categories[i % 3];
-            <div class="col-lg-4 col-md-6">
-                <div class="achievement-card card h-100 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="achievement-badge me-3">
-                                <i class="fas fa-trophy fa-2x text-warning"></i>
+            foreach (var item in Model)
+            {
+                var category = item.AchievementCategory;
+                var badgeColor = category == "Academic" ? "primary" : category == "Sports" ? "success" : category == "Cultural" ? "info" : "warning";
+                var categoryBn = category == "Academic" ? "একাডেমিক" : category == "Sports" ? "ক্রীড়া" : category == "Cultural" ? "সাংস্কৃতিক" : "বিজ্ঞান";
+                <div class="col-lg-4 col-md-6">
+                    <div class="achievement-card card h-100 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="achievement-badge me-3">
+                                    <i class="fas fa-trophy fa-2x text-warning"></i>
+                                </div>
+                                <div>
+                                    <span class="badge bg-@badgeColor mb-2">
+                                        @(isRtl ? categoryBn : category)
+                                    </span>
+                                    <h5 class="mb-0">@(isRtl ? item.TitleBn : item.TitleEn)</h5>
+                                </div>
                             </div>
-                            <div>
-                                <span class="badge bg-@(category == "Academic" ? "primary" : category == "Sports" ? "success" : "info") mb-2">
-                                    @(isRtl ? (category == "Academic" ? "একাডেমিক" : category == "Sports" ? "ক্রীড়া" : "সাংস্কৃতিক") : category)
-                                </span>
-                                <h5 class="mb-0">@(isRtl ? $"সাফল্যের শিরোনাম {i}" : $"Achievement Title {i}")</h5>
+                            <p class="achievement-description text-muted">
+                                @(isRtl ? item.DescriptionBn ?? item.DescriptionEn : item.DescriptionEn)
+                            </p>
+                            <div class="achievement-meta d-flex justify-content-between align-items-center">
+                                <small class="text-muted"><i class="far fa-calendar me-1"></i>@item.Date.ToString("MMM yyyy")</small>
                             </div>
-                        </div>
-                        <p class="achievement-description text-muted">
-                            @(isRtl ? "আমাদের শিক্ষার্থীরা বিভিন্ন প্রতিযোগিতায় অসাধারণ সাফল্য অর্জন করেছে।" : "Our students have achieved remarkable success in various competitions.")
-                        </p>
-                        <div class="achievement-meta d-flex justify-content-between align-items-center">
-                            <small class="text-muted"><i class="far fa-calendar me-1"></i>@DateTime.Now.AddMonths(-i).ToString("MMM yyyy")</small>
-                            <span class="badge bg-light text-dark">@(isRtl ? $"শিক্ষার্থী {i}" : $"Student {i}")</span>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
         }
     </div>
-    <nav aria-label="Pagination" class="mt-4">
-        <ul class="pagination justify-content-center">
-            <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
-        </ul>
-    </nav>
 </div>

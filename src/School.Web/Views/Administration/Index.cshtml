@@ -4,75 +4,11 @@
 }
 <div class="administration-page">
     <div class="row g-4">
-        <div class="col-lg-8">
-            <h2 class="mb-4"><i class="fas fa-users-cog me-2"></i>@(isRtl ? "ম্যানেজিং কমিটি" : "Managing Committee")</h2>
-            <div class="row g-4 mb-5">
-                <div class="col-md-6">
-                    <div class="committee-member card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <img src="/images/committee/chairman.jpg" alt="Chairman" class="rounded-circle mb-3" width="120" height="120" onerror="this.src='/images/avatar.jpg'" />
-                            <h5 class="mb-1">@(isRtl ? "জনাব [চেয়ারম্যান]" : "Mr. [Chairman]")</h5>
-                            <p class="text-primary mb-2"><strong>@(isRtl ? "সভাপতি" : "Chairman")</strong></p>
-                            <p class="small text-muted">@(isRtl ? "পরিচালনা পর্ষদের সভাপতি" : "Chairman of the Managing Committee")</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="committee-member card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <img src="/images/committee/head-teacher.jpg" alt="Head Teacher" class="rounded-circle mb-3" width="120" height="120" onerror="this.src='/images/avatar.jpg'" />
-                            <h5 class="mb-1">@(isRtl ? "জনাব [প্রধান শিক্ষক]" : "Mr. [Head Teacher]")</h5>
-                            <p class="text-primary mb-2"><strong>@(isRtl ? "সদস্য সচিব" : "Member Secretary")</strong></p>
-                            <p class="small text-muted">@(isRtl ? "প্রধান শিক্ষক ও কমিটির সদস্য সচিব" : "Head Teacher & Member Secretary")</p>
-                        </div>
-                    </div>
-                </div>
-                @for (int i = 1; i <= 4; i++)
-                {
-                    <div class="col-md-6">
-                        <div class="committee-member card h-100 shadow-sm">
-                            <div class="card-body text-center">
-                                <img src="/images/committee/member@(i).jpg" alt="Member" class="rounded-circle mb-3" width="100" height="100" onerror="this.src='/images/avatar.jpg'" />
-                                <h6 class="mb-1">@(isRtl ? $"সদস্য {i}" : $"Member {i}")</h6>
-                                <p class="text-muted small">@(isRtl ? "সদস্য, পরিচালনা পর্ষদ" : "Member, Managing Committee")</p>
-                            </div>
-                        </div>
-                    </div>
-                }
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                @(isRtl ? "প্রশাসনিক তথ্য শীঘ্রই যুক্ত করা হবে।" : "Administration information coming soon.")
             </div>
-
-            <h2 class="mb-4"><i class="fas fa-sitemap me-2"></i>@(isRtl ? "প্রাতিষ্ঠানিক কাঠামো" : "Organizational Structure")</h2>
-            <div class="org-structure text-center">
-                <div class="org-level ceo">
-                    <div class="org-box">@(isRtl ? "পরিচালনা পর্ষদ" : "Managing Committee")</div>
-                </div>
-                <div class="org-arrow"><i class="fas fa-arrow-down"></i></div>
-                <div class="org-level principal">
-                    <div class="org-box">@(isRtl ? "প্রধান শিক্ষক" : "Head Teacher")</div>
-                </div>
-                <div class="org-arrow"><i class="fas fa-arrow-down"></i></div>
-                <div class="org-level">
-                    <div class="row g-2">
-                        <div class="col-md-4"><div class="org-box">@(isRtl ? "সহকারী প্রধান শিক্ষক" : "Asst. Head Teacher")</div></div>
-                        <div class="col-md-4"><div class="org-box">@(isRtl ? "সিনিয়র শিক্ষক" : "Senior Teachers")</div></div>
-                        <div class="col-md-4"><div class="org-box">@(isRtl ? "সহকারী শিক্ষক" : "Assistant Teachers")</div></div>
-                    </div>
-                </div>
-                <div class="org-arrow"><i class="fas fa-arrow-down"></i></div>
-                <div class="org-level">
-                    <div class="row g-2">
-                        <div class="col-md-3"><div class="org-box">@(isRtl ? "অফিস স্টাফ" : "Office Staff")</div></div>
-                        <div class="col-md-3"><div class="org-box">@(isRtl ? "লাইব্রেরিয়ান" : "Librarian")</div></div>
-                        <div class="col-md-3"><div class="org-box">@(isRtl ? "ল্যাব সহকারী" : "Lab Asst.")</div></div>
-                        <div class="col-md-3"><div class="org-box">@(isRtl ? "অন্যান্য" : "Others")</div></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <aside>
-                @await Html.PartialAsync("_ImportantLinks")
-            </aside>
         </div>
     </div>
 </div>

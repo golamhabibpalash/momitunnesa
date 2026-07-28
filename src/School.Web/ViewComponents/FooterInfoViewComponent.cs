@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using School.Application.DTOs.Settings;
 using School.Application.Services.Interfaces;
 
 namespace School.Web.ViewComponents;
@@ -15,6 +16,7 @@ public class FooterInfoViewComponent : ViewComponent
     public async Task<IViewComponentResult> InvokeAsync()
     {
         var result = await _settingsService.GetSchoolInfoAsync();
-        return View(result.Data);
+        var model = result.Success ? result.Data : null;
+        return View(model);
     }
 }

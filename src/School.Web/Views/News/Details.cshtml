@@ -26,11 +26,9 @@
                     <span class="news-category ms-3"><i class="far fa-folder me-2"></i>@(isRtl ? Model?.CategoryBn ?? Model?.Category : Model?.Category ?? "General")</span>
                 </div>
                 <div class="news-body mt-4">
-                    @Html.Raw(isRtl ? Model?.ContentBn ?? Model?.Content : Model?.Content)
-                    @if (string.IsNullOrEmpty(Model?.Content))
+                    @if (!string.IsNullOrEmpty(Model?.Content) || !string.IsNullOrEmpty(Model?.ContentBn))
                     {
-                        <p>@(isRtl ? "এটি একটি নমুনা খবরের বিস্তারিত বিবরণ। আমাদের বিদ্যালয়ে বিভিন্ন কর্মকাণ্ড নিয়মিতভাবে আয়োজিত হয়।" : "This is a sample news article detail. Various activities are regularly organized in our school.")</p>
-                        <p>@(isRtl ? "আমরা শিক্ষার্থীদের অংশগ্রহণে বিভিন্ন সাংস্কৃতিক, ক্রীড়া ও শিক্ষামূলক অনুষ্ঠানের আয়োজন করি যা তাদের সার্বিক বিকাশে সহায়তা করে।" : "We organize various cultural, sports, and educational events with student participation, which helps in their overall development.")</p>
+                        @Html.Raw(isRtl ? (Model?.ContentBn ?? Model?.Content) : Model?.Content)
                     }
                 </div>
                 <div class="news-tags mt-4">
@@ -69,17 +67,7 @@
                         <h5 class="mb-0">@(isRtl ? "সাম্প্রতিক খবর" : "Recent News")</h5>
                     </div>
                     <div class="card-body">
-                        <ul class="recent-posts list-unstyled mb-0">
-                            @for (int i = 1; i <= 4; i++)
-                            {
-                                <li class="recent-post-item">
-                                    <a asp-action="Details" asp-route-id="@i">
-                                        <h6>@(isRtl ? $"খবর শিরোনাম {i}" : $"News Title {i}")</h6>
-                                        <small class="text-muted">@DateTime.Now.AddDays(-i).ToString("dd MMM yyyy")</small>
-                                    </a>
-                                </li>
-                            }
-                        </ul>
+                        <p class="text-muted mb-0">@(isRtl ? "কোনো সাম্প্রতিক খবর নেই" : "No recent news")</p>
                     </div>
                 </div>
                 @await Html.PartialAsync("_ImportantLinks")

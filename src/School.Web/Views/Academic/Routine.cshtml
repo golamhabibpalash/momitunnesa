@@ -4,98 +4,17 @@
 }
 <div class="routine-page">
     <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="routine-selector mb-4">
-                <div class="row g-2 align-items-center">
-                    <div class="col-md-4">
-                        <label class="fw-bold">@(isRtl ? "শ্রেণি:" : "Class:")</label>
-                        <select class="form-select">
-                            <option>@(isRtl ? "ষষ্ঠ" : "Class 6")</option>
-                            <option>@(isRtl ? "সপ্তম" : "Class 7")</option>
-                            <option>@(isRtl ? "অষ্টম" : "Class 8")</option>
-                            <option>@(isRtl ? "নবম" : "Class 9")</option>
-                            <option>@(isRtl ? "দশম" : "Class 10")</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="fw-bold">@(isRtl ? "শাখা:" : "Section:")</label>
-                        <select class="form-select">
-                            <option>A</option>
-                            <option>B</option>
-                            <option>C</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <a href="#" class="btn btn-primary">
-                            <i class="fas fa-download me-1"></i>@(isRtl ? "পিডিএফ ডাউনলোড" : "Download PDF")
-                        </a>
-                    </div>
+        <div class="col-12">
+            @if (!string.IsNullOrEmpty(ViewBag.Content))
+            {
+                <div class="page-content mb-4">
+                    @Html.Raw(ViewBag.Content)
                 </div>
+            }
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                @(isRtl ? "শ্রেণি রুটিনের তথ্য শীঘ্রই যুক্ত করা হবে।" : "Class routine data will be available soon.")
             </div>
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover routine-table">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>@(isRtl ? "সময়" : "Time")</th>
-                            <th>@(isRtl ? "শনিবার" : "Saturday")</th>
-                            <th>@(isRtl ? "রবিবার" : "Sunday")</th>
-                            <th>@(isRtl ? "সোমবার" : "Monday")</th>
-                            <th>@(isRtl ? "মঙ্গলবার" : "Tuesday")</th>
-                            <th>@(isRtl ? "বুধবার" : "Wednesday")</th>
-                            <th>@(isRtl ? "বৃহস্পতিবার" : "Thursday")</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int period = 1; period <= 8; period++)
-                        {
-                            var time = $"{7 + period}:00 - {8 + period}:00";
-                            if (period == 4) { time = isRtl ? "১০:০০ - ১০:৩০ (টিiffin)" : "10:00 - 10:30 (Tiffin)"; }
-                            <tr class="@(period == 4 ? "table-warning" : "")">
-                                <td class="fw-bold">@time</td>
-                                @for (int day = 0; day < 6; day++)
-                                {
-                                    <td>
-                                        @if (period != 4)
-                                        {
-                                            <span>@(isRtl ? "বিষয়" : "Subject") @period</span>
-                                            <br /><small class="text-muted">@(isRtl ? "শিক্ষক" : "Teacher") @period</small>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">@(isRtl ? "টিফিন" : "Tiffin")</span>
-                                        }
-                                    </td>
-                                }
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <p class="text-muted mt-2">
-                <i class="fas fa-info-circle me-1"></i>
-                @(isRtl ? "* শুক্রবার ও বৃহস্পতিবার সাপ্তাহিক ছুটি" : "* Friday & Thursday are weekly holidays")
-            </p>
-        </div>
-        <div class="col-lg-4">
-            <aside>
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">@(isRtl ? "শ্রেণি সময়" : "Class Times")</h5>
-                    </div>
-                    <div class="card-body">
-                        <ul class="class-timings list-unstyled mb-0">
-                            <li class="mb-1"><strong>@(isRtl ? "১ম পিরিয়ড:" : "1st Period:")</strong> 7:00 - 7:50</li>
-                            <li class="mb-1"><strong>@(isRtl ? "২য় পিরিয়ড:" : "2nd Period:")</strong> 7:50 - 8:40</li>
-                            <li class="mb-1"><strong>@(isRtl ? "৩য় পিরিয়ড:" : "3rd Period:")</strong> 8:40 - 9:30</li>
-                            <li class="mb-1"><strong>@(isRtl ? "টিফিন:" : "Tiffin:")</strong> 9:30 - 10:00</li>
-                            <li class="mb-1"><strong>@(isRtl ? "৪র্থ পিরিয়ড:" : "4th Period:")</strong> 10:00 - 10:50</li>
-                            <li class="mb-1"><strong>@(isRtl ? "৫ম পিরিয়ড:" : "5th Period:")</strong> 10:50 - 11:40</li>
-                            <li class="mb-1"><strong>@(isRtl ? "৬ষ্ঠ পিরিয়ড:" : "6th Period:")</strong> 11:40 - 12:30</li>
-                        </ul>
-                    </div>
-                </div>
-                @await Html.PartialAsync("_ImportantLinks")
-            </aside>
         </div>
     </div>
 </div>
