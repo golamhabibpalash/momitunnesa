@@ -54,6 +54,25 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+    if (!db.Database.CanConnect())
+    {
+        Console.Error.WriteLine("==================================================");
+        Console.Error.WriteLine("  ERROR: Database not found.");
+        Console.Error.WriteLine("  The 'SchoolManagement' database does not exist or");
+        Console.Error.WriteLine("  the SQL Server at the configured connection string");
+        Console.Error.WriteLine("  is not reachable.");
+        Console.Error.WriteLine("==================================================");
+        Console.Error.WriteLine("  Fix before running:");
+        Console.Error.WriteLine("    1. Make sure SQL Server is running.");
+        Console.Error.WriteLine("    2. Verify the connection string in appsettings.json.");
+        Console.Error.WriteLine("    3. Create/update the database schema and seed:");
+        Console.Error.WriteLine("         dotnet ef database update \\");
+        Console.Error.WriteLine("           --project src/School.Infrastructure \\");
+        Console.Error.WriteLine("           --startup-project src/School.Web");
+        Console.Error.WriteLine("==================================================");
+        Environment.Exit(1);
+    }
+
     if (!db.SchoolInfos.Any())
     {
         db.SchoolInfos.Add(new SchoolInfo
