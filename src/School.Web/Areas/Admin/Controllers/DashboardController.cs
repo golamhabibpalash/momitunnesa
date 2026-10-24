@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using School.Application.DTOs.Dashboard;
 using School.Application.Services.Interfaces;
 
 namespace School.Web.Areas.Admin.Controllers;
@@ -23,7 +24,7 @@ public class DashboardController : BaseAdminController
         if (!result.Success || result.Data is null)
         {
             SetErrorNotification(result.Message ?? "Failed to load dashboard data.");
-            return View();
+            return View(new DashboardDto { ChartYear = DateTime.Now.Year });
         }
 
         return View(result.Data);

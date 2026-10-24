@@ -1,3 +1,4 @@
+@model School.Application.DTOs.Dashboard.DashboardDto
 @{
     ViewData["Title"] = "Dashboard";
     ViewBag.ActiveMenu = "Dashboard";
@@ -22,65 +23,59 @@
     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
         <div class="stat-card bg-gradient-primary position-relative overflow-hidden">
             <i class="fas fa-eye stat-icon"></i>
-            <div class="stat-value">45,254</div>
-            <div class="stat-label"><i class="fas fa-arrow-up me-1"></i>Total Visitors</div>
-            <small class="opacity-75">+12.5% from last month</small>
+            <div class="stat-value">@Model.TotalVisitors.ToString("N0")</div>
+            <div class="stat-label">Total Visitors</div>
+            <small class="opacity-75">@Model.VisitorsThisMonth.ToString("N0") this month</small>
         </div>
     </div>
     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
         <div class="stat-card bg-gradient-success position-relative overflow-hidden" style="color:#1a1d29;">
             <i class="fas fa-chalkboard-teacher stat-icon"></i>
-            <div class="stat-value">128</div>
-            <div class="stat-label"><i class="fas fa-arrow-up me-1"></i>Teachers</div>
-            <small class="opacity-75">+3 this semester</small>
+            <div class="stat-value">@Model.TotalTeachers.ToString("N0")</div>
+            <div class="stat-label">Teachers</div>
         </div>
     </div>
     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
         <div class="stat-card bg-gradient-warning position-relative overflow-hidden" style="color:#1a1d29;">
             <i class="fas fa-users stat-icon"></i>
-            <div class="stat-value">64</div>
-            <div class="stat-label"><i class="fas fa-arrow-up me-1"></i>Staff Members</div>
-            <small class="opacity-75">Full time &amp; part time</small>
+            <div class="stat-value">@Model.TotalStaff.ToString("N0")</div>
+            <div class="stat-label">Staff Members</div>
         </div>
     </div>
     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
         <div class="stat-card bg-gradient-info position-relative overflow-hidden" style="color:#1a1d29;">
             <i class="fas fa-bullhorn stat-icon"></i>
-            <div class="stat-value">56</div>
-            <div class="stat-label">Notices Published</div>
-            <small class="opacity-75">12 featured notices</small>
+            <div class="stat-value">@Model.TotalNotices.ToString("N0")</div>
+            <div class="stat-label">Notices</div>
         </div>
     </div>
     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
         <div class="stat-card bg-gradient-danger position-relative overflow-hidden">
             <i class="fas fa-newspaper stat-icon"></i>
-            <div class="stat-value">89</div>
+            <div class="stat-value">@Model.TotalNews.ToString("N0")</div>
             <div class="stat-label">News Articles</div>
-            <small class="opacity-75">24 published this month</small>
         </div>
     </div>
     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
         <div class="stat-card bg-gradient-primary position-relative overflow-hidden">
             <i class="fas fa-images stat-icon"></i>
-            <div class="stat-value">1,247</div>
+            <div class="stat-value">@Model.TotalGalleryImages.ToString("N0")</div>
             <div class="stat-label">Gallery Images</div>
-            <small class="opacity-75">Across 32 albums</small>
+            <small class="opacity-75">Across @Model.TotalGalleryAlbums.ToString("N0") album@(Model.TotalGalleryAlbums == 1 ? "" : "s")</small>
         </div>
     </div>
     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
         <div class="stat-card bg-gradient-success position-relative overflow-hidden" style="color:#1a1d29;">
             <i class="fas fa-download stat-icon"></i>
-            <div class="stat-value">3,521</div>
-            <div class="stat-label">Downloads</div>
-            <small class="opacity-75">+842 this month</small>
+            <div class="stat-value">@Model.TotalDownloads.ToString("N0")</div>
+            <div class="stat-label">Downloadable Files</div>
         </div>
     </div>
     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
         <div class="stat-card bg-gradient-dark position-relative overflow-hidden">
             <i class="fas fa-user-graduate stat-icon"></i>
-            <div class="stat-value">2,450</div>
+            <div class="stat-value">@Model.TotalStudents.ToString("N0")</div>
             <div class="stat-label">Students</div>
-            <small class="opacity-75">+150 new admissions</small>
         </div>
     </div>
 </div>
@@ -90,13 +85,20 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span><i class="fas fa-chart-bar me-2"></i>Monthly Visitors</span>
-                <div class="btn-group btn-group-sm">
-                    <button type="button" class="btn btn-outline-secondary active">2026</button>
-                    <button type="button" class="btn btn-outline-secondary">2025</button>
-                </div>
+                <span class="badge bg-secondary">@Model.ChartYear</span>
             </div>
             <div class="card-body">
-                <canvas id="visitorChart" height="300"></canvas>
+                @if (Model.MonthlyVisitors.Any(v => v > 0))
+                {
+                    <canvas id="visitorChart" height="300"></canvas>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-chart-bar fa-2x d-block mb-2"></i>
+                        No visits recorded for @Model.ChartYear yet.
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -136,90 +138,64 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span><i class="fas fa-clock me-2"></i>Recent Activities</span>
-                <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                <span class="text-muted small">Latest @Model.RecentActivities.Count</span>
             </div>
             <div class="card-body p-0">
+                @if (!Model.RecentActivities.Any())
+                {
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-clock fa-2x d-block mb-2"></i>
+                        No activity has been recorded yet.
+                    </div>
+                }
+                else
+                {
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>User</th>
                                 <th>Action</th>
-                                <th>Item</th>
-                                <th>Date</th>
-                                <th>Status</th>
+                                <th>Details</th>
+                                <th>When</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="https://ui-avatars.com/api/?name=Admin&background=667eea&color=fff&size=32" class="avatar-sm">
-                                        <span>Admin</span>
-                                    </div>
-                                </td>
-                                <td>Created</td>
-                                <td>Notice: "Summer Vacation 2026"</td>
-                                <td><small>2 hours ago</small></td>
-                                <td><span class="badge bg-success">Published</span></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="https://ui-avatars.com/api/?name=Moderator&background=43e97b&color=fff&size=32" class="avatar-sm">
-                                        <span>Moderator</span>
-                                    </div>
-                                </td>
-                                <td>Updated</td>
-                                <td>Page: "About Us"</td>
-                                <td><small>5 hours ago</small></td>
-                                <td><span class="badge bg-info">Draft</span></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="https://ui-avatars.com/api/?name=Editor&background=f6d365&color=fff&size=32" class="avatar-sm">
-                                        <span>Editor</span>
-                                    </div>
-                                </td>
-                                <td>Uploaded</td>
-                                <td>8 images to "Annual Sports Day"</td>
-                                <td><small>1 day ago</small></td>
-                                <td><span class="badge bg-success">Published</span></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="https://ui-avatars.com/api/?name=Admin&background=667eea&color=fff&size=32" class="avatar-sm">
-                                        <span>Admin</span>
-                                    </div>
-                                </td>
-                                <td>Deleted</td>
-                                <td>User: "testuser@email.com"</td>
-                                <td><small>2 days ago</small></td>
-                                <td><span class="badge bg-danger">Deleted</span></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="https://ui-avatars.com/api/?name=Manager&background=f093fb&color=fff&size=32" class="avatar-sm">
-                                        <span>Manager</span>
-                                    </div>
-                                </td>
-                                <td>Updated</td>
-                                <td>Settings: School Information</td>
-                                <td><small>3 days ago</small></td>
-                                <td><span class="badge bg-success">Saved</span></td>
-                            </tr>
+                            @foreach (var activity in Model.RecentActivities)
+                            {
+                                var userName = string.IsNullOrWhiteSpace(activity.UserName) ? "System" : activity.UserName;
+                                var badgeClass = activity.Action?.ToLowerInvariant() switch
+                                {
+                                    "create" or "created" => "bg-success",
+                                    "update" or "updated" => "bg-info",
+                                    "delete" or "deleted" => "bg-danger",
+                                    "login" or "logout" => "bg-secondary",
+                                    _ => "bg-primary"
+                                };
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="avatar-initials">@userName.Substring(0, 1).ToUpperInvariant()</span>
+                                            <span>@userName</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge @badgeClass">@(activity.Action ?? "—")</span></td>
+                                    <td>@(string.IsNullOrWhiteSpace(activity.Description) ? "—" : activity.Description)</td>
+                                    <td><small title="@activity.Timestamp.ToString("g")">@activity.Timestamp.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</small></td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
+                }
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    @if (Model.MonthlyVisitors.Any(v => v > 0))
+    {
     <script>
         const ctx = document.getElementById('visitorChart').getContext('2d');
         new Chart(ctx, {
@@ -227,8 +203,8 @@
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 datasets: [{
-                    label: 'Visitors 2026',
-                    data: [3200, 2800, 4100, 3800, 5200, 4800, 6100, 5500, 4900, 5800, 6300, 5900],
+                    label: 'Visitors @Model.ChartYear',
+                    data: [@Html.Raw(string.Join(", ", Model.MonthlyVisitors))],
                     backgroundColor: [
                         'rgba(102, 126, 234, 0.7)',
                         'rgba(67, 233, 123, 0.7)',
@@ -284,4 +260,5 @@
             }
         });
     </script>
+    }
 }

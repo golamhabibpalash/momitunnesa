@@ -11,6 +11,7 @@ public interface ISettingsService
 
     Task<ResponseDto<IEnumerable<SocialLinkDto>>> GetAllSocialLinksAsync();
     Task<ResponseDto<SocialLinkDto>> CreateSocialLinkAsync(SocialLinkCreateDto dto);
+    Task<ResponseDto<bool>> UpdateSocialLinkAsync(SocialLinkDto dto);
     Task<ResponseDto<bool>> DeleteSocialLinkAsync(int id);
 
     Task<ResponseDto<SchoolInfoDto>> GetSchoolInfoAsync();

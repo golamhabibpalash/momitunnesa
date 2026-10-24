@@ -115,6 +115,30 @@ public class SettingsService : ISettingsService
         }
     }
 
+    public async Task<ResponseDto<bool>> UpdateSocialLinkAsync(SocialLinkDto dto)
+    {
+        try
+        {
+            var link = await _socialLinkRepo.GetByIdAsync(dto.Id);
+            if (link is null)
+                return ResponseDto<bool>.Fail("Social link not found.");
+
+            link.Platform = dto.Platform;
+            link.Url = dto.Url;
+            link.Icon = dto.Icon;
+            link.SortOrder = dto.SortOrder;
+            link.IsActive = dto.IsActive;
+
+            _socialLinkRepo.Update(link);
+            await _socialLinkRepo.SaveChangesAsync();
+            return ResponseDto<bool>.Ok(true, "Social link updated successfully.");
+        }
+        catch (Exception ex)
+        {
+            return ResponseDto<bool>.Fail(ex);
+        }
+    }
+
     public async Task<ResponseDto<bool>> DeleteSocialLinkAsync(int id)
     {
         try

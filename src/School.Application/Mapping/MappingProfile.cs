@@ -88,7 +88,12 @@ public class MappingProfile : Profile
         CreateMap<SocialLink, SocialLinkCreateDto>().ReverseMap();
 
         CreateMap<SchoolInfo, SchoolInfoDto>().ReverseMap();
-        CreateMap<SchoolInfo, SchoolInfoUpdateDto>().ReverseMap();
+        // Settings forms post only a subset of the fields, so null members must not
+        // wipe the stored values. Empty strings still overwrite, which is how the
+        // admin clears a field (e.g. removing the logo).
+        CreateMap<SchoolInfo, SchoolInfoUpdateDto>()
+            .ReverseMap()
+            .ForAllMembers(o => o.Condition((src, dest, srcMember) => srcMember is not null));
 
         CreateMap<Menu, MenuDto>()
             .ForMember(d => d.MenuType, o => o.MapFrom(s => s.MenuType.ToString()))

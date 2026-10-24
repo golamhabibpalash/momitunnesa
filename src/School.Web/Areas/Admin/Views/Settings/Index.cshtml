@@ -1,6 +1,10 @@
 @{
     ViewData["Title"] = "Settings";
     ViewBag.ActiveMenu = "Settings";
+    var info = ViewBag.SchoolInfo as SchoolInfoDto ?? new SchoolInfoDto();
+    var socialLinks = (ViewBag.SocialLinks as IEnumerable<SocialLinkDto> ?? Enumerable.Empty<SocialLinkDto>())
+        .OrderBy(l => l.SortOrder)
+        .ToList();
 }
 
 <div class="page-header">
@@ -24,6 +28,16 @@
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="social-tab" data-bs-toggle="pill" data-bs-target="#social" type="button" role="tab">
             <i class="fas fa-share-alt me-1"></i>Social Links
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="branding-tab" data-bs-toggle="pill" data-bs-target="#branding" type="button" role="tab">
+            <i class="fas fa-image me-1"></i>Logo &amp; Branding
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="about-tab" data-bs-toggle="pill" data-bs-target="#about" type="button" role="tab">
+            <i class="fas fa-info-circle me-1"></i>About Content
         </button>
     </li>
     <li class="nav-item" role="presentation">
@@ -84,38 +98,232 @@
                 </button>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Platform</th>
-                                <th>URL</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><i class="fab fa-facebook text-primary me-2"></i>Facebook</td>
-                                <td><a href="https://facebook.com/school" target="_blank">facebook.com/school</a></td>
-                                <td><span class="badge bg-success">Active</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><i class="fab fa-youtube text-danger me-2"></i>YouTube</td>
-                                <td><a href="https://youtube.com/@@school" target="_blank">youtube.com/@@school</a></td>
-                                <td><span class="badge bg-success">Active</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                @if (!socialLinks.Any())
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-share-alt fa-2x d-block mb-2"></i>
+                        No social links yet. Use <strong>Add Link</strong> to create one.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Platform</th>
+                                    <th>URL</th>
+                                    <th>Order</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var link in socialLinks)
+                                {
+                                    <tr>
+                                        <td><i class="@SocialPlatformHelper.GetIcon(link.Platform, link.Icon) me-2"></i>@link.Platform</td>
+                                        <td><a href="@link.Url" target="_blank" rel="noopener">@link.Url</a></td>
+                                        <td>@link.SortOrder</td>
+                                        <td>
+                                            @if (link.IsActive)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Hidden</span>
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-sm btn-info"
+                                                    data-bs-toggle="modal" data-bs-target="#editSocialModal"
+                                                    data-id="@link.Id" data-platform="@link.Platform"
+                                                    data-url="@link.Url" data-order="@link.SortOrder"
+                                                    data-active="@link.IsActive.ToString().ToLowerInvariant()">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <form asp-area="Admin" asp-controller="Settings" asp-action="DeleteSocialLink"
+                                                  method="post" class="d-inline"
+                                                  onsubmit="return confirm('Delete the @link.Platform link?');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@link.Id" />
+                                                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="branding" role="tabpanel">
+        <div class="card">
+            <div class="card-header"><i class="fas fa-image me-2"></i>Logo &amp; Branding</div>
+            <div class="card-body">
+                <form asp-area="Admin" asp-controller="Settings" asp-action="UpdateBranding" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Site Logo</label>
+                            <div class="border rounded p-3 mb-2 text-center bg-light">
+                                @if (!string.IsNullOrEmpty(info.LogoUrl))
+                                {
+                                    <img src="@info.LogoUrl" alt="Current logo" style="max-height:90px; max-width:100%;">
+                                }
+                                else
+                                {
+                                    <div class="text-muted py-3">
+                                        <i class="fas fa-school fa-2x d-block mb-2"></i>
+                                        No logo uploaded — the default icon is shown on the site.
+                                    </div>
+                                }
+                            </div>
+                            <input type="file" name="LogoFile" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp,.svg">
+                            <small class="text-muted">PNG or SVG with a transparent background works best. Displayed at 60&times;60 pixels.</small>
+                            @if (!string.IsNullOrEmpty(info.LogoUrl))
+                            {
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="removeLogo" name="RemoveLogo" value="true">
+                                    <label class="form-check-label" for="removeLogo">Remove the current logo</label>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Favicon</label>
+                            <div class="border rounded p-3 mb-2 text-center bg-light">
+                                @if (!string.IsNullOrEmpty(info.FaviconUrl))
+                                {
+                                    <img src="@info.FaviconUrl" alt="Current favicon" style="max-height:90px; max-width:100%;">
+                                }
+                                else
+                                {
+                                    <div class="text-muted py-3">
+                                        <i class="fas fa-star fa-2x d-block mb-2"></i>
+                                        No favicon uploaded — the built-in favicon.ico is used.
+                                    </div>
+                                }
+                            </div>
+                            <input type="file" name="FaviconFile" class="form-control" accept=".ico,.png,.svg">
+                            <small class="text-muted">A square image, ideally 32&times;32 or 64&times;64 pixels.</small>
+                            @if (!string.IsNullOrEmpty(info.FaviconUrl))
+                            {
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="removeFavicon" name="RemoveFavicon" value="true">
+                                    <label class="form-check-label" for="removeFavicon">Remove the current favicon</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save Branding</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="about" role="tabpanel">
+        <div class="card">
+            <div class="card-header"><i class="fas fa-info-circle me-2"></i>About Content</div>
+            <div class="card-body">
+                <p class="text-muted">
+                    This is what visitors read on the <strong>About Us</strong> page of your website.
+                    Each section becomes its own tab there, and a section you leave empty is simply hidden.
+                </p>
+                <form asp-area="Admin" asp-controller="Settings" asp-action="UpdateAbout" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <h6 class="fw-bold mt-3">Short Introduction</h6>
+                    <p class="text-muted small">A short paragraph shown in the About Us section of the home page.</p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">English</label>
+                            <textarea name="AboutShortEn" class="form-control" rows="4">@info.AboutShortEn</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Bangla</label>
+                            <textarea name="AboutShortBn" class="form-control" rows="4">@info.AboutShortBn</textarea>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="fw-bold">History</h6>
+                    <p class="text-muted small">HTML is allowed here, so you can use paragraphs and lists.</p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">English</label>
+                            <textarea name="HistoryEn" class="form-control" rows="6">@info.HistoryEn</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Bangla</label>
+                            <textarea name="HistoryBn" class="form-control" rows="6">@info.HistoryBn</textarea>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="fw-bold">Mission</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">English</label>
+                            <textarea name="MissionEn" class="form-control" rows="4">@info.MissionEn</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Bangla</label>
+                            <textarea name="MissionBn" class="form-control" rows="4">@info.MissionBn</textarea>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="fw-bold">Vision</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">English</label>
+                            <textarea name="VisionEn" class="form-control" rows="4">@info.VisionEn</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Bangla</label>
+                            <textarea name="VisionBn" class="form-control" rows="4">@info.VisionBn</textarea>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="fw-bold">Objectives</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">English</label>
+                            <textarea name="ObjectiveEn" class="form-control" rows="4">@info.ObjectiveEn</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Bangla</label>
+                            <textarea name="ObjectiveBn" class="form-control" rows="4">@info.ObjectiveBn</textarea>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="fw-bold">Future Plan</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">English</label>
+                            <textarea name="FuturePlanEn" class="form-control" rows="4">@info.FuturePlanEn</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Bangla</label>
+                            <textarea name="FuturePlanBn" class="form-control" rows="4">@info.FuturePlanBn</textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save About Content</button>
+                        <a href="/About" target="_blank" class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-external-link-alt me-1"></i>View About Us page
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -129,35 +337,35 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">School Name (English)</label>
-                                <input type="text" name="SchoolNameEn" class="form-control" value="Momitunnesa School">
+                                <input type="text" name="SchoolNameEn" class="form-control" value="@info.SchoolNameEn" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">School Name (Bangla)</label>
-                                <input type="text" name="SchoolNameBn" class="form-control" value="মমিতুন্নেসা স্কুল">
+                                <input type="text" name="SchoolNameBn" class="form-control" value="@info.SchoolNameBn" required>
                             </div>
                         </div>
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label">Phone</label>
-                                <input type="text" name="Phone" class="form-control" value="+880 2-1234567">
+                                <input type="text" name="Phone" class="form-control" value="@info.Phone">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Email</label>
-                                <input type="email" name="Email" class="form-control" value="info@momitunnesa.edu.bd">
+                                <input type="email" name="Email" class="form-control" value="@info.Email">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Website</label>
-                                <input type="url" name="Website" class="form-control" value="https://momitunnesa.edu.bd">
+                                <input type="url" name="Website" class="form-control" value="@info.Website">
                             </div>
                         </div>
                         <div class="row g-3 mt-2">
                             <div class="col-md-6">
                                 <label class="form-label">Footer Text (English)</label>
-                                <textarea name="FooterTextEn" class="form-control" rows="2">&copy; @DateTime.Now.Year Momitunnesa School. All rights reserved.</textarea>
+                                <textarea name="FooterTextEn" class="form-control" rows="2">@info.FooterTextEn</textarea>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Footer Text (Bangla)</label>
-                                <textarea name="FooterTextBn" class="form-control" rows="2">&copy; @DateTime.Now.Year মমিতুন্নেসা স্কুল। সর্বস্বত্ব সংরক্ষিত।</textarea>
+                                <textarea name="FooterTextBn" class="form-control" rows="2">@info.FooterTextBn</textarea>
                             </div>
                         </div>
                         <div class="mt-4">
@@ -268,7 +476,7 @@
 <div class="modal fade" id="addSocialModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-area="Admin" asp-controller="Settings" asp-action="UpdateSocialLink" method="post">
+            <form asp-area="Admin" asp-controller="Settings" asp-action="CreateSocialLink" method="post">
                 @Html.AntiForgeryToken()
                 <div class="modal-header">
                     <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Add Social Link</h5>
@@ -278,22 +486,24 @@
                     <div class="mb-3">
                         <label class="form-label">Platform</label>
                         <select name="Platform" class="form-select">
-                            <option value="Facebook">Facebook</option>
-                            <option value="YouTube">YouTube</option>
-                            <option value="Twitter">Twitter / X</option>
-                            <option value="Instagram">Instagram</option>
-                            <option value="LinkedIn">LinkedIn</option>
-                            <option value="WhatsApp">WhatsApp</option>
-                            <option value="Telegram">Telegram</option>
+                            @foreach (var platform in SocialPlatformHelper.KnownPlatforms)
+                            {
+                                <option value="@platform">@platform</option>
+                            }
                         </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">URL</label>
-                        <input type="url" name="Url" class="form-control" placeholder="https://facebook.com/school" required>
+                        <input type="url" name="Url" class="form-control" placeholder="https://facebook.com/yourschool" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Display Order</label>
-                        <input type="number" name="DisplayOrder" class="form-control" value="1">
+                        <input type="number" name="SortOrder" class="form-control" value="@(socialLinks.Count + 1)">
+                        <small class="text-muted">Lower numbers appear first on the website.</small>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="addSocialActive" name="IsActive" value="true" checked>
+                        <label class="form-check-label" for="addSocialActive">Show on the website</label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -304,3 +514,61 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="editSocialModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-area="Admin" asp-controller="Settings" asp-action="UpdateSocialLink" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" id="editSocialId" />
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Social Link</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Platform</label>
+                        <select name="Platform" id="editSocialPlatform" class="form-select">
+                            @foreach (var platform in SocialPlatformHelper.KnownPlatforms)
+                            {
+                                <option value="@platform">@platform</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">URL</label>
+                        <input type="url" name="Url" id="editSocialUrl" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Display Order</label>
+                        <input type="number" name="SortOrder" id="editSocialOrder" class="form-control">
+                        <small class="text-muted">Lower numbers appear first on the website.</small>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="editSocialActive" name="IsActive" value="true">
+                        <label class="form-check-label" for="editSocialActive">Show on the website</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Copy the clicked row's values into the edit modal before it opens.
+        document.getElementById('editSocialModal')?.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            if (!button) return;
+            document.getElementById('editSocialId').value = button.dataset.id;
+            document.getElementById('editSocialPlatform').value = button.dataset.platform;
+            document.getElementById('editSocialUrl').value = button.dataset.url;
+            document.getElementById('editSocialOrder').value = button.dataset.order;
+            document.getElementById('editSocialActive').checked = button.dataset.active === 'true';
+        });
+    </script>
+}

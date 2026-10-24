@@ -119,6 +119,16 @@ a:hover { color: var(--primary-light); }
     justify-content: center;
     font-size: 1.8rem;
 }
+/* An uploaded logo replaces the icon disc, so drop the coloured background. */
+.school-brand .brand-logo.has-image {
+    background: none;
+    border-radius: 0;
+}
+.school-brand .brand-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
 .brand-text { padding-left: 15px; }
 .rtl-mode .brand-text { padding-left: 0; padding-right: 15px; }
 .brand-name {
@@ -635,6 +645,7 @@ a:hover { color: var(--primary-light); }
 }
 .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
 .footer-logo i { font-size: 2rem; color: var(--secondary); }
+.footer-logo img { width: 48px; height: 48px; object-fit: contain; }
 .footer-logo h5 { color: #fff; margin: 0; }
 .footer-contact-list { list-style: none; padding: 0; margin: 0; }
 .footer-contact-list li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
@@ -666,6 +677,9 @@ a:hover { color: var(--primary-light); }
 .social-link.twitter:hover { background: #1da1f2; }
 .social-link.instagram:hover { background: #e4405f; }
 .social-link.linkedin:hover { background: #0a66c2; }
+.social-link.whatsapp:hover { background: #25d366; }
+.social-link.telegram:hover { background: #229ed9; }
+.social-link.generic:hover { background: var(--primary); }
 
 .visitor-counter { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
 .visitor-count { font-weight: 700; color: var(--secondary); }

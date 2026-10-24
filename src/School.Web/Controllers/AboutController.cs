@@ -56,7 +56,9 @@ public class AboutController : BaseController
             };
         }
 
-        return View();
+        // Named explicitly: History() delegates here, and an unnamed View() would be
+        // resolved against that route's action name instead.
+        return View("Index");
     }
 
     public async Task<IActionResult> History()

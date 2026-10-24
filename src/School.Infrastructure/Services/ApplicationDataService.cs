@@ -20,6 +20,21 @@ public class ApplicationDataService : IApplicationDataService
         return await _context.VisitorCounters.SumAsync(v => v.Count);
     }
 
+    public async Task<int[]> GetMonthlyVisitorsAsync(int year)
+    {
+        var totals = await _context.VisitorCounters
+            .Where(v => v.Date.Year == year)
+            .GroupBy(v => v.Date.Month)
+            .Select(g => new { Month = g.Key, Total = g.Sum(v => v.Count) })
+            .ToListAsync();
+
+        var months = new int[12];
+        foreach (var t in totals)
+            months[t.Month - 1] = t.Total;
+
+        return months;
+    }
+
     public async Task<IEnumerable<RecentActivityDto>> GetRecentActivitiesAsync(int count)
     {
         return await _context.ActivityLogs

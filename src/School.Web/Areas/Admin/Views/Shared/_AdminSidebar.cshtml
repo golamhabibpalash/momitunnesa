@@ -1,4 +1,10 @@
+@inject IContactService ContactService
 @{
+    var sidebarMessages = await ContactService.GetAllMessagesAsync();
+    var unreadMessageCount = sidebarMessages.Success && sidebarMessages.Data is not null
+        ? sidebarMessages.Data.Count(m => !m.IsRead)
+        : 0;
+
     var activeMenu = ViewBag.ActiveMenu as string ?? "";
     var activeSubMenu = ViewBag.ActiveSubMenu as string ?? "";
     bool IsActive(string menu, string? subMenu = null)
@@ -148,7 +154,10 @@
                asp-area="Admin" asp-controller="Contact" asp-action="Index">
                 <i class="fas fa-envelope"></i>
                 <span>Contact Messages</span>
-                <span class="badge bg-danger rounded-pill">3</span>
+                @if (unreadMessageCount > 0)
+                {
+                    <span class="badge bg-danger rounded-pill">@unreadMessageCount</span>
+                }
             </a>
         </li>
 

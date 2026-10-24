@@ -1,6 +1,20 @@
-﻿@{
+﻿@using School.Application.Services.Interfaces
+@inject ISettingsService SettingsService
+@inject IWebHostEnvironment WebHostEnvironment
+@{
     ViewData["Title"] = "Home";
     var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+
+    var homeSchoolInfo = await SettingsService.GetSchoolInfoAsync();
+    var homeInfo = homeSchoolInfo.Success ? homeSchoolInfo.Data : null;
+    var aboutShort = isRtl ? homeInfo?.AboutShortBn : homeInfo?.AboutShortEn;
+    var aboutHeading = isRtl ? homeInfo?.SchoolNameBn : homeInfo?.SchoolNameEn;
+
+    // The About image is still a fixed file on disk; only show it if it is actually there.
+    var aboutImagePath = "/images/about-school.jpg";
+    var hasAboutImage = System.IO.File.Exists(
+        System.IO.Path.Combine(WebHostEnvironment.WebRootPath, "images", "about-school.jpg"));
+
     var sliders = ViewBag.Sliders as IEnumerable<School.Application.DTOs.Slider.SliderDto>;
     var notices = ViewBag.Notices as IEnumerable<School.Application.DTOs.Notice.NoticeDto>;
     var newsItems = ViewBag.News as IEnumerable<School.Application.DTOs.News.NewsDto>;
@@ -85,28 +99,33 @@
         </section>
     }
 
-    <section class="about-brief-section section-padding">
-        <div class="container">
-            <div class="row align-items-center g-4">
-                <div class="col-lg-6">
-                    <div class="about-brief-content">
-                        <div class="section-subtitle">@(isRtl ? "আমাদের সম্পর্কে" : "About Us")</div>
-                        <h2 class="section-title">@(isRtl ? "মোমিতুন্নেসা মাধ্যমিক বিদ্যালয়" : "Momitunnesa Secondary School")</h2>
-                        <p>@(isRtl ? "মোমিতুন্নেসা মাধ্যমিক বিদ্যালয় একটি ঐতিহ্যবাহী শিক্ষাপ্রতিষ্ঠান যা মানসম্মত শিক্ষা প্রদানের লক্ষ্যে প্রতিষ্ঠিত। আমরা শিক্ষার্থীদের মধ্যে নৈতিক মূল্যবোধ, জ্ঞান ও দক্ষতা বিকাশে প্রতিশ্রুতিবদ্ধ।" : "Momitunnesa Secondary School is a traditional educational institution established with the aim of providing quality education. We are committed to developing moral values, knowledge, and skills among students.")</p>
-                        <p>@(isRtl ? "আমাদের আধুনিক শিক্ষা পদ্ধতি, দক্ষ শিক্ষকমণ্ডলী ও উন্নত অবকাঠামো শিক্ষার্থীদের সর্বোত্তম শিক্ষা নিশ্চিত করে।" : "Our modern teaching methods, skilled teachers, and excellent infrastructure ensure the best education for students.")</p>
-                        <a asp-controller="About" asp-action="Index" class="btn btn-primary mt-3">
-                            @(isRtl ? "আরও পড়ুন" : "Read More") <i class="fas fa-arrow-right ms-2"></i>
-                        </a>
+    @if (!string.IsNullOrWhiteSpace(aboutShort))
+    {
+        <section class="about-brief-section section-padding">
+            <div class="container">
+                <div class="row align-items-center g-4">
+                    <div class="@(hasAboutImage ? "col-lg-6" : "col-12")">
+                        <div class="about-brief-content">
+                            <div class="section-subtitle">@(isRtl ? "আমাদের সম্পর্কে" : "About Us")</div>
+                            <h2 class="section-title">@aboutHeading</h2>
+                            <p>@aboutShort</p>
+                            <a asp-controller="About" asp-action="Index" class="btn btn-primary mt-3">
+                                @(isRtl ? "আরও পড়ুন" : "Read More") <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="about-brief-image">
-                        <img src="/images/about-school.jpg" alt="School" class="img-fluid rounded shadow" />
-                    </div>
+                    @if (hasAboutImage)
+                    {
+                        <div class="col-lg-6">
+                            <div class="about-brief-image">
+                                <img src="@aboutImagePath" alt="@aboutHeading" class="img-fluid rounded shadow" />
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    }
 
     @await Html.PartialAsync("_Statistics")
 

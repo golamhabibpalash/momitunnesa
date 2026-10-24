@@ -6,13 +6,32 @@
     var hasVision = !string.IsNullOrEmpty(ViewBag.Vision);
     var hasObjective = !string.IsNullOrEmpty(ViewBag.Objective);
     var hasFuturePlan = !string.IsNullOrEmpty(ViewBag.FuturePlan);
+
+    // Sections are optional, so the first one that actually has content opens by
+    // default. Without this, an empty History would leave every tab closed.
+    var firstTab = hasHistory ? "history"
+        : hasMission ? "mission"
+        : hasVision ? "vision"
+        : hasObjective ? "objectives"
+        : hasFuturePlan ? "future"
+        : "";
+
+    string TabClass(string id) => firstTab == id ? "nav-link active" : "nav-link";
+    string PaneClass(string id) => firstTab == id ? "tab-pane fade show active" : "tab-pane fade";
 }
 <div class="about-page">
+    @if (firstTab == "")
+    {
+        <div class="text-center text-muted py-5">
+            <i class="fas fa-info-circle fa-2x d-block mb-3"></i>
+            <p>@(isRtl ? "এই পাতার তথ্য শীঘ্রই যুক্ত করা হবে।" : "Information for this page is coming soon.")</p>
+        </div>
+    }
     <ul class="nav nav-tabs about-tabs mb-4" id="aboutTab" role="tablist">
         @if (hasHistory)
         {
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
+                <button class="@TabClass("history")" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
                     @(isRtl ? "ইতিহাস" : "History")
                 </button>
             </li>
@@ -20,7 +39,7 @@
         @if (hasMission)
         {
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="mission-tab" data-bs-toggle="tab" data-bs-target="#mission" type="button" role="tab">
+                <button class="@TabClass("mission")" id="mission-tab" data-bs-toggle="tab" data-bs-target="#mission" type="button" role="tab">
                     @(isRtl ? "মিশন" : "Mission")
                 </button>
             </li>
@@ -28,7 +47,7 @@
         @if (hasVision)
         {
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="vision-tab" data-bs-toggle="tab" data-bs-target="#vision" type="button" role="tab">
+                <button class="@TabClass("vision")" id="vision-tab" data-bs-toggle="tab" data-bs-target="#vision" type="button" role="tab">
                     @(isRtl ? "ভিশন" : "Vision")
                 </button>
             </li>
@@ -36,7 +55,7 @@
         @if (hasObjective)
         {
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="objectives-tab" data-bs-toggle="tab" data-bs-target="#objectives" type="button" role="tab">
+                <button class="@TabClass("objectives")" id="objectives-tab" data-bs-toggle="tab" data-bs-target="#objectives" type="button" role="tab">
                     @(isRtl ? "উদ্দেশ্য" : "Objectives")
                 </button>
             </li>
@@ -44,7 +63,7 @@
         @if (hasFuturePlan)
         {
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="future-tab" data-bs-toggle="tab" data-bs-target="#future" type="button" role="tab">
+                <button class="@TabClass("future")" id="future-tab" data-bs-toggle="tab" data-bs-target="#future" type="button" role="tab">
                     @(isRtl ? "ভবিষ্যৎ পরিকল্পনা" : "Future Plan")
                 </button>
             </li>
@@ -53,7 +72,7 @@
     <div class="tab-content" id="aboutTabContent">
         @if (hasHistory)
         {
-            <div class="tab-pane fade show active" id="history" role="tabpanel">
+            <div class="@PaneClass("history")" id="history" role="tabpanel">
                 <div class="about-section">
                     <h2>@(isRtl ? "আমাদের ইতিহাস" : "Our History")</h2>
                     <div class="history-content mt-3">
@@ -64,7 +83,7 @@
         }
         @if (hasMission)
         {
-            <div class="tab-pane fade" id="mission" role="tabpanel">
+            <div class="@PaneClass("mission")" id="mission" role="tabpanel">
                 <div class="about-section">
                     <h2>@(isRtl ? "আমাদের মিশন" : "Our Mission")</h2>
                     <div class="mission-content mt-3">
@@ -76,7 +95,7 @@
         }
         @if (hasVision)
         {
-            <div class="tab-pane fade" id="vision" role="tabpanel">
+            <div class="@PaneClass("vision")" id="vision" role="tabpanel">
                 <div class="about-section">
                     <h2>@(isRtl ? "আমাদের ভিশন" : "Our Vision")</h2>
                     <div class="vision-content mt-3">
@@ -88,7 +107,7 @@
         }
         @if (hasObjective)
         {
-            <div class="tab-pane fade" id="objectives" role="tabpanel">
+            <div class="@PaneClass("objectives")" id="objectives" role="tabpanel">
                 <div class="about-section">
                     <h2>@(isRtl ? "আমাদের উদ্দেশ্য" : "Our Objectives")</h2>
                     <div class="objectives-content mt-3">
@@ -99,7 +118,7 @@
         }
         @if (hasFuturePlan)
         {
-            <div class="tab-pane fade" id="future" role="tabpanel">
+            <div class="@PaneClass("future")" id="future" role="tabpanel">
                 <div class="about-section">
                     <h2>@(isRtl ? "ভবিষ্যৎ পরিকল্পনা" : "Future Plan")</h2>
                     <div class="future-content mt-3">

@@ -1,3 +1,18 @@
+@using Microsoft.AspNetCore.Identity
+@using School.Domain.Entities
+@inject UserManager<ApplicationUser> UserManager
+@inject IContactService ContactService
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+    var currentUserName = currentUser?.FullName is { Length: > 0 } fullName ? fullName : (currentUser?.UserName ?? "Unknown user");
+    var currentUserEmail = currentUser?.Email ?? "";
+    var currentUserInitial = currentUserName.Substring(0, 1).ToUpperInvariant();
+
+    var messagesResult = await ContactService.GetAllMessagesAsync();
+    var unreadMessages = messagesResult.Success && messagesResult.Data is not null
+        ? messagesResult.Data.Where(m => !m.IsRead).OrderByDescending(m => m.CreatedAt).ToList()
+        : new List<School.Application.DTOs.Contact.ContactMessageDto>();
+}
 <header class="topbar">
     <div class="topbar-left">
         <button class="topbar-btn d-md-none" type="button" id="mobileSidebarToggle" onclick="$('.sidebar').toggleClass('expanded-mobile')">
@@ -30,64 +45,72 @@
         <div class="dropdown">
             <button class="topbar-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-bell"></i>
-                <span class="badge bg-danger rounded-pill">3</span>
+                @if (unreadMessages.Count > 0)
+                {
+                    <span class="badge bg-danger rounded-pill">@unreadMessages.Count</span>
+                }
             </button>
             <div class="dropdown-menu dropdown-menu-end shadow-sm" style="width:320px;">
-                <div class="dropdown-header d-flex justify-content-between align-items-center">
-                    <strong>Notifications</strong>
-                    <a href="#" class="text-decoration-none small">Mark all read</a>
+                <div class="dropdown-header">
+                    <strong>Unread Messages</strong>
                 </div>
                 <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item d-flex align-items-start gap-3 py-2">
-                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;min-width:36px;">
-                        <i class="fas fa-envelope text-white" style="font-size:0.8rem;"></i>
+                @if (unreadMessages.Count == 0)
+                {
+                    <div class="dropdown-item text-center text-muted small py-3">
+                        No unread messages.
                     </div>
-                    <div class="flex-grow-1">
-                        <p class="mb-0 small fw-semibold">New Contact Message</p>
-                        <small class="text-muted">John Doe sent a message</small>
-                        <br><small class="text-muted">2 min ago</small>
-                    </div>
-                </a>
-                <a href="#" class="dropdown-item d-flex align-items-start gap-3 py-2">
-                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;min-width:36px;">
-                        <i class="fas fa-user-plus text-white" style="font-size:0.8rem;"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <p class="mb-0 small fw-semibold">New User Registered</p>
-                        <small class="text-muted">Sarah Khan joined</small>
-                        <br><small class="text-muted">1 hour ago</small>
-                    </div>
-                </a>
-                <a href="#" class="dropdown-item d-flex align-items-start gap-3 py-2">
-                    <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;min-width:36px;">
-                        <i class="fas fa-exclamation text-white" style="font-size:0.8rem;"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <p class="mb-0 small fw-semibold">Notice Board Update</p>
-                        <small class="text-muted">New exam notice published</small>
-                        <br><small class="text-muted">3 hours ago</small>
-                    </div>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item text-center small" href="#">
-                    View All Notifications
-                </a>
+                }
+                else
+                {
+                    @foreach (var message in unreadMessages.Take(5))
+                    {
+                        <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="@message.Id" class="dropdown-item d-flex align-items-start gap-3 py-2">
+                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;min-width:36px;">
+                                <i class="fas fa-envelope text-white" style="font-size:0.8rem;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <p class="mb-0 small fw-semibold text-truncate">@message.Subject</p>
+                                <small class="text-muted">@message.Name</small>
+                                <br><small class="text-muted">@message.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</small>
+                            </div>
+                        </a>
+                    }
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item text-center small" asp-area="Admin" asp-controller="Contact" asp-action="Index">
+                        View All Messages
+                    </a>
+                }
             </div>
         </div>
 
         <div class="dropdown user-dropdown">
             <button class="topbar-btn d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:auto;padding:4px 12px;border-radius:30px;">
-                <img src="https://ui-avatars.com/api/?name=Admin+User&background=667eea&color=fff&size=34" alt="User">
-                <span class="d-none d-md-inline" style="font-size:0.85rem;font-weight:500;">Admin User</span>
+                @if (!string.IsNullOrEmpty(currentUser?.ImageUrl))
+                {
+                    <img src="@currentUser.ImageUrl" alt="@currentUserName" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">
+                }
+                else
+                {
+                    <span class="avatar-initials">@currentUserInitial</span>
+                }
+                <span class="d-none d-md-inline" style="font-size:0.85rem;font-weight:500;">@currentUserName</span>
                 <i class="fas fa-chevron-down" style="font-size:0.7rem;"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                 <li>
                     <div class="dropdown-header d-flex align-items-center gap-3">
-                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=667eea&color=fff&size=40" alt="User" style="width:40px;height:40px;border-radius:50%;">
+                        @if (!string.IsNullOrEmpty(currentUser?.ImageUrl))
+                        {
+                            <img src="@currentUser.ImageUrl" alt="@currentUserName" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                        }
+                        else
+                        {
+                            <span class="avatar-initials" style="width:40px;height:40px;font-size:1rem;">@currentUserInitial</span>
+                        }
                         <div>
-                            <strong>Admin User</strong>
-                            <br><small class="text-muted">admin@school.com</small>
+                            <strong>@currentUserName</strong>
+                            <br><small class="text-muted">@currentUserEmail</small>
                         </div>
                     </div>
                 </li>

@@ -14,6 +14,7 @@ public class DashboardService : IDashboardService
     private readonly IRepository<Notice> _noticeRepo;
     private readonly IRepository<News> _newsRepo;
     private readonly IRepository<GalleryImage> _galleryImageRepo;
+    private readonly IRepository<GalleryAlbum> _galleryAlbumRepo;
     private readonly IRepository<Download> _downloadRepo;
     private readonly IRepository<StudentInfo> _studentRepo;
     private readonly IApplicationDataService _dataService;
@@ -25,6 +26,7 @@ public class DashboardService : IDashboardService
         IRepository<Notice> noticeRepo,
         IRepository<News> newsRepo,
         IRepository<GalleryImage> galleryImageRepo,
+        IRepository<GalleryAlbum> galleryAlbumRepo,
         IRepository<Download> downloadRepo,
         IRepository<StudentInfo> studentRepo,
         IApplicationDataService dataService,
@@ -35,6 +37,7 @@ public class DashboardService : IDashboardService
         _noticeRepo = noticeRepo;
         _newsRepo = newsRepo;
         _galleryImageRepo = galleryImageRepo;
+        _galleryAlbumRepo = galleryAlbumRepo;
         _downloadRepo = downloadRepo;
         _studentRepo = studentRepo;
         _dataService = dataService;
@@ -53,7 +56,11 @@ public class DashboardService : IDashboardService
             var totalGalleryImages = await _galleryImageRepo.CountAsync();
             var totalDownloads = await _downloadRepo.CountAsync();
             var totalStudents = await _studentRepo.CountAsync();
+            var totalGalleryAlbums = await _galleryAlbumRepo.CountAsync();
             var recentActivities = await _dataService.GetRecentActivitiesAsync(10);
+
+            var chartYear = DateTime.Now.Year;
+            var monthlyVisitors = await _dataService.GetMonthlyVisitorsAsync(chartYear);
 
             var dashboard = new DashboardDto
             {
@@ -63,8 +70,12 @@ public class DashboardService : IDashboardService
                 TotalNotices = totalNotices,
                 TotalNews = totalNews,
                 TotalGalleryImages = totalGalleryImages,
+                TotalGalleryAlbums = totalGalleryAlbums,
                 TotalDownloads = totalDownloads,
                 TotalStudents = totalStudents,
+                ChartYear = chartYear,
+                MonthlyVisitors = monthlyVisitors,
+                VisitorsThisMonth = monthlyVisitors[DateTime.Now.Month - 1],
                 RecentActivities = recentActivities.ToList()
             };
 
