@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Verified against the current code. There is no README, CI, test project, linter/formatter config, or local dotnet tool manifest. `CLAUDE.md` has a longer write-up; where it conflicts with this file, trust this file.
+Verified against the current code. There is no README, CI, test project, linter/formatter config, or local dotnet tool manifest. `CLAUDE.md` imports this file and adds a short layer overview.
 
 ## Commands
 
