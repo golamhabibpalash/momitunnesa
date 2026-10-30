@@ -108,6 +108,54 @@ public class SettingsController : BaseAdminController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateGeneralSettings(string? SiteName, string? SiteTagline, string? DefaultLanguage)
+    {
+        if (string.IsNullOrWhiteSpace(SiteName))
+        {
+            SetErrorNotification("Site name is required.");
+            return RedirectToAction(nameof(Index));
+        }
+
+        var currentResult = await _settingsService.GetSchoolInfoAsync();
+        if (!currentResult.Success || currentResult.Data is null)
+        {
+            SetErrorNotification("School information has not been set up yet.");
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Site name/tagline are the single SchoolInfo record (English name + slogan),
+        // which drives the public header/footer and the admin panel. Only these members
+        // are set; the Bangla name is required on the entity so it is carried over, and
+        // everything else stays null so the partial-update mapper leaves it untouched.
+        var updateDto = new SchoolInfoUpdateDto
+        {
+            SchoolNameEn = SiteName.Trim(),
+            SchoolNameBn = currentResult.Data.SchoolNameBn,
+            SloganEn = SiteTagline ?? string.Empty
+        };
+
+        var result = await _settingsService.UpdateSchoolInfoAsync(updateDto);
+        if (!result.Success)
+        {
+            SetErrorNotification(result.Message ?? "Failed to update general settings.");
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (!string.IsNullOrWhiteSpace(DefaultLanguage))
+        {
+            await _settingsService.UpdateSettingAsync(new SiteSettingUpdateDto
+            {
+                Key = "DefaultLanguage",
+                Value = DefaultLanguage
+            });
+        }
+
+        SetSuccessNotification("General settings updated successfully.");
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateAbout(SchoolInfoDto model)
     {
         var currentResult = await _settingsService.GetSchoolInfoAsync();

@@ -1,3 +1,10 @@
+@inject ISettingsService SettingsService
+@{
+    var adminSchoolInfo = await SettingsService.GetSchoolInfoAsync();
+    var adminSchoolName = adminSchoolInfo.Success && !string.IsNullOrWhiteSpace(adminSchoolInfo.Data?.SchoolNameEn)
+        ? adminSchoolInfo.Data!.SchoolNameEn
+        : "School Management System";
+}
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 <head>
@@ -910,7 +917,7 @@
             </div>
 
             <footer class="footer">
-                &copy; @DateTime.Now.Year - Momitunnesa School Management System. All rights reserved.
+                &copy; @DateTime.Now.Year - @adminSchoolName. All rights reserved.
             </footer>
         </div>
     </div>
@@ -1039,6 +1046,9 @@
             $('html').attr('data-bs-theme', 'dark');
         }
     </script>
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
