@@ -32,7 +32,10 @@ public class NoticeController : BaseController
             Description = GetLocalizedContent(n.DescriptionEn ?? "", n.DescriptionBn ?? ""),
             Category = n.NoticeCategory,
             PublishDate = n.PublishDate,
-            IsFeatured = n.IsFeatured
+            IsFeatured = n.IsFeatured,
+            Attachments = n.AttachmentUrl is not null
+                ? new List<AttachmentItem> { new() { Url = n.AttachmentUrl, Name = n.TitleEn } }
+                : null
         }).ToList();
 
         var totalItems = notices.Count;

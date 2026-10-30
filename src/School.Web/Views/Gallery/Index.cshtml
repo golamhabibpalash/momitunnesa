@@ -2,37 +2,81 @@
 @{
     ViewData["Title"] = "Gallery";
     var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+    var showVideos = (ViewBag.ActiveTab as string) == "videos";
 }
 <div class="gallery-page">
     <ul class="nav nav-tabs gallery-tabs mb-4" id="galleryTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="photo-tab" data-bs-toggle="tab" data-bs-target="#photo" type="button" role="tab">
-                <i class="fas fa-image me-2"></i>@(isRtl ? "ফটো" : "Photos")
+            <button class="nav-link @(showVideos ? "" : "active")" id="photo-tab" data-bs-toggle="tab" data-bs-target="#photo" type="button" role="tab">
+                <i class="fas fa-image me-2"></i>@(isRtl ? "ফটো" : "Photos") <span class="badge bg-secondary ms-1">@(Model.Albums?.Count ?? 0)</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(showVideos ? "active" : "")" id="video-tab" data-bs-toggle="tab" data-bs-target="#video" type="button" role="tab">
+                <i class="fas fa-video me-2"></i>@(isRtl ? "ভিডিও" : "Videos") <span class="badge bg-secondary ms-1">@Model.Videos.Count</span>
             </button>
         </li>
     </ul>
     <div class="tab-content" id="galleryTabContent">
-        <div class="tab-pane fade show active" id="photo" role="tabpanel">
+        <div class="tab-pane fade @(showVideos ? "" : "show active")" id="photo" role="tabpanel">
+            @if (Model.Albums == null || !Model.Albums.Any())
+            {
+                <div class="alert alert-light border text-center py-5">@(isRtl ? "কোনো অ্যালবাম পাওয়া যায়নি।" : "No photo albums yet.")</div>
+            }
             <div class="row g-4">
-                @if (Model.Albums != null)
+                @foreach (var album in Model.Albums ?? new())
                 {
-                    foreach (var album in Model.Albums)
-                    {
-                        <div class="col-lg-4 col-md-6">
-                            <a asp-action="Album" asp-route-id="@album.Id" class="album-card text-decoration-none">
-                                <div class="album-cover position-relative">
-                                    <img src="@(album.CoverImageUrl ?? "/images/placeholder.jpg")" alt="@(isRtl ? album.TitleBn ?? album.Title : album.Title)" class="img-fluid rounded"
-                                         onerror="this.src='/images/placeholder.jpg'" />
-                                    <div class="album-overlay">
-                                        <div class="album-info text-center text-white">
-                                            <h5>@(isRtl ? album.TitleBn ?? album.Title : album.Title)</h5>
-                                            <span class="badge bg-light text-dark">@album.PhotoCount @(isRtl ? "টি ছবি" : "Photos")</span>
-                                        </div>
+                    <div class="col-lg-4 col-md-6">
+                        <a asp-action="Album" asp-route-id="@album.Id" class="album-card text-decoration-none">
+                            <div class="album-cover position-relative" style="aspect-ratio:4/3;overflow:hidden;border-radius:.5rem;background:#e3ebf2;">
+                                <img src="@(album.CoverImageUrl ?? "/images/placeholder.svg")" alt="@album.Title" class="img-fluid rounded" style="width:100%;height:100%;object-fit:cover;"
+                                     onerror="this.onerror=null;this.src='/images/placeholder.svg'" />
+                                <div class="album-overlay">
+                                    <div class="album-info text-center text-white">
+                                        <h5>@album.Title</h5>
+                                        <span class="badge bg-light text-dark">@album.PhotoCount @(isRtl ? "টি ছবি" : "Photos")</span>
                                     </div>
                                 </div>
-                            </a>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="tab-pane fade @(showVideos ? "show active" : "")" id="video" role="tabpanel">
+            @if (!Model.Videos.Any())
+            {
+                <div class="alert alert-light border text-center py-5">@(isRtl ? "কোনো ভিডিও পাওয়া যায়নি।" : "No videos yet.")</div>
+            }
+            <div class="row g-4">
+                @foreach (var video in Model.Videos)
+                {
+                    var embedUrl = VideoHelper.GetEmbedUrl(video.Url);
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="ratio ratio-16x9 bg-dark rounded-top overflow-hidden">
+                                @if (embedUrl is not null)
+                                {
+                                    <iframe src="@embedUrl" title="@video.Title" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>
+                                }
+                                else if (VideoHelper.IsUploadedFile(video.Url))
+                                {
+                                    <video src="@video.Url" controls preload="metadata" poster="@video.ThumbnailUrl"></video>
+                                }
+                                else
+                                {
+                                    <a href="@video.Url" target="_blank" rel="noopener" class="d-flex align-items-center justify-content-center text-white"><i class="fas fa-play-circle fa-3x"></i></a>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title mb-1">@video.Title</h6>
+                                @if (!string.IsNullOrEmpty(video.Description))
+                                {
+                                    <p class="card-text small text-muted mb-0">@video.Description</p>
+                                }
+                            </div>
                         </div>
-                    }
+                    </div>
                 }
             </div>
         </div>

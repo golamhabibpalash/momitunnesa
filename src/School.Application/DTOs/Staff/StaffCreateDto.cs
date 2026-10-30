@@ -13,7 +13,13 @@ public class StaffCreateDto
     [MaxLength(200)]
     public string NameBn { get; set; } = string.Empty;
 
-    public Designation Designation { get; set; }
+    public Designation Designation { get; set; } = Designation.Staff;
+
+    [MaxLength(200)]
+    public string? PositionEn { get; set; }
+
+    [MaxLength(200)]
+    public string? PositionBn { get; set; }
 
     [MaxLength(500)]
     public string? ImageUrl { get; set; }

@@ -1,17 +1,20 @@
 @model School.Application.DTOs.Page.PageCreateDto
 @{
-    ViewData["Title"] = "Create Page";
+    int? pageId = ViewBag.PageId;
+    string? slug = ViewBag.PageSlug;
+    var isEdit = pageId.HasValue;
+    ViewData["Title"] = isEdit ? "Edit Page" : "Create Page";
     ViewBag.ActiveMenu = "Pages";
 }
 
 <div class="page-header">
     <div>
-        <h2><i class="fas fa-plus-circle me-2"></i>Create New Page</h2>
+        <h2><i class="fas @(isEdit ? "fa-edit" : "fa-plus-circle") me-2"></i>@(isEdit ? "Edit Page" : "Create New Page")</h2>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Page" asp-action="Index">Pages</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Create</li>
+                <li class="breadcrumb-item active" aria-current="page">@(isEdit ? "Edit" : "Create")</li>
             </ol>
         </nav>
     </div>
@@ -20,9 +23,9 @@
     </a>
 </div>
 
-<form asp-area="Admin" asp-controller="Page" asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<form asp-area="Admin" asp-controller="Page" asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@pageId" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="FeaturedImage" />
+    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
 
     <div class="row g-3">
         <div class="col-lg-8">
@@ -32,12 +35,18 @@
                     <div class="mb-3">
                         <label asp-for="TitleEn" class="form-label required">Title (English)</label>
                         <input asp-for="TitleEn" class="form-control" placeholder="Enter page title in English" required>
-                        <span asp-validation-for="TitleEn" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label asp-for="TitleBn" class="form-label required">Title (Bangla)</label>
-                        <input asp-for="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম লিখুন" required>
-                        <span asp-validation-for="TitleBn" class="text-danger"></span>
+                        <label asp-for="TitleBn" class="form-label">Title (Bangla)</label>
+                        <input asp-for="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম লিখুন">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Page URL</label>
+                        @if (!string.IsNullOrEmpty(slug))
+                        {
+                            <div><a href="/page/@slug" target="_blank">/page/@slug</a></div>
+                        }
+                        <small class="text-muted">The URL is generated automatically from the English title.</small>
                     </div>
                     <div class="mb-3">
                         <label asp-for="ContentEn" class="form-label">Content (English)</label>
@@ -59,12 +68,11 @@
                     </div>
                     <div class="mb-3">
                         <label asp-for="MetaDescription" class="form-label">Meta Description</label>
-                        <textarea asp-for="MetaDescription" class="form-control" rows="3"></textarea>
+                        <textarea asp-for="MetaDescription" class="form-control" rows="3" placeholder="Brief description for search engines"></textarea>
                     </div>
                     <div class="mb-3">
                         <label asp-for="MetaKeywords" class="form-label">Meta Keywords</label>
                         <input asp-for="MetaKeywords" class="form-control" placeholder="keyword1, keyword2, keyword3">
-                        <small class="text-muted">Comma-separated keywords</small>
                     </div>
                 </div>
             </div>
@@ -76,28 +84,28 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label asp-for="TemplateType" class="form-label">Template</label>
-                        <select asp-for="TemplateType" class="form-select" asp-items="Html.GetEnumSelectList<TemplateType>()"></select>
+                        <select asp-for="TemplateType" class="form-select" asp-items="Html.GetEnumSelectList<School.Domain.Enums.TemplateType>()"></select>
                     </div>
                     <div class="mb-3">
                         <label asp-for="SortOrder" class="form-label">Sort Order</label>
-                        <input asp-for="SortOrder" type="number" class="form-control" value="0" min="0">
+                        <input asp-for="SortOrder" class="form-control" type="number" />
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input asp-for="IsHomePage" class="form-check-input" role="switch">
-                            <label asp-for="IsHomePage" class="form-check-label">Set as Home Page</label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input asp-for="IsPublished" class="form-check-input" role="switch" checked>
+                            <input asp-for="IsPublished" class="form-check-input" role="switch" />
                             <label asp-for="IsPublished" class="form-check-label">Published</label>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input asp-for="Status" class="form-check-input" role="switch" checked>
+                            <input asp-for="Status" class="form-check-input" role="switch" />
                             <label asp-for="Status" class="form-check-label">Active</label>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsHomePage" class="form-check-input" role="switch" />
+                            <label asp-for="IsHomePage" class="form-check-label">Set as Home Page</label>
                         </div>
                     </div>
                 </div>
@@ -106,8 +114,18 @@
             <div class="card mb-3">
                 <div class="card-header"><i class="fas fa-image me-2"></i>Featured Image</div>
                 <div class="card-body">
-                    <label asp-for="FeaturedImage" class="form-label">Image URL</label>
-                    <input asp-for="FeaturedImage" class="form-control" placeholder="/uploads/pages/image.jpg">
+                    @if (!string.IsNullOrEmpty(Model.FeaturedImage))
+                    {
+                        <div class="mb-3 text-center">
+                            <img src="@Model.FeaturedImage" class="img-fluid rounded mb-2" style="max-height:150px;" alt="Featured image" />
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="checkbox" name="removeImage" value="true" id="removeImage">
+                                <label class="form-check-label text-danger" for="removeImage">Remove image</label>
+                            </div>
+                        </div>
+                    }
+                    <input type="file" name="FeaturedImageFile" class="form-control image-preview-input" accept="image/*">
+                    <small class="text-muted">Recommended: 1200x630px, max 10MB</small>
                 </div>
             </div>
         </div>
@@ -116,20 +134,11 @@
     <div class="d-flex justify-content-end gap-2 mt-3">
         <a asp-area="Admin" asp-controller="Page" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary px-4">
-            <i class="fas fa-save me-1"></i>Save Page
+            <i class="fas fa-save me-1"></i>@(isEdit ? "Update Page" : "Save Page")
         </button>
     </div>
 </form>
 
 @section Scripts {
-    <script src="~/lib/tinymce/tinymce.min.js"></script>
-    <script>
-        tinymce.init({
-            selector: '.tinymce',
-            height: 500,
-            plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
-            toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-            promotion: false
-        });
-    </script>
+    <partial name="_RichTextEditor" />
 }

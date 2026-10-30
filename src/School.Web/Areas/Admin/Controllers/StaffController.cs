@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using School.Application.DTOs.Staff;
 using School.Application.Services.Interfaces;
+using School.Domain.Enums;
 
 namespace School.Web.Areas.Admin.Controllers;
 
@@ -9,14 +10,17 @@ namespace School.Web.Areas.Admin.Controllers;
 public class StaffController : BaseAdminController
 {
     private readonly IStaffService _staffService;
+    private readonly IMediaService _mediaService;
 
     public StaffController(
         IStaffService staffService,
+        IMediaService mediaService,
         ILogger<BaseAdminController> logger,
         IHttpContextAccessor httpContextAccessor)
         : base(logger, httpContextAccessor)
     {
         _staffService = staffService;
+        _mediaService = mediaService;
     }
 
     public async Task<IActionResult> Index()
@@ -29,7 +33,7 @@ public class StaffController : BaseAdminController
             return View(new List<StaffDto>());
         }
 
-        return View(result.Data.OrderBy(s => s.SortOrder));
+        return View(result.Data.OrderBy(s => s.SortOrder).ThenBy(s => s.NameEn).ToList());
     }
 
     [HttpGet]
@@ -40,8 +44,13 @@ public class StaffController : BaseAdminController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(StaffCreateDto model)
+    public async Task<IActionResult> Create(StaffCreateDto model, IFormFile? Photo)
     {
+        model.Designation = Designation.Staff;
+        var uploadedUrl = await UploadFileAsync(_mediaService, Photo, "staff", nameof(model.ImageUrl));
+        if (uploadedUrl is not null)
+            model.ImageUrl = uploadedUrl;
+
         if (!ModelState.IsValid)
             return View(model);
 
@@ -73,7 +82,8 @@ public class StaffController : BaseAdminController
         {
             NameEn = staff.NameEn,
             NameBn = staff.NameBn,
-            Designation = Enum.TryParse<Domain.Enums.Designation>(staff.Designation, out var des) ? des : Domain.Enums.Designation.Staff,
+            PositionEn = staff.PositionEn,
+            PositionBn = staff.PositionBn,
             ImageUrl = staff.ImageUrl,
             Email = staff.Email,
             Phone = staff.Phone,
@@ -84,17 +94,25 @@ public class StaffController : BaseAdminController
         };
 
         ViewBag.StaffId = id;
-        return View(dto);
+        return View("Create", dto);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, StaffCreateDto model)
+    public async Task<IActionResult> Edit(int id, StaffCreateDto model, IFormFile? Photo, bool removeImage = false)
     {
+        var previousImage = model.ImageUrl;
+        if (removeImage)
+            model.ImageUrl = null;
+
+        var uploadedUrl = await UploadFileAsync(_mediaService, Photo, "staff", nameof(model.ImageUrl));
+        if (uploadedUrl is not null)
+            model.ImageUrl = uploadedUrl;
+
         if (!ModelState.IsValid)
         {
             ViewBag.StaffId = id;
-            return View(model);
+            return View("Create", model);
         }
 
         var updateDto = new StaffUpdateDto
@@ -102,7 +120,9 @@ public class StaffController : BaseAdminController
             Id = id,
             NameEn = model.NameEn,
             NameBn = model.NameBn,
-            Designation = model.Designation,
+            Designation = Designation.Staff,
+            PositionEn = model.PositionEn,
+            PositionBn = model.PositionBn,
             ImageUrl = model.ImageUrl,
             Email = model.Email,
             Phone = model.Phone,
@@ -118,8 +138,11 @@ public class StaffController : BaseAdminController
         {
             SetErrorNotification(result.Message ?? "Failed to update staff.");
             ViewBag.StaffId = id;
-            return View(model);
+            return View("Create", model);
         }
+
+        if (previousImage != model.ImageUrl)
+            await DeleteUploadAsync(_mediaService, previousImage);
 
         SetSuccessNotification("Staff updated successfully.");
         return RedirectToAction(nameof(Index));
@@ -132,13 +155,9 @@ public class StaffController : BaseAdminController
         var result = await _staffService.DeleteAsync(id);
 
         if (!result.Success)
-        {
             SetErrorNotification(result.Message ?? "Failed to delete staff.");
-        }
         else
-        {
             SetSuccessNotification("Staff deleted successfully.");
-        }
 
         return RedirectToAction(nameof(Index));
     }

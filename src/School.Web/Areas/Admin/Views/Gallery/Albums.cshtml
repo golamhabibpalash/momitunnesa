@@ -1,12 +1,12 @@
-@model IEnumerable<School.Application.DTOs.Gallery.GalleryAlbumDto>
+@model List<School.Application.DTOs.Gallery.GalleryAlbumDto>
 @{
-    ViewData["Title"] = "Gallery Albums";
+    ViewData["Title"] = "Photo Albums";
     ViewBag.ActiveMenu = "Albums";
 }
 
 <div class="page-header">
     <div>
-        <h2><i class="fas fa-folder me-2"></i>Gallery Albums</h2>
+        <h2><i class="fas fa-folder me-2"></i>Photo Albums</h2>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
@@ -14,86 +14,47 @@
             </ol>
         </nav>
     </div>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAlbumModal">
-        <i class="fas fa-plus me-1"></i>Create New Album
-    </button>
+    <a asp-action="CreateAlbum" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Create Album</a>
 </div>
 
+@if (!Model.Any())
+{
+    <div class="card"><div class="card-body text-center text-muted py-5">
+        <i class="fas fa-images fa-3x mb-3"></i>
+        <p class="mb-3">No albums yet.</p>
+        <a asp-action="CreateAlbum" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Create your first album</a>
+    </div></div>
+}
 <div class="row g-3">
-    @if (Model != null && Model.Any())
+    @foreach (var album in Model)
     {
-        foreach (var album in Model)
-        {
-            <div class="col-lg-4 col-md-6">
-                <div class="album-card card">
-                    <div class="album-cover" style="background-image: url('@(string.IsNullOrEmpty(album.CoverImageUrl) ? "https://placehold.co/600x400/667eea/white?text=Album" : album.CoverImageUrl)'); background-size:cover; background-position:center; height:180px;">
-                        <span class="album-count"><i class="fas fa-images me-1"></i>@album.ImageCount</span>
-                    </div>
-                    <div class="album-body p-3">
-                        <h6>@album.TitleEn</h6>
-                        <small class="text-muted"><i class="far fa-calendar me-1"></i>Created: @album.CreatedAt.ToString("MMM dd, yyyy")</small>
-                        <div class="mt-2 d-flex gap-1">
-                            <a asp-area="Admin" asp-controller="Gallery" asp-action="AlbumImages" asp-route-id="@album.Id" class="btn btn-sm btn-primary">
-                                <i class="fas fa-eye"></i> View
-                            </a>
-                        </div>
+        <div class="col-sm-6 col-lg-4 col-xl-3">
+            <div class="card h-100">
+                <a asp-action="AlbumImages" asp-route-id="@album.Id" class="d-block" style="aspect-ratio:4/3;background:#f1f3f5;overflow:hidden;border-radius:.5rem .5rem 0 0;">
+                    @if (!string.IsNullOrEmpty(album.CoverImageUrl))
+                    {
+                        <img src="@album.CoverImageUrl" alt="" style="width:100%;height:100%;object-fit:cover;">
+                    }
+                    else
+                    {
+                        <div class="h-100 d-flex align-items-center justify-content-center text-muted"><i class="far fa-image fa-3x"></i></div>
+                    }
+                </a>
+                <div class="card-body d-flex flex-column">
+                    <h6 class="mb-1 text-truncate" title="@album.TitleEn">@album.TitleEn</h6>
+                    <small class="text-muted mb-2">
+                        @album.ImageCount photo(s) •
+                        @if (album.IsActive) { <span class="text-success">Active</span> } else { <span class="text-secondary">Hidden</span> }
+                    </small>
+                    <div class="mt-auto d-flex gap-1">
+                        <a asp-action="AlbumImages" asp-route-id="@album.Id" class="btn btn-sm btn-primary flex-grow-1"><i class="fas fa-images me-1"></i>Photos</a>
+                        <a asp-action="EditAlbum" asp-route-id="@album.Id" class="btn btn-sm btn-info" title="Edit album"><i class="fas fa-edit"></i></a>
+                        <form asp-action="DeleteAlbum" asp-route-id="@album.Id" method="post" onsubmit="return confirm('Delete this album and hide all its photos?');">
+                            <button type="submit" class="btn btn-sm btn-danger" title="Delete album"><i class="fas fa-trash"></i></button>
+                        </form>
                     </div>
                 </div>
             </div>
-        }
-    }
-    else
-    {
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body text-center text-muted py-4">No albums found.</div>
-            </div>
         </div>
     }
-</div>
-
-<div class="modal fade" id="createAlbumModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-area="Admin" asp-controller="Gallery" asp-action="CreateAlbum" method="post">
-                @Html.AntiForgeryToken()
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-folder-plus me-2"></i>Create New Album</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label required">Album Title (English)</label>
-                        <input type="text" name="TitleEn" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label required">Album Title (Bangla)</label>
-                        <input type="text" name="TitleBn" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description (English)</label>
-                        <textarea name="DescriptionEn" class="form-control" rows="2"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description (Bangla)</label>
-                        <textarea name="DescriptionBn" class="form-control" rows="2"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Cover Image URL</label>
-                        <input type="text" name="CoverImageUrl" class="form-control" placeholder="/uploads/gallery/cover.jpg">
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="albumActive" name="IsActive" value="true" checked>
-                            <label class="form-check-label" for="albumActive">Active</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Create Album</button>
-                </div>
-            </form>
-        </div>
-    </div>
 </div>

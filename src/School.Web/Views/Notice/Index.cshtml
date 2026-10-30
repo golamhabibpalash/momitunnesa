@@ -2,25 +2,20 @@
 @{
     ViewData["Title"] = "Notice Board";
     var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
-    var categories = new[] {
-        new { Name = "All", NameBn = "সব" },
-        new { Name = "Admission", NameBn = "ভর্তি" },
-        new { Name = "Exam", NameBn = "পরীক্ষা" },
-        new { Name = "Meeting", NameBn = "সভা" },
-        new { Name = "Result", NameBn = "ফলাফল" },
-        new { Name = "Notice", NameBn = "নোটিশ" }
-    };
 }
 <div class="notice-page">
     <div class="row g-4">
         <div class="col-lg-8">
             <div class="notice-filters mb-4">
                 <div class="d-flex flex-wrap gap-2">
-                    @foreach (var cat in categories)
+                    <a href="@Url.Action("Index")" class="btn btn-sm @(string.IsNullOrEmpty(Model.Category) ? "btn-primary" : "btn-outline-primary")">
+                        @(isRtl ? "সব" : "All")
+                    </a>
+                    @foreach (var cat in Enum.GetValues<School.Domain.Enums.NoticeCategory>())
                     {
-                        <a href="@Url.Action("Index", new { category = cat.Name == "All" ? "" : cat.Name })"
-                           class="btn btn-sm @(ViewContext.RouteData.Values["category"]?.ToString() == cat.Name || (ViewContext.RouteData.Values["category"] == null && cat.Name == "All") ? "btn-primary" : "btn-outline-primary")">
-                            @(isRtl ? cat.NameBn : cat.Name)
+                        <a href="@Url.Action("Index", new { category = cat.ToString() })"
+                           class="btn btn-sm @(Model.Category == cat.ToString() ? "btn-primary" : "btn-outline-primary")">
+                            @CategoryHelper.Label(cat)
                         </a>
                     }
                 </div>
@@ -40,14 +35,14 @@
                                 </h5>
                                 <div class="notice-meta">
                                     <span><i class="far fa-calendar-alt me-1"></i>@notice.PublishDate?.ToString("dd MMM yyyy")</span>
-                                    <span class="ms-3"><i class="far fa-folder me-1"></i>@(isRtl ? notice.CategoryBn ?? notice.Category : notice.Category)</span>
+                                    <span class="ms-3"><i class="far fa-folder me-1"></i>@(CategoryHelper.Label<School.Domain.Enums.NoticeCategory>(notice.Category))</span>
                                 </div>
                             </div>
                             <p class="notice-excerpt">@notice.Description</p>
                             @if (notice.Attachments != null && notice.Attachments.Any())
                             {
                                 <div class="notice-attachments">
-                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                    <a href="@notice.Attachments.First().Url" target="_blank" class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-file-pdf"></i> @(isRtl ? "ডাউনলোড" : "Download")
                                     </a>
                                 </div>

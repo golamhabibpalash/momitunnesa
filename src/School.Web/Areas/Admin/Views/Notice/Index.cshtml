@@ -46,7 +46,7 @@
                             <tr>
                                 <td>@sl</td>
                                 <td>@notice.TitleEn</td>
-                                <td><span class="badge bg-info">@notice.NoticeCategory</span></td>
+                                <td><span class="badge bg-info">@(CategoryHelper.Label<NoticeCategory>(notice.NoticeCategory))</span></td>
                                 <td>@notice.PublishDate.ToString("MMM dd, yyyy")</td>
                                 <td>@(notice.ExpiryDate?.ToString("MMM dd, yyyy") ?? "-")</td>
                                 <td>
@@ -60,7 +60,11 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (isExpired)
+                                    @if (!notice.IsActive)
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                    else if (isExpired)
                                     {
                                         <span class="badge bg-secondary">Expired</span>
                                     }

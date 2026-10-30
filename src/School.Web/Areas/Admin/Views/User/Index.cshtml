@@ -1,14 +1,14 @@
-@model IEnumerable<School.Application.DTOs.Account.UserDto>
+@model List<School.Application.DTOs.Account.UserDto>
 @{
     ViewData["Title"] = "Users";
     ViewBag.ActiveMenu = "Users";
-    var currentPage = ViewBag.CurrentPage as int? ?? 1;
-    var totalPages = ViewBag.TotalPages as int? ?? 1;
+    string? currentUserId = ViewBag.CurrentUserId;
+    var sl = 0;
 }
 
 <div class="page-header">
     <div>
-        <h2><i class="fas fa-user-shield me-2"></i>User Management</h2>
+        <h2><i class="fas fa-user-shield me-2"></i>Users</h2>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
@@ -28,8 +28,8 @@
                 <thead>
                     <tr>
                         <th>SL</th>
-                        <th>Email</th>
                         <th>Full Name</th>
+                        <th>Email</th>
                         <th>Phone</th>
                         <th>Roles</th>
                         <th>Status</th>
@@ -38,68 +38,46 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (Model != null && Model.Any())
+                    @foreach (var user in Model)
                     {
-                        var sl = (currentPage - 1) * 20 + 1;
-                        foreach (var user in Model)
-                        {
-                            <tr>
-                                <td>@(sl++)</td>
-                                <td>@user.Email</td>
-                                <td>@user.FullName</td>
-                                <td>@(string.IsNullOrEmpty(user.Phone) ? "-" : user.Phone)</td>
-                                <td>
-                                    @foreach (var role in user.Roles)
-                                    {
-                                        <span class="badge bg-info me-1">@role</span>
-                                    }
-                                </td>
-                                <td>
-                                    @if (user.IsActive)
-                                    {
-                                        <span class="badge bg-success">Active</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">Inactive</span>
-                                    }
-                                </td>
-                                <td>@(user.LastLoginAt?.ToString("MMM dd, yyyy") ?? "-")</td>
-                                <td>
-                                    <div class="table-actions">
-                                        <a asp-area="Admin" asp-controller="User" asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
+                        sl++;
                         <tr>
-                            <td colspan="8" class="text-center text-muted py-4">No users found.</td>
+                            <td>@sl</td>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                            <td>@user.Phone</td>
+                            <td>
+                                @foreach (var role in user.Roles)
+                                {
+                                    <span class="badge @(role == "SuperAdmin" ? "bg-danger" : role == "Admin" ? "bg-primary" : "bg-info") me-1">@role</span>
+                                }
+                            </td>
+                            <td>
+                                @if (user.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
+                            </td>
+                            <td data-order="@(user.LastLoginAt?.Ticks ?? 0)">@(user.LastLoginAt?.ToLocalTime().ToString("MMM dd, yyyy HH:mm") ?? "Never")</td>
+                            <td>
+                                <div class="table-actions d-flex gap-1">
+                                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></a>
+                                    @if (user.Id != currentUserId)
+                                    {
+                                        <form asp-action="Delete" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Delete this user?');">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
-        @if (totalPages > 1)
-        {
-            <nav class="mt-3">
-                <ul class="pagination justify-content-center mb-0">
-                    <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
-                        <a class="page-link" asp-area="Admin" asp-controller="User" asp-action="Index" asp-route-page="@(currentPage - 1)"><i class="fas fa-chevron-left"></i></a>
-                    </li>
-                    @for (int p = 1; p <= totalPages; p++)
-                    {
-                        <li class="page-item @(p == currentPage ? "active" : "")">
-                            <a class="page-link" asp-area="Admin" asp-controller="User" asp-action="Index" asp-route-page="@p">@p</a>
-                        </li>
-                    }
-                    <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
-                        <a class="page-link" asp-area="Admin" asp-controller="User" asp-action="Index" asp-route-page="@(currentPage + 1)"><i class="fas fa-chevron-right"></i></a>
-                    </li>
-                </ul>
-            </nav>
-        }
     </div>
 </div>

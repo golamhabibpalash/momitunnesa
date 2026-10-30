@@ -25,6 +25,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAchievementService, AchievementService>();
         services.AddScoped<ISettingsService, SettingsService>();
         services.AddScoped<ISearchService, SearchService>();
+        services.AddScoped<IAcademicService, AcademicService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IMediaService, MediaService>();

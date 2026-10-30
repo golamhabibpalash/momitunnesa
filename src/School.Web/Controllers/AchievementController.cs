@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using School.Application.Services.Interfaces;
-using School.Web.Models;
+using School.Domain.Enums;
 
 namespace School.Web.Controllers;
 
@@ -13,13 +13,17 @@ public class AchievementController : BaseController
         _achievementService = achievementService;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(AchievementCategory? category)
     {
         var result = await _achievementService.GetAllAsync();
 
         if (!result.Success || result.Data is null)
             return View(new List<School.Application.DTOs.Achievement.AchievementDto>());
 
-        return View(result.Data);
+        ViewBag.Category = category?.ToString();
+        return View(result.Data
+            .Where(a => a.IsActive && (!category.HasValue || a.AchievementCategory == category.Value.ToString()))
+            .OrderByDescending(a => a.Date)
+            .ToList());
     }
 }

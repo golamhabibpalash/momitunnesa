@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = "Create User";
     ViewBag.ActiveMenu = "Users";
-    var roles = ViewBag.Roles as IEnumerable<School.Application.DTOs.Account.RoleDto> ?? Enumerable.Empty<School.Application.DTOs.Account.RoleDto>();
 }
 
 <div class="page-header">
@@ -22,8 +21,7 @@
 </div>
 
 <form asp-area="Admin" asp-controller="User" asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
 
     <div class="row g-3">
         <div class="col-lg-8">
@@ -32,37 +30,27 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label asp-for="Email" class="form-label required">Email</label>
-                            <input asp-for="Email" type="email" class="form-control" required>
-                            <span asp-validation-for="Email" class="text-danger"></span>
+                            <label asp-for="FullName" class="form-label required"></label>
+                            <input asp-for="FullName" class="form-control">
                         </div>
                         <div class="col-md-6">
-                            <label asp-for="FullName" class="form-label required">Full Name</label>
-                            <input asp-for="FullName" class="form-control" required>
-                            <span asp-validation-for="FullName" class="text-danger"></span>
+                            <label asp-for="Email" class="form-label required"></label>
+                            <input asp-for="Email" class="form-control" autocomplete="off">
+                            <small class="text-muted">Used to sign in.</small>
                         </div>
-                    </div>
-                    <div class="row g-3 mt-2">
                         <div class="col-md-6">
-                            <label asp-for="Phone" class="form-label">Phone</label>
+                            <label asp-for="Phone" class="form-label"></label>
                             <input asp-for="Phone" class="form-control">
                         </div>
-                    </div>
-                    <div class="row g-3 mt-2">
+                        <div class="col-md-6"></div>
                         <div class="col-md-6">
-                            <label asp-for="Password" class="form-label required">Password</label>
-                            <div class="input-group">
-                                <input asp-for="Password" type="password" class="form-control" id="passwordInput" required>
-                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
-                                    <i class="fas fa-eye" id="passwordToggle"></i>
-                                </button>
-                            </div>
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                            <small class="text-muted">Minimum 6 characters.</small>
+                            <label asp-for="Password" class="form-label required"></label>
+                            <input asp-for="Password" class="form-control" autocomplete="new-password">
+                            <small class="text-muted">At least 8 characters, with an uppercase letter, a lowercase letter and a digit.</small>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label required">Confirm Password</label>
-                            <input type="password" name="ConfirmPassword" class="form-control" required>
+                            <label asp-for="ConfirmPassword" class="form-label required"></label>
+                            <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password">
                         </div>
                     </div>
                 </div>
@@ -70,35 +58,12 @@
         </div>
 
         <div class="col-lg-4">
+            <partial name="_RoleCheckboxes" model="Model.Roles" />
             <div class="card mb-3">
-                <div class="card-header"><i class="fas fa-user-tag me-2"></i>Role Assignment</div>
                 <div class="card-body">
-                    <p class="text-muted small mb-3">Select one or more roles for this user.</p>
-                    @if (roles.Any())
-                    {
-                        foreach (var role in roles)
-                        {
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="Roles" value="@role.Name" id="role_@role.Name">
-                                <label class="form-check-label" for="role_@role.Name">@role.Name</label>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p class="text-muted small">No roles available.</p>
-                    }
-                </div>
-            </div>
-
-            <div class="card mb-3">
-                <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input asp-for="IsActive" class="form-check-input" role="switch" checked>
-                            <label asp-for="IsActive" class="form-check-label">Active</label>
-                        </div>
+                    <div class="form-check form-switch">
+                        <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch">
+                        <label asp-for="IsActive" class="form-check-label">Active</label>
                     </div>
                 </div>
             </div>
@@ -107,26 +72,6 @@
 
     <div class="d-flex justify-content-end gap-2 mt-3">
         <a asp-area="Admin" asp-controller="User" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
-        <button type="submit" class="btn btn-primary px-4">
-            <i class="fas fa-save me-1"></i>Create User
-        </button>
+        <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-1"></i>Create User</button>
     </div>
 </form>
-
-@section Scripts {
-    <script>
-        function togglePassword() {
-            const input = document.getElementById('passwordInput');
-            const toggle = document.getElementById('passwordToggle');
-            if (input.type === 'password') {
-                input.type = 'text';
-                toggle.classList.remove('fa-eye');
-                toggle.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                toggle.classList.remove('fa-eye-slash');
-                toggle.classList.add('fa-eye');
-            }
-        }
-    </script>
-}

@@ -1,0 +1,118 @@
+@model School.Application.DTOs.Gallery.GalleryVideoCreateDto
+@{
+    int? videoId = ViewBag.VideoId;
+    var isEdit = videoId.HasValue;
+    ViewData["Title"] = isEdit ? "Edit Video" : "Add Video";
+    ViewBag.ActiveMenu = "Videos";
+    var isUploaded = VideoHelper.IsUploadedFile(Model.YouTubeUrl);
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-video me-2"></i>@ViewData["Title"]</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-action="Videos">Videos</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@(isEdit ? "Edit" : "Create")</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-action="Videos" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back to Videos</a>
+</div>
+
+<form asp-action="@(isEdit ? "EditVideo" : "CreateVideo")" asp-route-id="@videoId" method="post" enctype="multipart/form-data" id="videoForm">
+    <input type="hidden" asp-for="ThumbnailUrl" />
+    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="TitleEn" class="form-label required">Title (English)</label>
+                            <input asp-for="TitleEn" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="TitleBn" class="form-label required">Title (Bangla)</label>
+                            <input asp-for="TitleBn" class="form-control">
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><i class="fas fa-film me-2"></i>Video Source</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="YouTubeUrl" class="form-label">YouTube Link</label>
+                        <input asp-for="YouTubeUrl" type="text" class="form-control" placeholder="https://www.youtube.com/watch?v=..." value="@(isUploaded ? "" : Model.YouTubeUrl)" id="youTubeUrl">
+                        @if (isUploaded)
+                        {
+                            <input type="hidden" name="YouTubeUrl" value="@Model.YouTubeUrl" id="uploadedVideoUrl" />
+                            <div class="mt-2">
+                                <video src="@Model.YouTubeUrl" controls style="max-width:100%;max-height:240px;" preload="metadata"></video>
+                                <small class="text-muted d-block">Current uploaded file. Paste a YouTube link or choose a new file to replace it.</small>
+                            </div>
+                        }
+                    </div>
+                    <div class="text-center text-muted small my-2">— or —</div>
+                    <div class="mb-0">
+                        <label class="form-label">Upload Video File</label>
+                        <input type="file" name="VideoFile" class="form-control" accept="video/mp4,video/webm,video/ogg,video/quicktime">
+                        <small class="text-muted">MP4, WEBM, OGG or MOV, up to 100MB. For long videos, uploading to YouTube and pasting the link is recommended.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-image me-2"></i>Thumbnail</div>
+                <div class="card-body">
+                    @{ var thumb = VideoHelper.GetThumbnail(Model.YouTubeUrl, Model.ThumbnailUrl); }
+                    @if (thumb is not null)
+                    {
+                        <img src="@thumb" class="img-fluid rounded mb-2" alt="Thumbnail" />
+                    }
+                    <input type="file" name="Thumbnail" class="form-control" accept="image/*">
+                    <small class="text-muted">Optional. YouTube videos use their own thumbnail automatically.</small>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="SortOrder" class="form-label">Display Order</label>
+                        <input asp-for="SortOrder" type="number" class="form-control" min="0">
+                    </div>
+                    <div class="form-check form-switch">
+                        <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch">
+                        <label asp-for="IsActive" class="form-check-label">Show on website</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <a asp-action="Videos" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary px-4" id="saveVideoBtn"><i class="fas fa-save me-1"></i>@(isEdit ? "Update Video" : "Save Video")</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        // A typed YouTube link replaces a previously uploaded file.
+        const ytInput = document.getElementById('youTubeUrl');
+        const uploadedField = document.getElementById('uploadedVideoUrl');
+        if (uploadedField) {
+            ytInput.addEventListener('input', () => { uploadedField.disabled = ytInput.value.trim().length > 0; });
+        }
+        document.getElementById('videoForm').addEventListener('submit', () => {
+            const btn = document.getElementById('saveVideoBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving…';
+        });
+    </script>
+}

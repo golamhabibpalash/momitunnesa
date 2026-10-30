@@ -1,90 +1,40 @@
-@model IEnumerable<School.Application.DTOs.Download.DownloadDto>
+@model List<School.Application.DTOs.Download.DownloadDto>
 @{
     ViewData["Title"] = "Downloads";
     ViewBag.ActiveMenu = "Downloads";
+    var sl = 0;
+    string Size(long b) => b <= 0 ? "-" : b >= 1024 * 1024 ? $"{b / 1024d / 1024d:0.0} MB" : $"{Math.Max(1, b / 1024)} KB";
 }
-
 <div class="page-header">
     <div>
         <h2><i class="fas fa-download me-2"></i>Downloads</h2>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Downloads</li>
-            </ol>
-        </nav>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Downloads</li>
+        </ol></nav>
     </div>
-    <a asp-area="Admin" asp-controller="Download" asp-action="Create" class="btn btn-primary">
-        <i class="fas fa-plus me-1"></i>Add New Download
-    </a>
+    <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Add Download</a>
 </div>
-
-<div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover table-datatable">
-                <thead>
-                    <tr>
-                        <th>SL</th>
-                        <th>Title (English)</th>
-                        <th>Category</th>
-                        <th>Type</th>
-                        <th>File</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        var sl = 1;
-                        foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>@(sl++)</td>
-                                <td>@item.TitleEn</td>
-                                <td><span class="badge bg-info">@item.DownloadCategory</span></td>
-                                <td>@(string.IsNullOrEmpty(item.FileType) ? "-" : item.FileType)</td>
-                                <td>
-                                    @if (!string.IsNullOrEmpty(item.FileUrl))
-                                    {
-                                        <a href="@item.FileUrl" target="_blank" rel="noopener"><i class="fas fa-file-download"></i> Open</a>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">-</span>
-                                    }
-                                </td>
-                                <td>
-                                    @if (item.IsActive)
-                                    {
-                                        <span class="badge bg-success">Active</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">Inactive</span>
-                                    }
-                                </td>
-                                <td>
-                                    <div class="table-actions d-flex gap-1">
-                                        <a asp-area="Admin" asp-controller="Download" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                        <form asp-area="Admin" asp-controller="Download" asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Are you sure you want to delete this download?');">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-4">No downloads found.</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+<div class="card"><div class="card-body"><div class="table-responsive">
+    <table class="table table-hover table-datatable">
+        <thead><tr><th>SL</th><th>Title</th><th>Category</th><th>Type</th><th>Size</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+            @foreach (var d in Model)
+            {
+                sl++;
+                <tr>
+                    <td>@sl</td>
+                    <td><a href="@d.FileUrl" target="_blank">@d.TitleEn</a><br><small class="text-muted">@d.TitleBn</small></td>
+                    <td><span class="badge bg-info">@d.DownloadCategory</span></td>
+                    <td>@d.FileType</td>
+                    <td data-order="@d.FileSize">@Size(d.FileSize)</td>
+                    <td>@if (d.IsActive) { <span class="badge bg-success">Active</span> } else { <span class="badge bg-secondary">Hidden</span> }</td>
+                    <td><div class="d-flex gap-1">
+                        <a asp-action="Edit" asp-route-id="@d.Id" class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></a>
+                        <form asp-action="Delete" asp-route-id="@d.Id" method="post" onsubmit="return confirm('Delete this download and its file?');"><button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button></form>
+                    </div></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div></div></div>

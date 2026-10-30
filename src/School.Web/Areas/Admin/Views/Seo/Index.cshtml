@@ -1,0 +1,80 @@
+@model School.Web.Areas.Admin.Controllers.SeoSettingsModel
+@{
+    ViewData["Title"] = "SEO Settings";
+    ViewBag.ActiveMenu = "Seo";
+}
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-search me-2"></i>SEO Settings</h2>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">SEO</li>
+        </ol></nav>
+    </div>
+</div>
+<form asp-action="Index" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="OgImageUrl" />
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-globe me-2"></i>Search Engine Defaults</div>
+                <div class="card-body">
+                    <p class="text-muted small">Used on every public page that has no description of its own (pages set their own Meta fields on the page form).</p>
+                    <div class="mb-3">
+                        <label asp-for="MetaDescription" class="form-label"></label>
+                        <textarea asp-for="MetaDescription" class="form-control" rows="2" maxlength="300"></textarea>
+                        <small class="text-muted">About 150–160 characters works best in Google results.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="MetaDescriptionBn" class="form-label"></label>
+                        <textarea asp-for="MetaDescriptionBn" class="form-control" rows="2" maxlength="300"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="MetaKeywords" class="form-label"></label>
+                        <input asp-for="MetaKeywords" class="form-control" placeholder="school, secondary school, Bangladesh">
+                    </div>
+                    <div class="form-check form-switch">
+                        <input asp-for="AllowIndexing" class="form-check-input" role="switch">
+                        <label asp-for="AllowIndexing" class="form-check-label"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-header"><i class="fab fa-google me-2"></i>Google</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="GoogleSiteVerification" class="form-label"></label>
+                        <input asp-for="GoogleSiteVerification" class="form-control" placeholder="Paste the code or the whole <meta> tag">
+                    </div>
+                    <div class="mb-0">
+                        <label asp-for="GoogleAnalyticsId" class="form-label"></label>
+                        <input asp-for="GoogleAnalyticsId" class="form-control" placeholder="G-XXXXXXXXXX">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-share-alt me-2"></i>Social Share Image</div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.OgImageUrl))
+                    {
+                        <img src="@Model.OgImageUrl" class="img-fluid rounded mb-2" alt="Share image" />
+                    }
+                    <input type="file" name="OgImage" class="form-control" accept="image/*">
+                    <small class="text-muted">Shown when the site is shared on Facebook etc. 1200×630px recommended.</small>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><i class="fas fa-chart-bar me-2"></i>Homepage Statistics</div>
+                <div class="card-body">
+                    <label asp-for="TotalStudents" class="form-label"></label>
+                    <input asp-for="TotalStudents" type="number" min="0" class="form-control">
+                    <small class="text-muted">Teachers, staff and achievements are counted automatically.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-end mt-3"><button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-1"></i>Save Settings</button></div>
+</form>

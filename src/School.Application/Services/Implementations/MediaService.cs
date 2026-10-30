@@ -7,7 +7,9 @@ public class MediaService : IMediaService
 {
     private readonly string _uploadsFolder;
     private readonly long _maxFileSize = 10 * 1024 * 1024;
-    private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".ico", ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".txt" };
+    private readonly long _maxVideoFileSize = 100 * 1024 * 1024;
+    private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".ico", ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".txt", ".mp4", ".webm", ".ogg", ".mov" };
+    private readonly string[] _videoExtensions = { ".mp4", ".webm", ".ogg", ".mov" };
     private readonly string[] _imageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".ico" };
 
     public MediaService()
@@ -24,12 +26,17 @@ public class MediaService : IMediaService
             if (file is null || file.Length == 0)
                 return new FileUploadResult { Success = false, Error = "No file provided." };
 
-            if (file.Length > _maxFileSize)
-                return new FileUploadResult { Success = false, Error = $"File size exceeds the maximum limit of {_maxFileSize / 1024 / 1024}MB." };
-
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
             if (!_allowedExtensions.Contains(extension))
                 return new FileUploadResult { Success = false, Error = $"File type '{extension}' is not allowed." };
+
+            var sizeLimit = _videoExtensions.Contains(extension) ? _maxVideoFileSize : _maxFileSize;
+            if (file.Length > sizeLimit)
+                return new FileUploadResult { Success = false, Error = $"File size exceeds the maximum limit of {sizeLimit / 1024 / 1024}MB." };
+
+            folder = NormalizeFolder(folder);
+            if (folder is null)
+                return new FileUploadResult { Success = false, Error = "Invalid folder." };
 
             var uploadPath = _uploadsFolder;
             if (!string.IsNullOrEmpty(folder))
@@ -69,7 +76,10 @@ public class MediaService : IMediaService
     {
         try
         {
-            var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", filePath.TrimStart('/'));
+            var fullPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", filePath.TrimStart('/')));
+            if (!fullPath.StartsWith(Path.GetFullPath(_uploadsFolder) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                return Task.FromResult(false);
+
             if (File.Exists(fullPath))
             {
                 File.Delete(fullPath);
@@ -83,14 +93,68 @@ public class MediaService : IMediaService
         }
     }
 
+    public string? NormalizeFolder(string? folder)
+    {
+        var normalized = (folder ?? string.Empty).Replace('\\', '/').Trim('/', ' ');
+        if (normalized.Length == 0)
+            return string.Empty;
+
+        var segments = normalized.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Any(s => s == "." || s == ".." || s.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0))
+            return null;
+
+        var fullPath = Path.GetFullPath(Path.Combine(_uploadsFolder, Path.Combine(segments)));
+        var root = Path.GetFullPath(_uploadsFolder);
+        return fullPath.StartsWith(root, StringComparison.OrdinalIgnoreCase) ? string.Join('/', segments) : null;
+    }
+
+    public Task<MediaFolderContents?> GetFolderContentsAsync(string? folder)
+    {
+        var relative = NormalizeFolder(folder);
+        if (relative is null)
+            return Task.FromResult<MediaFolderContents?>(null);
+
+        var fullPath = relative.Length == 0 ? _uploadsFolder : Path.Combine(_uploadsFolder, relative);
+        if (!Directory.Exists(fullPath))
+            return Task.FromResult<MediaFolderContents?>(null);
+
+        var prefix = relative.Length == 0 ? "" : relative + "/";
+        var contents = new MediaFolderContents
+        {
+            Folder = relative,
+            Folders = new DirectoryInfo(fullPath).GetDirectories()
+                .OrderBy(d => d.Name)
+                .Select(d => new MediaFolderInfo
+                {
+                    Name = d.Name,
+                    Path = prefix + d.Name,
+                    ItemCount = d.EnumerateFileSystemInfos().Count()
+                }).ToList(),
+            Files = new DirectoryInfo(fullPath).GetFiles()
+                .OrderByDescending(f => f.LastWriteTimeUtc)
+                .Select(f => new MediaFileInfo
+                {
+                    Name = f.Name,
+                    Url = $"/uploads/{prefix}{f.Name}",
+                    Size = f.Length,
+                    LastModified = f.LastWriteTimeUtc,
+                    IsImage = _imageExtensions.Contains(f.Extension.ToLowerInvariant())
+                }).ToList()
+        };
+
+        return Task.FromResult<MediaFolderContents?>(contents);
+    }
+
     public Task<IEnumerable<string>> GetFilesInFolderAsync(string folder)
     {
-        var folderPath = Path.Combine(_uploadsFolder, folder);
-        if (!Directory.Exists(folderPath))
+        var relative = NormalizeFolder(folder);
+        var folderPath = relative is null ? null : Path.Combine(_uploadsFolder, relative);
+        if (folderPath is null || !Directory.Exists(folderPath))
             return Task.FromResult(Enumerable.Empty<string>());
 
+        var prefix = relative!.Length == 0 ? "" : relative + "/";
         var files = Directory.GetFiles(folderPath)
-            .Select(f => $"/uploads/{folder}/{Path.GetFileName(f)}");
+            .Select(f => $"/uploads/{prefix}{Path.GetFileName(f)}");
         return Task.FromResult(files);
     }
 
@@ -98,7 +162,11 @@ public class MediaService : IMediaService
     {
         try
         {
-            var fullPath = Path.Combine(_uploadsFolder, folderPath);
+            var relative = NormalizeFolder(folderPath);
+            if (string.IsNullOrEmpty(relative))
+                return Task.FromResult(false);
+
+            var fullPath = Path.Combine(_uploadsFolder, relative);
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
@@ -137,7 +205,11 @@ public class MediaService : IMediaService
     {
         try
         {
-            var fullPath = Path.Combine(_uploadsFolder, folderPath);
+            var relative = NormalizeFolder(folderPath);
+            if (string.IsNullOrEmpty(relative))
+                return Task.FromResult(false);
+
+            var fullPath = Path.Combine(_uploadsFolder, relative);
             if (Directory.Exists(fullPath))
             {
                 Directory.Delete(fullPath, true);

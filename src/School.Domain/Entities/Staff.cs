@@ -16,6 +16,13 @@ public class Staff : BaseEntity
 
     public Designation Designation { get; set; }
 
+    /// <summary>Free-text job title (e.g. Librarian, Accountant); Designation only covers teaching ranks.</summary>
+    [MaxLength(200)]
+    public string? PositionEn { get; set; }
+
+    [MaxLength(200)]
+    public string? PositionBn { get; set; }
+
     [MaxLength(500)]
     public string? ImageUrl { get; set; }
 

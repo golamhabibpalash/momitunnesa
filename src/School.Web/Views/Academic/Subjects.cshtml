@@ -1,0 +1,31 @@
+@model List<School.Application.DTOs.Academic.SubjectDto>
+@{
+    ViewData["Title"] = "Subjects";
+    var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+}
+<div class="subjects-page">
+    <partial name="_PageContent" />
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>@(isRtl ? "বিষয়ের তালিকা শীঘ্রই প্রকাশ করা হবে।" : "The list of subjects will be published soon.")</div>
+    }
+    <div class="row g-4">
+        @foreach (var group in Model.GroupBy(s => s.ClassName))
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-header bg-primary text-white fw-semibold"><i class="fas fa-book-open me-2"></i>@group.Key</div>
+                    <ul class="list-group list-group-flush">
+                        @foreach (var item in group)
+                        {
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>@(isRtl ? item.NameBn : item.NameEn)</span>
+                                @if (!string.IsNullOrWhiteSpace(item.Code)) { <small class="text-muted">@item.Code</small> }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -9,18 +9,20 @@ namespace School.Web.Areas.Admin.Controllers;
 public class PageController : BaseAdminController
 {
     private readonly IPageService _pageService;
-    private const int PageSize = 20;
+    private readonly IMediaService _mediaService;
 
     public PageController(
         IPageService pageService,
+        IMediaService mediaService,
         ILogger<BaseAdminController> logger,
         IHttpContextAccessor httpContextAccessor)
         : base(logger, httpContextAccessor)
     {
         _pageService = pageService;
+        _mediaService = mediaService;
     }
 
-    public async Task<IActionResult> Index(int page = 1)
+    public async Task<IActionResult> Index()
     {
         var result = await _pageService.GetAllAsync();
 
@@ -30,26 +32,26 @@ public class PageController : BaseAdminController
             return View(new List<PageDto>());
         }
 
-        var pages = result.Data.OrderByDescending(p => p.CreatedAt).ToList();
-        var totalPages = (int)Math.Ceiling(pages.Count / (double)PageSize);
-        var pagedItems = pages.Skip((page - 1) * PageSize).Take(PageSize).ToList();
-
-        ViewBag.CurrentPage = page;
-        ViewBag.TotalPages = totalPages;
-
-        return View(pagedItems);
+        return View(result.Data.OrderByDescending(p => p.CreatedAt).ToList());
     }
 
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new PageCreateDto());
+        return View(new PageCreateDto { IsPublished = true });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(PageCreateDto model)
+    public async Task<IActionResult> Create(PageCreateDto model, IFormFile? FeaturedImageFile)
     {
+        if (string.IsNullOrWhiteSpace(model.TitleEn) && string.IsNullOrWhiteSpace(model.TitleBn))
+            ModelState.AddModelError(nameof(model.TitleEn), "A title in English or Bangla is required.");
+
+        var uploadedUrl = await UploadFileAsync(_mediaService, FeaturedImageFile, "pages", nameof(model.FeaturedImage));
+        if (uploadedUrl is not null)
+            model.FeaturedImage = uploadedUrl;
+
         if (!ModelState.IsValid)
             return View(model);
 
@@ -95,17 +97,29 @@ public class PageController : BaseAdminController
         };
 
         ViewBag.PageId = id;
-        return View(dto);
+        ViewBag.PageSlug = page.Slug;
+        return View("Create", dto);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, PageCreateDto model)
+    public async Task<IActionResult> Edit(int id, PageCreateDto model, IFormFile? FeaturedImageFile, bool removeImage = false)
     {
+        if (string.IsNullOrWhiteSpace(model.TitleEn) && string.IsNullOrWhiteSpace(model.TitleBn))
+            ModelState.AddModelError(nameof(model.TitleEn), "A title in English or Bangla is required.");
+
+        var previousImage = model.FeaturedImage;
+        if (removeImage)
+            model.FeaturedImage = null;
+
+        var uploadedUrl = await UploadFileAsync(_mediaService, FeaturedImageFile, "pages", nameof(model.FeaturedImage));
+        if (uploadedUrl is not null)
+            model.FeaturedImage = uploadedUrl;
+
         if (!ModelState.IsValid)
         {
             ViewBag.PageId = id;
-            return View(model);
+            return View("Create", model);
         }
 
         var updateDto = new PageUpdateDto
@@ -132,8 +146,11 @@ public class PageController : BaseAdminController
         {
             SetErrorNotification(result.Message ?? "Failed to update page.");
             ViewBag.PageId = id;
-            return View(model);
+            return View("Create", model);
         }
+
+        if (previousImage != model.FeaturedImage)
+            await DeleteUploadAsync(_mediaService, previousImage);
 
         SetSuccessNotification("Page updated successfully.");
         return RedirectToAction(nameof(Index));

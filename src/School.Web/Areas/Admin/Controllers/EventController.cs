@@ -9,14 +9,17 @@ namespace School.Web.Areas.Admin.Controllers;
 public class EventController : BaseAdminController
 {
     private readonly IEventService _eventService;
+    private readonly IMediaService _mediaService;
 
     public EventController(
         IEventService eventService,
+        IMediaService mediaService,
         ILogger<BaseAdminController> logger,
         IHttpContextAccessor httpContextAccessor)
         : base(logger, httpContextAccessor)
     {
         _eventService = eventService;
+        _mediaService = mediaService;
     }
 
     public async Task<IActionResult> Index()
@@ -29,19 +32,23 @@ public class EventController : BaseAdminController
             return View(new List<EventDto>());
         }
 
-        return View(result.Data.OrderByDescending(e => e.EventDate));
+        return View(result.Data.OrderByDescending(e => e.EventDate).ToList());
     }
 
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new EventCreateDto { EventDate = DateTime.Now });
+        return View(new EventCreateDto { EventDate = DateTime.Today });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(EventCreateDto model)
+    public async Task<IActionResult> Create(EventCreateDto model, IFormFile? Image)
     {
+        var uploadedUrl = await UploadFileAsync(_mediaService, Image, "events", nameof(model.ImageUrl));
+        if (uploadedUrl is not null)
+            model.ImageUrl = uploadedUrl;
+
         if (!ModelState.IsValid)
             return View(model);
 
@@ -85,17 +92,25 @@ public class EventController : BaseAdminController
         };
 
         ViewBag.EventId = id;
-        return View(dto);
+        return View("Create", dto);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, EventCreateDto model)
+    public async Task<IActionResult> Edit(int id, EventCreateDto model, IFormFile? Image, bool removeImage = false)
     {
+        var previousImage = model.ImageUrl;
+        if (removeImage)
+            model.ImageUrl = null;
+
+        var uploadedUrl = await UploadFileAsync(_mediaService, Image, "events", nameof(model.ImageUrl));
+        if (uploadedUrl is not null)
+            model.ImageUrl = uploadedUrl;
+
         if (!ModelState.IsValid)
         {
             ViewBag.EventId = id;
-            return View(model);
+            return View("Create", model);
         }
 
         var updateDto = new EventUpdateDto
@@ -120,8 +135,11 @@ public class EventController : BaseAdminController
         {
             SetErrorNotification(result.Message ?? "Failed to update event.");
             ViewBag.EventId = id;
-            return View(model);
+            return View("Create", model);
         }
+
+        if (previousImage != model.ImageUrl)
+            await DeleteUploadAsync(_mediaService, previousImage);
 
         SetSuccessNotification("Event updated successfully.");
         return RedirectToAction(nameof(Index));

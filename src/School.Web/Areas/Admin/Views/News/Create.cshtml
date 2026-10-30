@@ -1,17 +1,19 @@
-@model School.Application.DTOs.News.NewsCreateDto
+@model NewsCreateDto
 @{
-    ViewData["Title"] = "Create News";
+    int? newsId = ViewBag.NewsId;
+    var isEdit = newsId.HasValue;
+    ViewData["Title"] = isEdit ? "Edit News" : "Create News";
     ViewBag.ActiveMenu = "News";
 }
 
 <div class="page-header">
     <div>
-        <h2><i class="fas fa-plus-circle me-2"></i>Create News Article</h2>
+        <h2><i class="fas @(isEdit ? "fa-edit" : "fa-plus-circle") me-2"></i>@(isEdit ? "Edit News Article" : "Create News Article")</h2>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="News" asp-action="Index">News</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Create</li>
+                <li class="breadcrumb-item active" aria-current="page">@(isEdit ? "Edit" : "Create")</li>
             </ol>
         </nav>
     </div>
@@ -20,9 +22,9 @@
     </a>
 </div>
 
-<form asp-area="Admin" asp-controller="News" asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<form asp-area="Admin" asp-controller="News" asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@newsId" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="ImageUrl" />
+    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
 
     <div class="row g-3">
         <div class="col-lg-8">
@@ -31,21 +33,19 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label asp-for="TitleEn" class="form-label required">Title (English)</label>
-                        <input asp-for="TitleEn" class="form-control" placeholder="Enter news title in English" required>
-                        <span asp-validation-for="TitleEn" class="text-danger"></span>
+                        <input asp-for="TitleEn" class="form-control" placeholder="Enter news title in English">
                     </div>
                     <div class="mb-3">
                         <label asp-for="TitleBn" class="form-label required">Title (Bangla)</label>
-                        <input asp-for="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম লিখুন" required>
-                        <span asp-validation-for="TitleBn" class="text-danger"></span>
+                        <input asp-for="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম লিখুন">
                     </div>
                     <div class="mb-3">
                         <label asp-for="ContentEn" class="form-label">Content (English)</label>
-                        <textarea asp-for="ContentEn" class="form-control tinymce" placeholder="Write your news article here..."></textarea>
+                        <textarea asp-for="ContentEn" class="form-control tinymce"></textarea>
                     </div>
                     <div class="mb-3">
                         <label asp-for="ContentBn" class="form-label">Content (Bangla)</label>
-                        <textarea asp-for="ContentBn" class="form-control tinymce" placeholder="বাংলায় সংবাদ লিখুন..."></textarea>
+                        <textarea asp-for="ContentBn" class="form-control tinymce"></textarea>
                     </div>
                 </div>
             </div>
@@ -57,28 +57,47 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label asp-for="Category" class="form-label required">Category</label>
-                        <select asp-for="Category" class="form-select" asp-items="Html.GetEnumSelectList<NewsCategory>()" required></select>
+                        <select asp-for="Category" class="form-select">
+                            @foreach (var category in Enum.GetValues<NewsCategory>())
+                            {
+                                <option value="@category" selected="@(Model.Category == category)">@CategoryHelper.EnglishLabel(category)</option>
+                            }
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label asp-for="PublishDate" class="form-label">Publish Date</label>
-                        <input asp-for="PublishDate" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="ImageUrl" class="form-label">Featured Image URL</label>
-                        <input asp-for="ImageUrl" class="form-control" placeholder="/uploads/news/photo.jpg">
+                        <input asp-for="PublishDate" type="date" class="form-control" value="@Model.PublishDate.ToString("yyyy-MM-dd")">
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input asp-for="IsFeatured" class="form-check-input" role="switch">
+                            <input asp-for="IsFeatured" class="form-check-input" type="checkbox" role="switch">
                             <label asp-for="IsFeatured" class="form-check-label">Featured Article</label>
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-0">
                         <div class="form-check form-switch">
-                            <input asp-for="IsActive" class="form-check-input" role="switch" checked>
-                            <label asp-for="IsActive" class="form-check-label">Active (Published)</label>
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch">
+                            <label asp-for="IsActive" class="form-check-label">Published</label>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-image me-2"></i>Featured Image</div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-3 text-center">
+                            <img src="@Model.ImageUrl" class="img-fluid rounded mb-2" style="max-height:150px;" alt="Featured image" />
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="checkbox" name="removeImage" value="true" id="removeImage">
+                                <label class="form-check-label text-danger" for="removeImage">Remove image</label>
+                            </div>
+                        </div>
+                    }
+                    <input type="file" name="Image" class="form-control" accept="image/*">
+                    <small class="text-muted">Recommended: 1200x630px, max 10MB</small>
                 </div>
             </div>
         </div>
@@ -87,20 +106,12 @@
     <div class="d-flex justify-content-end gap-2 mt-3">
         <a asp-area="Admin" asp-controller="News" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary px-4">
-            <i class="fas fa-save me-1"></i>Save News
+            <i class="fas fa-save me-1"></i>@(isEdit ? "Update News" : "Save News")
         </button>
     </div>
 </form>
 
 @section Scripts {
-    <script src="~/lib/tinymce/tinymce.min.js"></script>
-    <script>
-        tinymce.init({
-            selector: '.tinymce',
-            height: 400,
-            plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
-            toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-            promotion: false
-        });
-    </script>
+    @{ ViewData["EditorHeight"] = 400; }
+    <partial name="_RichTextEditor" />
 }

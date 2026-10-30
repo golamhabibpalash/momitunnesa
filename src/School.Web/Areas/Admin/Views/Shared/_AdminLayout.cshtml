@@ -32,6 +32,8 @@
             --transition-speed: 0.3s;
         }
 
+        .validation-summary-valid { display: none; }
+
         * {
             margin: 0;
             padding: 0;
@@ -926,7 +928,16 @@
 
     <script>
         $(document).ready(function() {
-            $('.table-datatable').DataTable({
+            // Server-rendered "No items found" rows use colspan, which DataTables rejects
+            // ("Incorrect column count"). Remove them and let DataTables show its own empty message.
+            $('.table-datatable').each(function () {
+                if ($.fn.dataTable.isDataTable(this)) return;
+                $(this).find('tbody tr').filter(function () {
+                    return $(this).children('td[colspan]').length > 0;
+                }).remove();
+            });
+
+            $('.table-datatable').not(function () { return $.fn.dataTable.isDataTable(this); }).DataTable({
                 responsive: true,
                 pageLength: 10,
                 lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
@@ -937,6 +948,7 @@
                     infoEmpty: "Showing 0 to 0 of 0 entries",
                     infoFiltered: "(filtered from _MAX_ total entries)",
                     zeroRecords: "No matching records found",
+                    emptyTable: "No records found",
                     paginate: {
                         first: "First",
                         last: "Last",

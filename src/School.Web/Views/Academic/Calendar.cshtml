@@ -1,20 +1,50 @@
+@model List<School.Application.DTOs.Academic.AcademicCalendarDto>
 @{
     ViewData["Title"] = "Academic Calendar";
     var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+    var years = ViewBag.Years as List<int> ?? new();
+    int selectedYear = ViewBag.SelectedYear;
+    var culture = new System.Globalization.CultureInfo(isRtl ? "bn-BD" : "en-US");
 }
 <div class="academic-calendar-page">
-    <div class="row g-4">
-        <div class="col-12">
-            @if (!string.IsNullOrEmpty(ViewBag.Content))
+    <partial name="_PageContent" />
+    @if (years.Count > 1)
+    {
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            @foreach (var y in years)
             {
-                <div class="page-content mb-4">
-                    @Html.Raw(ViewBag.Content)
-                </div>
+                <a asp-action="Calendar" asp-route-year="@y" class="btn btn-sm @(y == selectedYear ? "btn-primary" : "btn-outline-primary")">@y</a>
             }
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                @(isRtl ? "একাডেমিক ক্যালেন্ডারের তথ্য শীঘ্রই যুক্ত করা হবে।" : "Academic calendar content coming soon.")
-            </div>
         </div>
-    </div>
+    }
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>@(isRtl ? "একাডেমিক ক্যালেন্ডারের তথ্য শীঘ্রই যুক্ত করা হবে।" : "The academic calendar will be published soon.")</div>
+    }
+    @foreach (var month in Model.GroupBy(i => new DateTime(i.EventDate.Year, i.EventDate.Month, 1)))
+    {
+        <div class="card shadow-sm mb-3 border-0">
+            <div class="card-header bg-primary text-white fw-semibold"><i class="far fa-calendar-alt me-2"></i>@month.Key.ToString("MMMM yyyy", culture)</div>
+            <ul class="list-group list-group-flush">
+                @foreach (var item in month)
+                {
+                    var isPast = item.EventDate.Date < DateTime.Today;
+                    <li class="list-group-item d-flex gap-3 align-items-start @(isPast ? "text-muted" : "")">
+                        <div class="text-center flex-shrink-0" style="width:56px;">
+                            <div class="fs-4 fw-bold lh-1">@item.EventDate.ToString("dd", culture)</div>
+                            <small>@item.EventDate.ToString("ddd", culture)</small>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">@(isRtl && !string.IsNullOrWhiteSpace(item.TitleBn) ? item.TitleBn : item.TitleEn)</div>
+                            @{ var description = isRtl && !string.IsNullOrWhiteSpace(item.DescriptionBn) ? item.DescriptionBn : item.DescriptionEn; }
+                            @if (!string.IsNullOrWhiteSpace(description))
+                            {
+                                <small class="d-block">@description</small>
+                            }
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
 </div>

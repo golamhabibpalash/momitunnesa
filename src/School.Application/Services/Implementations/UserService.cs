@@ -93,8 +93,12 @@ public class UserService : IUserService
             {
                 var roleResult = await _userManager.AddToRolesAsync(user, dto.Roles);
                 if (!roleResult.Succeeded)
-                    return ResponseDto<UserDto>.Fail("User created but role assignment failed.",
+                {
+                    // Don't leave a half-configured account behind.
+                    await _userManager.DeleteAsync(user);
+                    return ResponseDto<UserDto>.Fail("Failed to assign roles.",
                         roleResult.Errors.Select(e => e.Description).ToList());
+                }
             }
 
             var userDto = _mapper.Map<UserDto>(user);

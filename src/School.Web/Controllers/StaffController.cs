@@ -20,14 +20,16 @@ public class StaffController : BaseController
         if (!result.Success || result.Data is null)
             return View(new StaffListViewModel());
 
-        var staff = result.Data.Select(s => new StaffItem
+        var staff = result.Data.OrderBy(s => s.SortOrder).Select(s => new StaffItem
         {
             Id = s.Id,
             Name = GetLocalizedContent(s.NameEn, s.NameBn),
             NameBn = s.NameBn,
-            Designation = s.Designation,
-            DesignationBn = s.Designation,
-            ImageUrl = s.ImageUrl
+            Designation = GetLocalizedContent(s.PositionEn ?? "", string.IsNullOrWhiteSpace(s.PositionBn) ? s.PositionEn ?? "" : s.PositionBn),
+            Department = s.Department,
+            ImageUrl = s.ImageUrl,
+            Email = s.Email,
+            Phone = s.Phone
         }).ToList();
 
         var viewModel = new StaffListViewModel

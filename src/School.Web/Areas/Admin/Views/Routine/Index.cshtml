@@ -1,0 +1,38 @@
+@model List<School.Application.DTOs.Academic.RoutineDto>
+@{
+    ViewData["Title"] = "Class Routine";
+    ViewBag.ActiveMenu = "Routine";
+}
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-table me-2"></i>Class Routine</h2>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Routine</li>
+        </ol></nav>
+    </div>
+    <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Add Period</a>
+</div>
+<div class="card"><div class="card-body"><div class="table-responsive">
+    <table class="table table-hover table-datatable">
+        <thead><tr><th>Class</th><th>Section</th><th>Day</th><th>Time</th><th>Subject</th><th>Teacher</th><th>Room</th><th>Actions</th></tr></thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="@(item.IsActive ? "" : "text-muted")">
+                    <td>@item.ClassNameEn</td>
+                    <td>@item.Section</td>
+                    <td data-order="@Array.IndexOf(AcademicOptions.Days, item.DayOfWeek)">@item.DayOfWeek</td>
+                    <td data-order="@item.StartTime.Ticks">@DateTime.Today.Add(item.StartTime).ToString("hh:mm tt") – @DateTime.Today.Add(item.EndTime).ToString("hh:mm tt")</td>
+                    <td>@item.SubjectEn</td>
+                    <td>@item.TeacherEn</td>
+                    <td>@item.Room</td>
+                    <td><div class="d-flex gap-1">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></a>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Delete this period?');"><button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button></form>
+                    </div></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div></div></div>

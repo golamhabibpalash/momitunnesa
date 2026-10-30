@@ -1,18 +1,26 @@
 @model School.Application.Services.Interfaces.MenuUpdateDto
 @{
-    ViewData["Title"] = "Edit Menu Item";
+    var isEdit = Model.Id > 0;
+    ViewData["Title"] = isEdit ? "Edit Menu Item" : "Create Menu Item";
     ViewBag.ActiveMenu = "Menus";
     var parentMenus = ViewBag.ParentMenus as List<School.Application.Services.Interfaces.MenuDto> ?? new();
+    var pages = ViewBag.Pages as List<School.Application.DTOs.Page.PageDto> ?? new();
+    var locationLabels = new Dictionary<MenuLocation, string>
+    {
+        [MenuLocation.Main] = "Main navigation (header)",
+        [MenuLocation.Footer] = "Footer (Quick Links)",
+        [MenuLocation.Top] = "Top bar"
+    };
 }
 
 <div class="page-header">
     <div>
-        <h2><i class="fas fa-edit me-2"></i>Edit Menu Item</h2>
+        <h2><i class="fas @(isEdit ? "fa-edit" : "fa-plus-circle") me-2"></i>@ViewData["Title"]</h2>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Menu" asp-action="Index">Menus</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                <li class="breadcrumb-item active" aria-current="page">@(isEdit ? "Edit" : "Create")</li>
             </ol>
         </nav>
     </div>
@@ -21,32 +29,52 @@
     </a>
 </div>
 
-<form asp-area="Admin" asp-controller="Menu" asp-action="Edit" asp-route-id="@Model.Id" method="post">
-    @Html.AntiForgeryToken()
+<form asp-area="Admin" asp-controller="Menu" asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@(isEdit ? Model.Id : null)" method="post">
     <input type="hidden" asp-for="Id" />
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+    <input type="hidden" asp-for="MenuType" />
+    <input type="hidden" asp-for="IsExternal" />
+    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
 
     <div class="row g-3">
         <div class="col-lg-8">
             <div class="card mb-3">
                 <div class="card-header"><i class="fas fa-info-circle me-2"></i>Menu Item Details</div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label asp-for="Title" class="form-label required"></label>
-                        <input asp-for="Title" class="form-control" required>
-                        <span asp-validation-for="Title" class="text-danger"></span>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Title" class="form-label required"></label>
+                            <input asp-for="Title" class="form-control" placeholder="e.g., Admission">
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="TitleBn" class="form-label"></label>
+                            <input asp-for="TitleBn" class="form-control" placeholder="যেমন: ভর্তি">
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label asp-for="Url" class="form-label"></label>
-                        <input asp-for="Url" class="form-control" placeholder="/about-us or https://example.com">
+                        <label asp-for="MenuLocation" class="form-label">Show In</label>
+                        <select asp-for="MenuLocation" class="form-select">
+                            @foreach (var location in new[] { MenuLocation.Main, MenuLocation.Footer, MenuLocation.Top })
+                            {
+                                <option value="@location" selected="@(Model.MenuLocation == location)">@locationLabels[location]</option>
+                            }
+                        </select>
+                        <small class="text-muted">Main navigation items appear in the website header after the built-in menu; footer items appear under Quick Links.</small>
                     </div>
                     <div class="mb-3">
-                        <label asp-for="MenuLocation" class="form-label"></label>
-                        <select asp-for="MenuLocation" class="form-select" asp-items="Html.GetEnumSelectList<School.Domain.Enums.MenuLocation>()"></select>
+                        <label class="form-label">Link to a Page</label>
+                        <select class="form-select" id="pagePicker">
+                            <option value="">-- Choose a page to fill the URL --</option>
+                            @foreach (var cmsPage in pages)
+                            {
+                                var pageUrl = "/page/" + cmsPage.Slug;
+                                <option value="@pageUrl" selected="@(Model.Url == pageUrl)">@(cmsPage.TitleEn ?? cmsPage.TitleBn)</option>
+                            }
+                        </select>
                     </div>
                     <div class="mb-3">
-                        <label asp-for="MenuType" class="form-label"></label>
-                        <select asp-for="MenuType" class="form-select" asp-items="Html.GetEnumSelectList<School.Domain.Enums.MenuType>()"></select>
+                        <label asp-for="Url" class="form-label">URL</label>
+                        <input asp-for="Url" class="form-control" placeholder="/page/admission or https://example.com">
+                        <small class="text-muted">Use a path on this site (e.g. <code>/Notice</code>) or a full external address. Leave empty for a dropdown header that only holds sub-items.</small>
                     </div>
                     <div class="mb-3">
                         <label asp-for="ParentMenuId" class="form-label"></label>
@@ -54,21 +82,13 @@
                             <option value="">-- None (Top Level) --</option>
                             @foreach (var parent in parentMenus)
                             {
-                                <option value="@parent.Id">@parent.Title</option>
+                                <option value="@parent.Id" selected="@(Model.ParentMenuId == parent.Id)">@parent.Title (@parent.MenuLocation)</option>
                             }
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label asp-for="Icon" class="form-label"></label>
+                    <div class="mb-0">
+                        <label asp-for="Icon" class="form-label">Icon (optional)</label>
                         <input asp-for="Icon" class="form-control" placeholder="fas fa-home">
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="Controller" class="form-label"></label>
-                        <input asp-for="Controller" class="form-control" placeholder="Home">
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="Action" class="form-label"></label>
-                        <input asp-for="Action" class="form-control" placeholder="Index">
                     </div>
                 </div>
             </div>
@@ -79,27 +99,19 @@
                 <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label asp-for="SortOrder" class="form-label"></label>
-                        <input asp-for="SortOrder" class="form-control" type="number" min="1">
+                        <label asp-for="SortOrder" class="form-label">Sort Order</label>
+                        <input asp-for="SortOrder" class="form-control" type="number" min="0">
                     </div>
                     <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input asp-for="IsActive" class="form-check-input" role="switch" />
-                            <label asp-for="IsActive" class="form-check-label"></label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input asp-for="IsExternal" class="form-check-input" role="switch" />
-                            <label asp-for="IsExternal" class="form-check-label"></label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="Target" class="form-label"></label>
+                        <label asp-for="Target" class="form-label">Open In</label>
                         <select asp-for="Target" class="form-select">
                             <option value="">Same Tab</option>
                             <option value="_blank">New Tab</option>
                         </select>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input asp-for="IsActive" class="form-check-input" role="switch" />
+                        <label asp-for="IsActive" class="form-check-label">Active</label>
                     </div>
                 </div>
             </div>
@@ -109,7 +121,15 @@
     <div class="d-flex justify-content-end gap-2 mt-3">
         <a asp-area="Admin" asp-controller="Menu" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary px-4">
-            <i class="fas fa-save me-1"></i>Update Menu Item
+            <i class="fas fa-save me-1"></i>@(isEdit ? "Update Menu Item" : "Save Menu Item")
         </button>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        document.getElementById('pagePicker').addEventListener('change', function () {
+            if (this.value) document.getElementById('Url').value = this.value;
+        });
+    </script>
+}

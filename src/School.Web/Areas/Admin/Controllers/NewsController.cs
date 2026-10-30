@@ -10,20 +10,22 @@ namespace School.Web.Areas.Admin.Controllers;
 public class NewsController : BaseAdminController
 {
     private readonly INewsService _newsService;
+    private readonly IMediaService _mediaService;
 
     public NewsController(
         INewsService newsService,
+        IMediaService mediaService,
         ILogger<BaseAdminController> logger,
         IHttpContextAccessor httpContextAccessor)
         : base(logger, httpContextAccessor)
     {
         _newsService = newsService;
+        _mediaService = mediaService;
     }
 
-    public async Task<IActionResult> Index(int page = 1)
+    public async Task<IActionResult> Index()
     {
         var result = await _newsService.GetAllAsync();
-        const int pageSize = 20;
 
         if (!result.Success || result.Data is null)
         {
@@ -31,26 +33,23 @@ public class NewsController : BaseAdminController
             return View(new List<NewsDto>());
         }
 
-        var newsItems = result.Data.OrderByDescending(n => n.PublishDate).ToList();
-        var totalPages = (int)Math.Ceiling(newsItems.Count / (double)pageSize);
-        var pagedItems = newsItems.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-        ViewBag.CurrentPage = page;
-        ViewBag.TotalPages = totalPages;
-
-        return View(pagedItems);
+        return View(result.Data.OrderByDescending(n => n.PublishDate).ToList());
     }
 
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new NewsCreateDto { PublishDate = DateTime.Now });
+        return View(new NewsCreateDto { PublishDate = DateTime.Today, Category = NewsCategory.General });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(NewsCreateDto model)
+    public async Task<IActionResult> Create(NewsCreateDto model, IFormFile? Image)
     {
+        var uploadedUrl = await UploadFileAsync(_mediaService, Image, "news", nameof(model.ImageUrl));
+        if (uploadedUrl is not null)
+            model.ImageUrl = uploadedUrl;
+
         if (!ModelState.IsValid)
             return View(model);
 
@@ -92,17 +91,25 @@ public class NewsController : BaseAdminController
         };
 
         ViewBag.NewsId = id;
-        return View(dto);
+        return View("Create", dto);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, NewsCreateDto model)
+    public async Task<IActionResult> Edit(int id, NewsCreateDto model, IFormFile? Image, bool removeImage = false)
     {
+        var previousImage = model.ImageUrl;
+        if (removeImage)
+            model.ImageUrl = null;
+
+        var uploadedUrl = await UploadFileAsync(_mediaService, Image, "news", nameof(model.ImageUrl));
+        if (uploadedUrl is not null)
+            model.ImageUrl = uploadedUrl;
+
         if (!ModelState.IsValid)
         {
             ViewBag.NewsId = id;
-            return View(model);
+            return View("Create", model);
         }
 
         var updateDto = new NewsUpdateDto
@@ -125,8 +132,11 @@ public class NewsController : BaseAdminController
         {
             SetErrorNotification(result.Message ?? "Failed to update news.");
             ViewBag.NewsId = id;
-            return View(model);
+            return View("Create", model);
         }
+
+        if (previousImage != model.ImageUrl)
+            await DeleteUploadAsync(_mediaService, previousImage);
 
         SetSuccessNotification("News updated successfully.");
         return RedirectToAction(nameof(Index));

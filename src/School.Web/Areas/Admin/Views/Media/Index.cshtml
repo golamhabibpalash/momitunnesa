@@ -1,9 +1,10 @@
+@model School.Application.Services.Interfaces.MediaFolderContents
 @{
     ViewData["Title"] = "Media Manager";
     ViewBag.ActiveMenu = "Media";
-    var currentFolder = ViewBag.CurrentFolder as string ?? "";
-    var files = ViewBag.Files as IEnumerable<string> ?? Enumerable.Empty<string>();
-    var imageExts = new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".svg" };
+    var segments = Model.Folder.Length == 0 ? Array.Empty<string>() : Model.Folder.Split('/');
+    string FormatSize(long bytes) => bytes >= 1024 * 1024 ? $"{bytes / 1024d / 1024d:0.0} MB" : $"{Math.Max(1, bytes / 1024)} KB";
+    var baseUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
 }
 
 <div class="page-header">
@@ -12,89 +13,120 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Media@(string.IsNullOrEmpty(currentFolder) ? "" : " / " + currentFolder)</li>
+                <li class="breadcrumb-item"><a asp-action="Index" asp-route-folder="">uploads</a></li>
+                @for (var i = 0; i < segments.Length; i++)
+                {
+                    var path = string.Join('/', segments.Take(i + 1));
+                    if (i == segments.Length - 1)
+                    {
+                        <li class="breadcrumb-item active" aria-current="page">@segments[i]</li>
+                    }
+                    else
+                    {
+                        <li class="breadcrumb-item"><a asp-action="Index" asp-route-folder="@path">@segments[i]</a></li>
+                    }
+                }
             </ol>
         </nav>
     </div>
     <div class="d-flex gap-2">
-        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createFolderModal">
-            <i class="fas fa-folder-plus me-1"></i>New Folder
-        </button>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadMediaModal">
-            <i class="fas fa-upload me-1"></i>Upload Media
-        </button>
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createFolderModal"><i class="fas fa-folder-plus me-1"></i>New Folder</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadMediaModal"><i class="fas fa-upload me-1"></i>Upload Files</button>
     </div>
 </div>
 
 <div class="card">
-    <div class="card-header"><i class="fas fa-images me-1"></i>Files@(string.IsNullOrEmpty(currentFolder) ? " (Root)" : " in " + currentFolder)</div>
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span><i class="fas fa-folder-open text-warning me-1"></i>/uploads/@Model.Folder <small class="text-muted ms-2">@Model.Folders.Count folder(s), @Model.Files.Count file(s)</small></span>
+        <input type="search" class="form-control form-control-sm" placeholder="Filter by name..." style="max-width:220px;" id="mediaSearch">
+    </div>
     <div class="card-body">
-        <div class="row g-3">
-            @if (files.Any())
+        @if (Model.Folder.Length > 0 && !Model.Folders.Any() && !Model.Files.Any())
+        {
+            <div class="text-center text-muted py-4">
+                <p>This folder is empty.</p>
+                <form asp-action="DeleteFolder" method="post" class="d-inline" onsubmit="return confirm('Delete this empty folder?');">
+                    <input type="hidden" name="folder" value="@Model.Folder" />
+                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash me-1"></i>Delete folder</button>
+                </form>
+            </div>
+        }
+        <div class="row g-3" id="mediaGrid">
+            @if (Model.Folder.Length > 0)
             {
-                foreach (var file in files)
-                {
-                    var name = System.IO.Path.GetFileName(file);
-                    var ext = System.IO.Path.GetExtension(file).ToLowerInvariant();
-                    var isImage = imageExts.Contains(ext);
-                    <div class="col-md-3 col-6">
-                        <div class="border rounded overflow-hidden">
-                            @if (isImage)
+                var parent = Model.Folder.Contains('/') ? Model.Folder[..Model.Folder.LastIndexOf('/')] : "";
+                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                    <a asp-action="Index" asp-route-folder="@parent" class="d-block border rounded text-center p-3 text-decoration-none h-100">
+                        <i class="fas fa-level-up-alt fa-2x text-muted"></i>
+                        <div class="small mt-2 text-muted">Up one level</div>
+                    </a>
+                </div>
+            }
+            @foreach (var f in Model.Folders)
+            {
+                <div class="col-6 col-md-4 col-lg-3 col-xl-2 media-entry" data-name="@f.Name.ToLowerInvariant()">
+                    <a asp-action="Index" asp-route-folder="@f.Path" class="d-block border rounded text-center p-3 text-decoration-none h-100">
+                        <i class="fas fa-folder fa-3x text-warning"></i>
+                        <div class="small mt-2 text-truncate fw-semibold" title="@f.Name">@f.Name</div>
+                        <small class="text-muted">@f.ItemCount item(s)</small>
+                    </a>
+                </div>
+            }
+            @foreach (var file in Model.Files)
+            {
+                var ext = System.IO.Path.GetExtension(file.Name).ToLowerInvariant();
+                var icon = ext switch { ".pdf" => "fa-file-pdf text-danger", ".doc" or ".docx" => "fa-file-word text-primary", ".xls" or ".xlsx" => "fa-file-excel text-success", ".ppt" or ".pptx" => "fa-file-powerpoint text-warning", ".mp4" or ".webm" or ".ogg" or ".mov" => "fa-file-video text-info", _ => "fa-file text-muted" };
+                <div class="col-6 col-md-4 col-lg-3 col-xl-2 media-entry" data-name="@file.Name.ToLowerInvariant()">
+                    <div class="border rounded h-100 d-flex flex-column overflow-hidden">
+                        <a href="@file.Url" target="_blank" class="d-block" style="aspect-ratio:4/3;background:#f4f6f9;">
+                            @if (file.IsImage)
                             {
-                                <img src="@file" alt="@name" style="width:100%;height:120px;object-fit:cover;">
+                                <img src="@file.Url" alt="@file.Name" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
                             }
                             else
                             {
-                                <div class="d-flex align-items-center justify-content-center" style="height:120px;background:#f4f6f9;">
-                                    <i class="fas fa-file text-muted" style="font-size:2rem;"></i>
-                                </div>
+                                <span class="h-100 d-flex align-items-center justify-content-center"><i class="fas @icon fa-3x"></i></span>
                             }
-                            <div class="p-2">
-                                <small class="d-block text-truncate" title="@name">@name</small>
-                                <div class="d-flex gap-1 mt-1">
-                                    <a href="@file" target="_blank" rel="noopener" class="btn btn-sm btn-light" title="Open"><i class="fas fa-external-link-alt"></i></a>
-                                    <form asp-area="Admin" asp-controller="Media" asp-action="Delete" method="post" onsubmit="return confirm('Delete this file?');">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="path" value="@file">
-                                        <button type="submit" class="btn btn-sm btn-light" title="Delete"><i class="fas fa-trash text-danger"></i></button>
-                                    </form>
-                                </div>
-                            </div>
+                        </a>
+                        <div class="p-2 small">
+                            <div class="text-truncate" title="@file.Name">@file.Name</div>
+                            <div class="text-muted">@FormatSize(file.Size) • @file.LastModified.ToLocalTime().ToString("dd MMM yyyy")</div>
+                        </div>
+                        <div class="d-flex gap-1 p-2 pt-0 mt-auto">
+                            <button type="button" class="btn btn-sm btn-outline-primary flex-grow-1 copy-url" data-url="@(baseUrl + file.Url)" title="Copy URL"><i class="fas fa-link"></i></button>
+                            <form asp-action="Delete" method="post" class="flex-grow-1" onsubmit="return confirm('Delete this file? Pages that use it will show a broken image.');">
+                                <input type="hidden" name="path" value="@file.Url" />
+                                <input type="hidden" name="folder" value="@Model.Folder" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger w-100" title="Delete"><i class="fas fa-trash"></i></button>
+                            </form>
                         </div>
                     </div>
-                }
-            }
-            else
-            {
-                <div class="col-12 text-center text-muted py-4">No files found@(string.IsNullOrEmpty(currentFolder) ? "" : " in this folder").</div>
+                </div>
             }
         </div>
+        @if (Model.Folder.Length == 0 && !Model.Folders.Any() && !Model.Files.Any())
+        {
+            <p class="text-center text-muted py-4 mb-0">No media uploaded yet.</p>
+        }
     </div>
 </div>
 
 <div class="modal fade" id="uploadMediaModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-area="Admin" asp-controller="Media" asp-action="Upload" method="post" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
+            <form asp-action="Upload" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="folder" value="@Model.Folder" />
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-upload me-2"></i>Upload Media</h5>
+                    <h5 class="modal-title"><i class="fas fa-upload me-2"></i>Upload to /uploads/@Model.Folder</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Upload to Folder</label>
-                        <input type="text" name="folder" class="form-control" value="@currentFolder" placeholder="Leave empty for root">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label required">File</label>
-                        <input type="file" name="file" class="form-control" required>
-                        <small class="text-muted">Max 25MB.</small>
-                    </div>
+                    <input type="file" name="files" class="form-control" multiple required>
+                    <small class="text-muted d-block mt-2">Images, PDF, Word, Excel, PowerPoint, TXT (max 10MB each) and MP4/WEBM videos (max 100MB). You can select several files at once.</small>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-upload me-1"></i>Upload File</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-upload me-1"></i>Upload</button>
                 </div>
             </form>
         </div>
@@ -104,17 +136,15 @@
 <div class="modal fade" id="createFolderModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-area="Admin" asp-controller="Media" asp-action="CreateFolder" method="post">
-                @Html.AntiForgeryToken()
+            <form asp-action="CreateFolder" method="post">
+                <input type="hidden" name="parentFolder" value="@Model.Folder" />
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-folder-plus me-2"></i>Create Folder</h5>
+                    <h5 class="modal-title"><i class="fas fa-folder-plus me-2"></i>New folder in /uploads/@Model.Folder</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label required">Folder Name</label>
-                        <input type="text" name="name" class="form-control" placeholder="e.g., gallery/sports-2026" required>
-                    </div>
+                    <label class="form-label required" for="folderName">Folder Name</label>
+                    <input type="text" name="folderName" id="folderName" class="form-control" placeholder="e.g., Annual Sports 2026" required maxlength="100">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -124,3 +154,15 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.copy-url').forEach(btn => btn.addEventListener('click', () => {
+            navigator.clipboard.writeText(btn.dataset.url).then(() => showToast('URL copied to clipboard!', 'success'));
+        }));
+        document.getElementById('mediaSearch').addEventListener('input', function () {
+            const q = this.value.trim().toLowerCase();
+            document.querySelectorAll('.media-entry').forEach(el => { el.style.display = !q || el.dataset.name.includes(q) ? '' : 'none'; });
+        });
+    </script>
+}

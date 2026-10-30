@@ -1,83 +1,140 @@
+@model List<School.Application.DTOs.Gallery.GalleryImageDto>
 @{
-    ViewData["Title"] = "Album Images";
+    var album = (School.Application.DTOs.Gallery.GalleryAlbumDto)ViewBag.Album;
+    ViewData["Title"] = album.TitleEn;
     ViewBag.ActiveMenu = "Albums";
-    var album = ViewBag.Album as School.Application.DTOs.Gallery.GalleryAlbumDto;
-    var images = ViewBag.Images as IEnumerable<School.Application.DTOs.Gallery.GalleryImageDto> ?? Enumerable.Empty<School.Application.DTOs.Gallery.GalleryImageDto>();
-    var albumId = album?.Id ?? 0;
 }
 
 <div class="page-header">
     <div>
-        <h2><i class="fas fa-images me-2"></i>Album: @album?.TitleEn</h2>
+        <h2><i class="fas fa-images me-2"></i>@album.TitleEn</h2>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
-                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Gallery" asp-action="Albums">Albums</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Album Images</li>
+                <li class="breadcrumb-item"><a asp-action="Albums">Albums</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@album.TitleEn</li>
             </ol>
         </nav>
     </div>
     <div class="d-flex gap-2">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadImagesModal">
-            <i class="fas fa-upload me-1"></i>Upload Image
-        </button>
-        <a asp-area="Admin" asp-controller="Gallery" asp-action="Albums" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Back
-        </a>
+        <a asp-area="" asp-controller="Gallery" asp-action="Album" asp-route-id="@album.Id" target="_blank" class="btn btn-outline-secondary"><i class="fas fa-eye me-1"></i>View on Website</a>
+        <a asp-action="EditAlbum" asp-route-id="@album.Id" class="btn btn-info"><i class="fas fa-edit me-1"></i>Edit Album</a>
     </div>
 </div>
 
 <div class="card mb-3">
+    <div class="card-header"><i class="fas fa-cloud-upload-alt me-2"></i>Upload Photos</div>
     <div class="card-body">
-        <div class="row g-3">
-            @if (images.Any())
-            {
-                foreach (var image in images)
+        <form asp-action="UploadImages" method="post" enctype="multipart/form-data" id="uploadForm">
+            <input type="hidden" name="albumId" value="@album.Id" />
+            <label for="fileInput" class="d-block border rounded p-4 text-center" id="dropZone" style="border:2px dashed #ced4da !important;cursor:pointer;">
+                <i class="fas fa-cloud-upload-alt fa-2x text-muted"></i>
+                <div class="mt-2"><strong>Click to choose photos</strong> or drag &amp; drop them here</div>
+                <small class="text-muted">Select as many images as you like (JPG, PNG, WEBP, GIF; max 10MB each).</small>
+                <input type="file" name="files" id="fileInput" class="d-none" multiple accept="image/*">
+            </label>
+            <div id="selectedInfo" class="small text-muted mt-2"></div>
+            <div class="text-end mt-2">
+                <button type="submit" class="btn btn-primary" id="uploadBtn" disabled><i class="fas fa-upload me-1"></i>Upload</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span><i class="fas fa-th me-2"></i>Photos (@Model.Count)</span>
+        @if (Model.Any())
+        {
+            <div class="d-flex gap-2 align-items-center">
+                <div class="form-check mb-0">
+                    <input class="form-check-input" type="checkbox" id="selectAll">
+                    <label class="form-check-label" for="selectAll">Select all</label>
+                </div>
+                <button type="submit" form="deleteForm" class="btn btn-sm btn-danger" id="bulkDeleteBtn" disabled><i class="fas fa-trash me-1"></i>Delete selected</button>
+            </div>
+        }
+    </div>
+    <div class="card-body">
+        @if (!Model.Any())
+        {
+            <p class="text-center text-muted py-4 mb-0">This album has no photos yet. Upload some above.</p>
+        }
+        else
+        {
+            <form asp-action="DeleteImages" method="post" id="deleteForm" onsubmit="return confirm('Delete the selected photos? This cannot be undone.');">
+                <input type="hidden" name="albumId" value="@album.Id" />
+            </form>
+            <div class="row g-3">
+                @foreach (var image in Model)
                 {
-                    <div class="col-md-3 col-6">
-                        <div class="border rounded overflow-hidden position-relative">
-                            <img src="@image.ImageUrl" alt="@image.Title" style="width:100%;height:160px;object-fit:cover;">
-                            <div class="p-2 d-flex justify-content-between align-items-center">
-                                <small class="text-truncate">@image.Title</small>
-                                <form asp-area="Admin" asp-controller="Gallery" asp-action="DeleteImage" asp-route-id="@image.Id" method="post" onsubmit="return confirm('Delete this image?');">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-light"><i class="fas fa-times text-danger"></i></button>
+                    var isCover = album.CoverImageUrl == image.ImageUrl;
+                    <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                        <div class="position-relative border rounded overflow-hidden @(isCover ? "border-primary border-3" : "")">
+                            <a href="@image.ImageUrl" target="_blank" class="d-block" style="aspect-ratio:1/1;">
+                                <img src="@image.ImageUrl" alt="@image.Title" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+                            </a>
+                            <div class="position-absolute top-0 start-0 p-1">
+                                <input class="form-check-input image-check shadow" type="checkbox" name="imageIds" value="@image.Id" form="deleteForm" aria-label="Select photo">
+                            </div>
+                            @if (isCover)
+                            {
+                                <span class="badge bg-primary position-absolute top-0 end-0 m-1">Cover</span>
+                            }
+                            <div class="d-flex gap-1 p-1 bg-light">
+                                @if (!isCover)
+                                {
+                                    <form asp-action="SetCover" method="post" class="flex-grow-1">
+                                        <input type="hidden" name="albumId" value="@album.Id" />
+                                        <input type="hidden" name="imageId" value="@image.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-primary w-100" title="Use as album cover"><i class="fas fa-star"></i></button>
+                                    </form>
+                                }
+                                <form asp-action="DeleteImages" method="post" class="flex-grow-1" onsubmit="return confirm('Delete this photo?');">
+                                    <input type="hidden" name="albumId" value="@album.Id" />
+                                    <input type="hidden" name="imageIds" value="@image.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100" title="Delete photo"><i class="fas fa-trash"></i></button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 }
-            }
-            else
-            {
-                <div class="col-12 text-center text-muted py-4">No images in this album yet.</div>
-            }
-        </div>
+            </div>
+        }
     </div>
 </div>
 
-<div class="modal fade" id="uploadImagesModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-area="Admin" asp-controller="Gallery" asp-action="UploadImage" method="post" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="albumId" value="@albumId">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-upload me-2"></i>Upload Image</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label required">Select Image</label>
-                        <input type="file" name="file" class="form-control" accept="image/*" required>
-                        <small class="text-muted">Supports JPG, PNG, WEBP.</small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-upload me-1"></i>Upload</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+@section Scripts {
+    <script>
+        (function () {
+            const input = document.getElementById('fileInput');
+            const zone = document.getElementById('dropZone');
+            const info = document.getElementById('selectedInfo');
+            const uploadBtn = document.getElementById('uploadBtn');
+
+            function refresh() {
+                const n = input.files.length;
+                uploadBtn.disabled = n === 0;
+                info.textContent = n ? n + ' photo(s) selected: ' + Array.from(input.files).slice(0, 6).map(f => f.name).join(', ') + (n > 6 ? '…' : '') : '';
+            }
+            input.addEventListener('change', refresh);
+            ['dragover', 'dragenter'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('bg-light'); }));
+            ['dragleave', 'drop'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.remove('bg-light'); }));
+            zone.addEventListener('drop', ev => { input.files = ev.dataTransfer.files; refresh(); });
+            document.getElementById('uploadForm').addEventListener('submit', () => {
+                uploadBtn.disabled = true;
+                uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Uploading…';
+            });
+
+            const checks = document.querySelectorAll('.image-check');
+            const bulkBtn = document.getElementById('bulkDeleteBtn');
+            const selectAll = document.getElementById('selectAll');
+            function refreshChecks() {
+                const selected = Array.from(checks).filter(c => c.checked).length;
+                if (bulkBtn) { bulkBtn.disabled = selected === 0; bulkBtn.innerHTML = '<i class="fas fa-trash me-1"></i>Delete selected' + (selected ? ' (' + selected + ')' : ''); }
+            }
+            checks.forEach(c => c.addEventListener('change', refreshChecks));
+            if (selectAll) selectAll.addEventListener('change', () => { checks.forEach(c => c.checked = selectAll.checked); refreshChecks(); });
+        })();
+    </script>
+}

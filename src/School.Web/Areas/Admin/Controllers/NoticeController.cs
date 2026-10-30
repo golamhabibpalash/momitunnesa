@@ -10,14 +10,17 @@ namespace School.Web.Areas.Admin.Controllers;
 public class NoticeController : BaseAdminController
 {
     private readonly INoticeService _noticeService;
+    private readonly IMediaService _mediaService;
 
     public NoticeController(
         INoticeService noticeService,
+        IMediaService mediaService,
         ILogger<BaseAdminController> logger,
         IHttpContextAccessor httpContextAccessor)
         : base(logger, httpContextAccessor)
     {
         _noticeService = noticeService;
+        _mediaService = mediaService;
     }
 
     public async Task<IActionResult> Index(int page = 1)
@@ -44,13 +47,17 @@ public class NoticeController : BaseAdminController
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new NoticeCreateDto { PublishDate = DateTime.Now });
+        return View(new NoticeCreateDto { PublishDate = DateTime.Today });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(NoticeCreateDto model)
+    public async Task<IActionResult> Create(NoticeCreateDto model, IFormFile? Attachment)
     {
+        var uploadedUrl = await UploadFileAsync(_mediaService, Attachment, "notices", nameof(model.AttachmentUrl));
+        if (uploadedUrl is not null)
+            model.AttachmentUrl = uploadedUrl;
+
         if (!ModelState.IsValid)
             return View(model);
 
@@ -93,17 +100,25 @@ public class NoticeController : BaseAdminController
         };
 
         ViewBag.NoticeId = id;
-        return View(dto);
+        return View("Create", dto);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, NoticeCreateDto model)
+    public async Task<IActionResult> Edit(int id, NoticeCreateDto model, IFormFile? Attachment, bool removeAttachment = false)
     {
+        var previousUrl = model.AttachmentUrl;
+        if (removeAttachment)
+            model.AttachmentUrl = null;
+
+        var uploadedUrl = await UploadFileAsync(_mediaService, Attachment, "notices", nameof(model.AttachmentUrl));
+        if (uploadedUrl is not null)
+            model.AttachmentUrl = uploadedUrl;
+
         if (!ModelState.IsValid)
         {
             ViewBag.NoticeId = id;
-            return View(model);
+            return View("Create", model);
         }
 
         var updateDto = new NoticeUpdateDto
@@ -127,8 +142,11 @@ public class NoticeController : BaseAdminController
         {
             SetErrorNotification(result.Message ?? "Failed to update notice.");
             ViewBag.NoticeId = id;
-            return View(model);
+            return View("Create", model);
         }
+
+        if (previousUrl != model.AttachmentUrl)
+            await DeleteUploadAsync(_mediaService, previousUrl);
 
         SetSuccessNotification("Notice updated successfully.");
         return RedirectToAction(nameof(Index));

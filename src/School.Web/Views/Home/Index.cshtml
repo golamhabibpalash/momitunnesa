@@ -127,7 +127,7 @@
         </section>
     }
 
-    @await Html.PartialAsync("_Statistics")
+    @await Html.PartialAsync("_Statistics", ViewBag.Statistics as School.Web.Models.StatisticsViewModel)
 
     @{
         var headTeacherMsg = ViewBag.HeadTeacher as School.Web.Models.HeadTeacherMessageViewModel;
@@ -151,7 +151,7 @@
                         <div class="col-lg-4 col-md-6">
                             <div class="news-card">
                                 <div class="news-image">
-                                    <img src="@(news.ImageUrl ?? "/images/placeholder.jpg")" alt="@(isRtl ? news.TitleBn : news.TitleEn)" class="img-fluid" />
+                                    <img src="@(news.ImageUrl ?? "/images/placeholder.svg")" alt="@(isRtl ? news.TitleBn : news.TitleEn)" class="img-fluid" />
                                     <div class="news-date">
                                         <span class="day">@news.PublishDate.Day</span>
                                         <span class="month">@(isRtl ? news.PublishDate.ToString("MMM") : news.PublishDate.ToString("MMM"))</span>
@@ -225,35 +225,31 @@
                 <div class="section-subtitle text-white-50">@(isRtl ? "আমাদের সাফল্য" : "Our Achievements")</div>
                 <h2 class="section-title text-white">@(isRtl ? "গর্বিত অর্জন" : "Proud Achievements")</h2>
             </div>
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="achievement-item text-center">
-                        <div class="achievement-icon"><i class="fas fa-medal"></i></div>
-                        <div class="achievement-number" data-target="5">0</div>
-                        <p class="achievement-label">@(isRtl ? "জাতীয় পুরস্কার" : "National Awards")</p>
+            @{
+                var achievementCounts = ViewBag.AchievementCounts as Dictionary<School.Domain.Enums.AchievementCategory, int> ?? new();
+                var achievementIcons = new Dictionary<School.Domain.Enums.AchievementCategory, string>
+                {
+                    [School.Domain.Enums.AchievementCategory.Student] = "fa-user-graduate",
+                    [School.Domain.Enums.AchievementCategory.Teacher] = "fa-chalkboard-teacher",
+                    [School.Domain.Enums.AchievementCategory.Institution] = "fa-school",
+                    [School.Domain.Enums.AchievementCategory.Sports] = "fa-trophy",
+                    [School.Domain.Enums.AchievementCategory.NationalAward] = "fa-medal"
+                };
+            }
+            <div class="row g-4 justify-content-center">
+                @foreach (var category in Enum.GetValues<School.Domain.Enums.AchievementCategory>())
+                {
+                    <div class="col-lg col-md-4 col-6">
+                        <a class="achievement-item text-center d-block text-white text-decoration-none" asp-controller="Achievement" asp-action="Index" asp-route-category="@category">
+                            <div class="achievement-icon"><i class="fas @achievementIcons[category]"></i></div>
+                            <div class="achievement-number" data-target="@(achievementCounts.GetValueOrDefault(category))">0</div>
+                            <p class="achievement-label">@CategoryHelper.Label(category)</p>
+                        </a>
                     </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="achievement-item text-center">
-                        <div class="achievement-icon"><i class="fas fa-trophy"></i></div>
-                        <div class="achievement-number" data-target="25">0</div>
-                        <p class="achievement-label">@(isRtl ? "বিভাগীয় পুরস্কার" : "Divisional Awards")</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="achievement-item text-center">
-                        <div class="achievement-icon"><i class="fas fa-award"></i></div>
-                        <div class="achievement-number" data-target="100">0</div>
-                        <p class="achievement-label">@(isRtl ? "এ+ প্রাপ্ত শিক্ষার্থী" : "A+ Students")</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="achievement-item text-center">
-                        <div class="achievement-icon"><i class="fas fa-star"></i></div>
-                        <div class="achievement-number" data-target="50">0</div>
-                        <p class="achievement-label">@(isRtl ? "বৃত্তি প্রাপ্ত" : "Scholarship Winners")</p>
-                    </div>
-                </div>
+                }
+            </div>
+            <div class="text-center mt-4">
+                <a asp-controller="Achievement" asp-action="Index" class="btn btn-outline-light">@(isRtl ? "সব সাফল্য দেখুন" : "View All Achievements")</a>
             </div>
         </div>
     </section>

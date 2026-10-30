@@ -49,7 +49,27 @@ public class ContactController : BaseAdminController
             return RedirectToAction(nameof(Index));
         }
 
+        if (!result.Data.IsRead)
+        {
+            await _contactService.MarkAsReadAsync(id);
+            result.Data.IsRead = true;
+        }
+
         return View(result.Data);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var result = await _contactService.DeleteAsync(id);
+
+        if (!result.Success)
+            SetErrorNotification(result.Message ?? "Failed to delete message.");
+        else
+            SetSuccessNotification("Message deleted successfully.");
+
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]

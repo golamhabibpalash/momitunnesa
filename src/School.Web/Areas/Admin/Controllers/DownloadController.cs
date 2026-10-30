@@ -10,14 +10,17 @@ namespace School.Web.Areas.Admin.Controllers;
 public class DownloadController : BaseAdminController
 {
     private readonly IDownloadService _downloadService;
+    private readonly IMediaService _mediaService;
 
     public DownloadController(
         IDownloadService downloadService,
+        IMediaService mediaService,
         ILogger<BaseAdminController> logger,
         IHttpContextAccessor httpContextAccessor)
         : base(logger, httpContextAccessor)
     {
         _downloadService = downloadService;
+        _mediaService = mediaService;
     }
 
     public async Task<IActionResult> Index()
@@ -30,19 +33,21 @@ public class DownloadController : BaseAdminController
             return View(new List<DownloadDto>());
         }
 
-        return View(result.Data.OrderByDescending(d => d.CreatedAt));
+        return View(result.Data.OrderByDescending(d => d.CreatedAt).ToList());
     }
 
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new DownloadCreateDto());
+        return View(new DownloadCreateDto { DownloadCategory = DownloadCategory.Forms });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(DownloadCreateDto model)
+    public async Task<IActionResult> Create(DownloadCreateDto model, IFormFile? File)
     {
+        await ApplyFileAsync(model, File);
+
         if (!ModelState.IsValid)
             return View(model);
 
@@ -70,7 +75,8 @@ public class DownloadController : BaseAdminController
         }
 
         var download = result.Data;
-        var dto = new DownloadCreateDto
+        ViewBag.DownloadId = id;
+        return View("Create", new DownloadCreateDto
         {
             TitleEn = download.TitleEn,
             TitleBn = download.TitleBn,
@@ -78,26 +84,26 @@ public class DownloadController : BaseAdminController
             DescriptionBn = download.DescriptionBn,
             FileUrl = download.FileUrl,
             FileType = download.FileType,
-            DownloadCategory = Enum.TryParse<DownloadCategory>(download.DownloadCategory, out var cat) ? cat : DownloadCategory.Circular,
             FileSize = download.FileSize,
+            DownloadCategory = Enum.TryParse<DownloadCategory>(download.DownloadCategory, out var cat) ? cat : DownloadCategory.Forms,
             IsActive = download.IsActive
-        };
-
-        ViewBag.DownloadId = id;
-        return View(dto);
+        });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, DownloadCreateDto model)
+    public async Task<IActionResult> Edit(int id, DownloadCreateDto model, IFormFile? File)
     {
+        var previousFile = model.FileUrl;
+        await ApplyFileAsync(model, File);
+
         if (!ModelState.IsValid)
         {
             ViewBag.DownloadId = id;
-            return View(model);
+            return View("Create", model);
         }
 
-        var updateDto = new DownloadUpdateDto
+        var result = await _downloadService.UpdateAsync(new DownloadUpdateDto
         {
             Id = id,
             TitleEn = model.TitleEn,
@@ -106,19 +112,20 @@ public class DownloadController : BaseAdminController
             DescriptionBn = model.DescriptionBn,
             FileUrl = model.FileUrl,
             FileType = model.FileType,
-            DownloadCategory = model.DownloadCategory,
             FileSize = model.FileSize,
+            DownloadCategory = model.DownloadCategory,
             IsActive = model.IsActive
-        };
-
-        var result = await _downloadService.UpdateAsync(updateDto);
+        });
 
         if (!result.Success)
         {
             SetErrorNotification(result.Message ?? "Failed to update download.");
             ViewBag.DownloadId = id;
-            return View(model);
+            return View("Create", model);
         }
+
+        if (previousFile != model.FileUrl)
+            await DeleteUploadAsync(_mediaService, previousFile);
 
         SetSuccessNotification("Download updated successfully.");
         return RedirectToAction(nameof(Index));
@@ -128,6 +135,7 @@ public class DownloadController : BaseAdminController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
+        var item = (await _downloadService.GetByIdAsync(id)).Data;
         var result = await _downloadService.DeleteAsync(id);
 
         if (!result.Success)
@@ -136,9 +144,32 @@ public class DownloadController : BaseAdminController
         }
         else
         {
+            await DeleteUploadAsync(_mediaService, item?.FileUrl);
             SetSuccessNotification("Download deleted successfully.");
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private async Task ApplyFileAsync(DownloadCreateDto model, IFormFile? file)
+    {
+        var url = await UploadFileAsync(_mediaService, file, "downloads", nameof(model.FileUrl));
+        if (url is not null)
+        {
+            model.FileUrl = url;
+            model.FileType = Path.GetExtension(file!.FileName).TrimStart('.').ToUpperInvariant();
+            model.FileSize = file.Length;
+        }
+
+        // FileUrl is [Required]; replace the generic binder message with a clear one.
+        if (string.IsNullOrWhiteSpace(model.FileUrl))
+        {
+            ModelState.Remove(nameof(model.FileUrl));
+            ModelState.AddModelError(nameof(model.FileUrl), "Please choose the file to upload.");
+        }
+        else
+        {
+            ModelState.Remove(nameof(model.FileUrl));
+        }
     }
 }

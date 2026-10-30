@@ -1,0 +1,17 @@
+@model string?
+@* Current photo preview with a remove checkbox, plus a file input named "Photo". *@
+<div class="card mb-3">
+    <div class="card-header"><i class="fas fa-camera me-2"></i>Photo</div>
+    <div class="card-body text-center">
+        @if (!string.IsNullOrEmpty(Model))
+        {
+            <img src="@Model" alt="Photo" class="rounded mb-2" style="width:140px;height:160px;object-fit:cover;">
+            <div class="form-check d-flex justify-content-center gap-2 mb-2">
+                <input class="form-check-input" type="checkbox" name="removeImage" value="true" id="removeImage">
+                <label class="form-check-label text-danger" for="removeImage">Remove photo</label>
+            </div>
+        }
+        <input type="file" name="Photo" class="form-control" accept="image/*">
+        <small class="text-muted d-block mt-1">A portrait (3:4) photo looks best. Max 10MB.</small>
+    </div>
+</div>

@@ -94,28 +94,32 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link @(IsActive("AcademicCalendar") ? "active" : "")"
+               asp-area="Admin" asp-controller="AcademicCalendar" asp-action="Index">
                 <i class="fas fa-calendar-check"></i>
                 <span>Academic Calendar</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link @(IsActive("Routine") ? "active" : "")"
+               asp-area="Admin" asp-controller="Routine" asp-action="Index">
                 <i class="fas fa-table"></i>
                 <span>Routine</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link @(IsActive("Syllabus") ? "active" : "")"
+               asp-area="Admin" asp-controller="Syllabus" asp-action="Index">
                 <i class="fas fa-book"></i>
                 <span>Syllabus</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link @(IsActive("Subjects") ? "active" : "")"
+               asp-area="Admin" asp-controller="Subject" asp-action="Index">
                 <i class="fas fa-book-open"></i>
                 <span>Subjects</span>
             </a>
@@ -180,7 +184,8 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link @(IsActive("Seo") ? "active" : "")"
+               asp-area="Admin" asp-controller="Seo" asp-action="Index">
                 <i class="fas fa-search"></i>
                 <span>SEO</span>
             </a>
@@ -213,14 +218,16 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link @(IsActive("ActivityLog") ? "active" : "")"
+               asp-area="Admin" asp-controller="ActivityLog" asp-action="Index">
                 <i class="fas fa-history"></i>
                 <span>Activity Log</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link @(IsActive("Backup") ? "active" : "")"
+               asp-area="Admin" asp-controller="Backup" asp-action="Index">
                 <i class="fas fa-database"></i>
                 <span>Backup</span>
             </a>

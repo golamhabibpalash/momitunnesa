@@ -1,0 +1,32 @@
+@model School.Web.Models.PersonCardModel
+@* Equal-height card for teachers and staff. Photo is a fixed square, text lines are clamped. *@
+<div class="person-card h-100">
+    <div class="person-photo">
+        <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/avatar.svg" : Model.ImageUrl)" alt="@Model.Name" loading="lazy"
+             onerror="this.onerror=null;this.src='/images/avatar.svg'" />
+    </div>
+    <div class="person-body">
+        <h5 class="person-name" title="@Model.Name">
+            @if (!string.IsNullOrEmpty(Model.DetailsUrl))
+            {
+                <a href="@Model.DetailsUrl">@Model.Name</a>
+            }
+            else
+            {
+                @Model.Name
+            }
+        </h5>
+        <p class="person-role">@Model.Role</p>
+        <p class="person-meta">@Model.Meta</p>
+        <div class="person-contact">
+            @if (!string.IsNullOrEmpty(Model.Phone))
+            {
+                <a href="tel:@Model.Phone" class="btn btn-sm btn-outline-primary" title="@Model.Phone"><i class="fas fa-phone-alt"></i></a>
+            }
+            @if (!string.IsNullOrEmpty(Model.Email))
+            {
+                <a href="mailto:@Model.Email" class="btn btn-sm btn-outline-secondary" title="@Model.Email"><i class="fas fa-envelope"></i></a>
+            }
+        </div>
+    </div>
+</div>

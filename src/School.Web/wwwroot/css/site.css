@@ -214,18 +214,22 @@ a:hover { color: var(--primary-light); }
 
 /* Hero Slider */
 .hero-carousel .hero-slide {
-    height: 85vh;
-    min-height: 500px;
+    height: 75vh;
+    min-height: 460px;
+    max-height: 760px;
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
+    background-color: #0e2f44;
     position: relative;
     display: flex;
     align-items: center;
 }
+/* Darken only behind the caption so the photo itself stays clear */
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(26,82,118,0.85), rgba(14,47,68,0.7));
+    background: linear-gradient(90deg, rgba(14,47,68,0.62) 0%, rgba(14,47,68,0.35) 45%, rgba(14,47,68,0) 75%);
 }
 .hero-content {
     position: relative;
@@ -238,16 +242,19 @@ a:hover { color: var(--primary-light); }
     font-weight: 800;
     margin-bottom: 15px;
     line-height: 1.2;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.45);
 }
 .hero-subtitle {
     font-size: 1.2rem;
-    opacity: 0.9;
+    opacity: 0.95;
     margin-bottom: 30px;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
 }
 .hero-buttons .btn { margin-right: 10px; padding: 12px 30px; font-weight: 600; }
 .rtl-mode .hero-buttons .btn { margin-right: 0; margin-left: 10px; }
 @media (max-width: 768px) {
     .hero-carousel .hero-slide { height: 60vh; min-height: 350px; }
+    .hero-overlay { background: linear-gradient(180deg, rgba(14,47,68,0.25) 0%, rgba(14,47,68,0.6) 100%); }
     .hero-title { font-size: 2rem; }
     .hero-subtitle { font-size: 1rem; }
 }
@@ -894,3 +901,46 @@ a:hover { color: var(--primary-light); }
 .rtl-mode .navbar-nav { padding-right: 0; }
 .rtl-mode .input-group:not(.has-validation) > :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu):not(.form-floating) { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
 .rtl-mode .input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+
+/* Hide validation summaries that have no errors */
+.validation-summary-valid { display: none; }
+
+/* Teacher / staff cards: every card in a row has the same size regardless of photo or text length */
+.person-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: var(--radius-md, 12px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.person-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); }
+.person-photo { aspect-ratio: 1 / 1; background: #e3ebf2; overflow: hidden; }
+.person-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+.person-body { display: flex; flex-direction: column; flex: 1; padding: 16px; }
+.person-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    min-height: 2.5em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.person-name a { color: inherit; text-decoration: none; }
+.person-name a:hover { color: var(--primary); }
+.person-role { color: var(--primary); font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; min-height: 1.4em; }
+.person-meta {
+    color: #6c757d;
+    font-size: 0.85rem;
+    min-height: 2.6em;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.person-contact { margin-top: auto; display: flex; justify-content: center; gap: 6px; min-height: 31px; }

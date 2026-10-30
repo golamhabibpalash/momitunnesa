@@ -1,20 +1,71 @@
+@model List<School.Application.DTOs.Academic.RoutineDto>
 @{
     ViewData["Title"] = "Class Routine";
     var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
+    var classes = ViewBag.Classes as List<(string ClassNameEn, string? Section)> ?? new();
+    string? selectedClass = ViewBag.SelectedClass;
+    string? selectedSection = ViewBag.SelectedSection;
+    var slots = Model.Select(r => (r.StartTime, r.EndTime)).Distinct().OrderBy(s => s.StartTime).ToList();
+    var days = AcademicOptions.Days.Where(d => Model.Any(r => r.DayOfWeek == d)).ToList();
+    string Time(TimeSpan t) => DateTime.Today.Add(t).ToString("hh:mm tt");
 }
 <div class="routine-page">
-    <div class="row g-4">
-        <div class="col-12">
-            @if (!string.IsNullOrEmpty(ViewBag.Content))
+    <partial name="_PageContent" />
+    @if (classes.Any())
+    {
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            @foreach (var c in classes)
             {
-                <div class="page-content mb-4">
-                    @Html.Raw(ViewBag.Content)
-                </div>
+                var label = string.IsNullOrEmpty(c.Section) ? c.ClassNameEn : $"{c.ClassNameEn} ({c.Section})";
+                <a asp-action="Routine" asp-route-className="@c.ClassNameEn" asp-route-section="@c.Section"
+                   class="btn btn-sm @(c.ClassNameEn == selectedClass && c.Section == selectedSection ? "btn-primary" : "btn-outline-primary")">@label</a>
             }
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                @(isRtl ? "শ্রেণি রুটিনের তথ্য শীঘ্রই যুক্ত করা হবে।" : "Class routine data will be available soon.")
-            </div>
         </div>
-    </div>
+    }
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>@(isRtl ? "ক্লাস রুটিন শীঘ্রই প্রকাশ করা হবে।" : "The class routine will be published soon.")</div>
+    }
+    else
+    {
+        <h4 class="mb-3">@(isRtl ? Model.First().ClassNameBn : Model.First().ClassNameEn) @(string.IsNullOrEmpty(selectedSection) ? "" : $"— {(isRtl ? "শাখা" : "Section")} {selectedSection}")</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center bg-white">
+                <thead class="table-primary">
+                    <tr>
+                        <th>@(isRtl ? "দিন" : "Day")</th>
+                        @foreach (var slot in slots)
+                        {
+                            <th class="small">@Time(slot.StartTime)<br>– @Time(slot.EndTime)</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var day in days)
+                    {
+                        <tr>
+                            <th class="table-light">@(isRtl ? AcademicOptions.DayNamesBn[day] : day)</th>
+                            @foreach (var slot in slots)
+                            {
+                                var period = Model.FirstOrDefault(r => r.DayOfWeek == day && r.StartTime == slot.StartTime && r.EndTime == slot.EndTime);
+                                <td>
+                                    @if (period is not null)
+                                    {
+                                        <div class="fw-semibold">@(isRtl ? period.SubjectBn : period.SubjectEn)</div>
+                                        var teacher = isRtl && !string.IsNullOrWhiteSpace(period.TeacherBn) ? period.TeacherBn : period.TeacherEn;
+                                        @if (!string.IsNullOrWhiteSpace(teacher)) { <small class="text-muted d-block">@teacher</small> }
+                                        @if (!string.IsNullOrWhiteSpace(period.Room)) { <small class="text-muted">@(isRtl ? "কক্ষ" : "Room") @period.Room</small> }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>

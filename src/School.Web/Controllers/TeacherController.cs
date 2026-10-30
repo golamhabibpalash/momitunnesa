@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using School.Application.Services.Interfaces;
 using School.Domain.Enums;
+using School.Web.Helpers;
 using School.Web.Models;
 
 namespace School.Web.Controllers;
@@ -22,17 +23,27 @@ public class TeacherController : BaseController
             return View(new TeacherListViewModel());
 
         var teachers = result.Data
-            .Where(t => !designation.HasValue || t.Designation == designation.Value.ToString())
+            .Where(t => !designation.HasValue
+                || t.Designation == designation.Value.ToString()
+                || (designation == Designation.HeadTeacher && t.IsHeadTeacher)
+                || (designation == Designation.AssistantHeadTeacher && t.IsAssistantHeadTeacher))
+            .OrderByDescending(t => t.IsHeadTeacher)
+            .ThenByDescending(t => t.IsAssistantHeadTeacher)
+            .ThenBy(t => t.SortOrder)
             .Select(t => new TeacherItem
             {
                 Id = t.Id,
                 Name = GetLocalizedContent(t.NameEn, t.NameBn),
                 NameBn = t.NameBn,
-                Designation = t.Designation,
-                DesignationBn = t.Designation,
+                Designation = t.IsHeadTeacher ? CategoryHelper.Label(Designation.HeadTeacher)
+                    : t.IsAssistantHeadTeacher ? CategoryHelper.Label(Designation.AssistantHeadTeacher)
+                    : CategoryHelper.Label<Designation>(t.Designation),
                 Qualification = GetLocalizedContent(t.QualificationEn ?? "", t.QualificationBn ?? ""),
                 ImageUrl = t.ImageUrl,
-                Subject = GetLocalizedContent(t.SubjectEn ?? "", t.SubjectBn ?? "")
+                Subject = GetLocalizedContent(t.SubjectEn ?? "", t.SubjectBn ?? ""),
+                Email = t.Email,
+                Phone = t.Phone,
+                IsHeadTeacher = t.IsHeadTeacher
             }).ToList();
 
         var viewModel = new TeacherListViewModel
@@ -57,7 +68,7 @@ public class TeacherController : BaseController
             Id = teacher.Id,
             Name = GetLocalizedContent(teacher.NameEn, teacher.NameBn),
             NameBn = teacher.NameBn,
-            Designation = teacher.Designation,
+            Designation = CategoryHelper.Label<Designation>(teacher.Designation),
             Qualification = GetLocalizedContent(teacher.QualificationEn ?? "", teacher.QualificationBn ?? ""),
             ImageUrl = teacher.ImageUrl,
             Email = teacher.Email,

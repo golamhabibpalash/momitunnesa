@@ -1,17 +1,19 @@
 @model School.Application.DTOs.Event.EventCreateDto
 @{
-    ViewData["Title"] = "Create Event";
+    int? eventId = ViewBag.EventId;
+    var isEdit = eventId.HasValue;
+    ViewData["Title"] = isEdit ? "Edit Event" : "Create Event";
     ViewBag.ActiveMenu = "Events";
 }
 
 <div class="page-header">
     <div>
-        <h2><i class="fas fa-plus-circle me-2"></i>Create New Event</h2>
+        <h2><i class="fas @(isEdit ? "fa-edit" : "fa-plus-circle") me-2"></i>@(isEdit ? "Edit Event" : "Create New Event")</h2>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Event" asp-action="Index">Events</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Create</li>
+                <li class="breadcrumb-item active" aria-current="page">@(isEdit ? "Edit" : "Create")</li>
             </ol>
         </nav>
     </div>
@@ -20,9 +22,9 @@
     </a>
 </div>
 
-<form asp-area="Admin" asp-controller="Event" asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<form asp-area="Admin" asp-controller="Event" asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@eventId" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="ImageUrl" />
+    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
 
     <div class="row g-3">
         <div class="col-lg-8">
@@ -31,31 +33,29 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label asp-for="TitleEn" class="form-label required">Title (English)</label>
-                        <input asp-for="TitleEn" class="form-control" placeholder="Enter event title" required>
-                        <span asp-validation-for="TitleEn" class="text-danger"></span>
+                        <input asp-for="TitleEn" class="form-control" placeholder="Enter event title in English">
                     </div>
                     <div class="mb-3">
                         <label asp-for="TitleBn" class="form-label required">Title (Bangla)</label>
-                        <input asp-for="TitleBn" class="form-control" placeholder="বাংলায় ইভেন্টের শিরোনাম" required>
-                        <span asp-validation-for="TitleBn" class="text-danger"></span>
+                        <input asp-for="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম লিখুন">
                     </div>
-                    <div class="row g-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-md-4">
                             <label asp-for="EventDate" class="form-label required">Event Date</label>
-                            <input asp-for="EventDate" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required>
+                            <input asp-for="EventDate" type="date" class="form-control" value="@Model.EventDate.ToString("yyyy-MM-dd")">
                         </div>
                         <div class="col-md-4">
                             <label asp-for="StartTime" class="form-label">Start Time</label>
-                            <input asp-for="StartTime" type="time" class="form-control">
+                            <input asp-for="StartTime" type="time" class="form-control" value="@Model.StartTime?.ToString(@"hh\:mm")">
                         </div>
                         <div class="col-md-4">
                             <label asp-for="EndTime" class="form-label">End Time</label>
-                            <input asp-for="EndTime" type="time" class="form-control">
+                            <input asp-for="EndTime" type="time" class="form-control" value="@Model.EndTime?.ToString(@"hh\:mm")">
                         </div>
                     </div>
-                    <div class="mb-3 mt-3">
+                    <div class="mb-3">
                         <label asp-for="Location" class="form-label">Location</label>
-                        <input asp-for="Location" class="form-control" placeholder="School Auditorium, Playground, etc.">
+                        <input asp-for="Location" class="form-control" placeholder="e.g., School Auditorium">
                     </div>
                     <div class="mb-3">
                         <label asp-for="DescriptionEn" class="form-label">Description (English)</label>
@@ -74,21 +74,35 @@
                 <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label asp-for="ImageUrl" class="form-label">Event Image URL</label>
-                        <input asp-for="ImageUrl" class="form-control" placeholder="/uploads/events/photo.jpg">
-                    </div>
-                    <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input asp-for="IsFeatured" class="form-check-input" role="switch">
+                            <input asp-for="IsFeatured" class="form-check-input" type="checkbox" role="switch">
                             <label asp-for="IsFeatured" class="form-check-label">Featured Event</label>
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-0">
                         <div class="form-check form-switch">
-                            <input asp-for="IsActive" class="form-check-input" role="switch" checked>
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch">
                             <label asp-for="IsActive" class="form-check-label">Active</label>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-image me-2"></i>Event Image</div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-3 text-center">
+                            <img src="@Model.ImageUrl" class="img-fluid rounded mb-2" style="max-height:150px;" alt="Event image" />
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="checkbox" name="removeImage" value="true" id="removeImage">
+                                <label class="form-check-label text-danger" for="removeImage">Remove image</label>
+                            </div>
+                        </div>
+                    }
+                    <input type="file" name="Image" class="form-control" accept="image/*">
+                    <small class="text-muted">Recommended: 1200x630px, max 10MB</small>
                 </div>
             </div>
         </div>
@@ -97,20 +111,12 @@
     <div class="d-flex justify-content-end gap-2 mt-3">
         <a asp-area="Admin" asp-controller="Event" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary px-4">
-            <i class="fas fa-save me-1"></i>Save Event
+            <i class="fas fa-save me-1"></i>@(isEdit ? "Update Event" : "Save Event")
         </button>
     </div>
 </form>
 
 @section Scripts {
-    <script src="~/lib/tinymce/tinymce.min.js"></script>
-    <script>
-        tinymce.init({
-            selector: '.tinymce',
-            height: 350,
-            plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
-            toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-            promotion: false
-        });
-    </script>
+    @{ ViewData["EditorHeight"] = 350; }
+    <partial name="_RichTextEditor" />
 }

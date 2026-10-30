@@ -1,0 +1,35 @@
+@model List<School.Application.DTOs.Academic.AcademicCalendarDto>
+@{
+    ViewData["Title"] = "Academic Calendar";
+    ViewBag.ActiveMenu = "AcademicCalendar";
+}
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-calendar-check me-2"></i>Academic Calendar</h2>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Academic Calendar</li>
+        </ol></nav>
+    </div>
+    <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Add Date</a>
+</div>
+<div class="card"><div class="card-body"><div class="table-responsive">
+    <table class="table table-hover table-datatable">
+        <thead><tr><th>Date</th><th>Title</th><th>Description</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td data-order="@item.EventDate.Ticks">@item.EventDate.ToString("dd MMM yyyy (ddd)")</td>
+                    <td>@item.TitleEn<br><small class="text-muted">@item.TitleBn</small></td>
+                    <td class="text-truncate" style="max-width:260px;">@item.DescriptionEn</td>
+                    <td>@if (item.IsActive) { <span class="badge bg-success">Active</span> } else { <span class="badge bg-secondary">Hidden</span> }</td>
+                    <td><div class="d-flex gap-1">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></a>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Delete this date?');"><button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button></form>
+                    </div></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div></div></div>
