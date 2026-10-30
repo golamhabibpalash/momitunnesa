@@ -1,95 +1,49 @@
 @model School.Web.Models.TeacherListViewModel
+@using School.Domain.Enums
 @{
     ViewData["Title"] = "Teachers";
     var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
-    var featuredTeacher = Model.Teachers?.FirstOrDefault();
+    var filters = new[] { Designation.HeadTeacher, Designation.AssistantHeadTeacher, Designation.SeniorTeacher, Designation.JuniorTeacher };
 }
 <div class="teachers-page">
     <div class="row g-4">
-        <div class="col-lg-8">
+        <div class="col-lg-9">
             <div class="teacher-filters mb-4">
                 <div class="d-flex flex-wrap gap-2">
                     <a href="@Url.Action("Index")" class="btn btn-sm @(string.IsNullOrEmpty(Model.Designation) ? "btn-primary" : "btn-outline-primary")">@(isRtl ? "সব" : "All")</a>
-                    <a href="@Url.Action("Index", new { designation = "head-teacher" })" class="btn btn-sm @(Model.Designation == "head-teacher" ? "btn-primary" : "btn-outline-primary")">@(isRtl ? "প্রধান শিক্ষক" : "Head Teacher")</a>
-                    <a href="@Url.Action("Index", new { designation = "assistant-teacher" })" class="btn btn-sm @(Model.Designation == "assistant-teacher" ? "btn-primary" : "btn-outline-primary")">@(isRtl ? "সহকারী শিক্ষক" : "Assistant Teacher")</a>
-                    <a href="@Url.Action("Index", new { designation = "senior-teacher" })" class="btn btn-sm @(Model.Designation == "senior-teacher" ? "btn-primary" : "btn-outline-primary")">@(isRtl ? "সিনিয়র শিক্ষক" : "Senior Teacher")</a>
+                    @foreach (var d in filters)
+                    {
+                        <a href="@Url.Action("Index", new { designation = d.ToString() })" class="btn btn-sm @(Model.Designation == d.ToString() ? "btn-primary" : "btn-outline-primary")">@CategoryHelper.Label(d)</a>
+                    }
                 </div>
             </div>
-            <div class="row g-4">
-                @if (featuredTeacher != null)
-                {
-                    <div class="col-12">
-                        <div class="teacher-card featured-teacher d-flex align-items-center p-4 bg-primary text-white rounded">
-                            <div class="flex-shrink-0">
-                                <img src="@(featuredTeacher.ImageUrl ?? "/images/avatar.jpg")" alt="@(isRtl ? featuredTeacher.NameBn ?? featuredTeacher.Name : featuredTeacher.Name)" class="rounded-circle" width="120" height="120" onerror="this.src='/images/avatar.jpg'" />
-                            </div>
-                            <div class="flex-grow-1 ms-4">
-                                <h4>@(isRtl ? featuredTeacher.NameBn ?? featuredTeacher.Name : featuredTeacher.Name)</h4>
-                                <p class="mb-1"><strong>@(isRtl ? featuredTeacher.DesignationBn ?? featuredTeacher.Designation : featuredTeacher.Designation)</strong></p>
-                                @if (!string.IsNullOrEmpty(featuredTeacher.Qualification))
-                                {
-                                    <p class="mb-0"><i class="fas fa-graduation-cap me-2"></i>@featuredTeacher.Qualification</p>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
-                @if (Model.Teachers != null)
-                {
-                    foreach (var teacher in Model.Teachers)
+            @if (Model.Teachers == null || !Model.Teachers.Any())
+            {
+                <div class="alert alert-light border text-center py-5">@(isRtl ? "কোনো শিক্ষক পাওয়া যায়নি।" : "No teachers found.")</div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    @foreach (var teacher in Model.Teachers)
                     {
-                        <div class="col-md-6">
-                            <div class="teacher-card text-center p-4 shadow-sm rounded">
-                                <div class="teacher-image mb-3">
-                                    <img src="@(teacher.ImageUrl ?? "/images/avatar.jpg")" alt="@(isRtl ? teacher.NameBn ?? teacher.Name : teacher.Name)"
-                                         class="img-fluid rounded-circle" width="150" height="150"
-                                         onerror="this.src='/images/avatar.jpg'" />
-                                </div>
-                                <h5 class="teacher-name">
-                                    <a asp-action="Details" asp-route-id="@teacher.Id">
-                                        @(isRtl ? teacher.NameBn ?? teacher.Name : teacher.Name)
-                                    </a>
-                                </h5>
-                                <p class="teacher-designation text-primary mb-1">
-                                    @(isRtl ? teacher.DesignationBn ?? teacher.Designation : teacher.Designation)
-                                </p>
-                                @if (!string.IsNullOrEmpty(teacher.Qualification))
-                                {
-                                    <p class="teacher-qualification text-muted small">
-                                        <i class="fas fa-graduation-cap me-1"></i>@teacher.Qualification
-                                    </p>
-                                }
-                                <div class="teacher-social">
-                                    <a href="#" class="btn btn-sm btn-outline-primary"><i class="fab fa-facebook-f"></i></a>
-                                    <a href="#" class="btn btn-sm btn-outline-info"><i class="fab fa-linkedin-in"></i></a>
-                                    <a href="mailto:teacher@momitunnesa.edu.bd" class="btn btn-sm btn-outline-secondary"><i class="fas fa-envelope"></i></a>
-                                </div>
-                            </div>
+                        var card = new PersonCardModel
+                        {
+                            Name = teacher.Name,
+                            Role = teacher.Designation,
+                            Meta = string.Join(" • ", new[] { teacher.Subject, teacher.Qualification }.Where(x => !string.IsNullOrWhiteSpace(x))),
+                            ImageUrl = teacher.ImageUrl,
+                            Email = teacher.Email,
+                            Phone = teacher.Phone,
+                            DetailsUrl = Url.Action("Details", new { id = teacher.Id })
+                        };
+                        <div class="col-xl-4 col-md-6">
+                            <partial name="_PersonCard" model="card" />
                         </div>
                     }
-                }
-            </div>
-            @if (Model.TotalPages > 1)
-            {
-                <nav aria-label="Pagination" class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
-                            <a class="page-link" href="@Url.Action("Index", new { page = Model.CurrentPage - 1, designation = Model.Designation })"><i class="fas fa-chevron-left"></i></a>
-                        </li>
-                        @for (int p = 1; p <= Model.TotalPages; p++)
-                        {
-                            <li class="page-item @(p == Model.CurrentPage ? "active" : "")">
-                                <a class="page-link" href="@Url.Action("Index", new { page = p, designation = Model.Designation })">@p</a>
-                            </li>
-                        }
-                        <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
-                            <a class="page-link" href="@Url.Action("Index", new { page = Model.CurrentPage + 1, designation = Model.Designation })"><i class="fas fa-chevron-right"></i></a>
-                        </li>
-                    </ul>
-                </nav>
+                </div>
             }
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <aside>
                 @await Html.PartialAsync("_ImportantLinks")
             </aside>

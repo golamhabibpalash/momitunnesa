@@ -1,0 +1,50 @@
+@model School.Application.DTOs.Academic.RoutineUpdateDto
+@{
+    var isEdit = Model.Id > 0;
+    ViewData["Title"] = isEdit ? "Edit Period" : "Add Period";
+    ViewBag.ActiveMenu = "Routine";
+}
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-table me-2"></i>@ViewData["Title"]</h2>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Routine</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@(isEdit ? "Edit" : "Create")</li>
+        </ol></nav>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back</a>
+</div>
+<form asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@(isEdit ? Model.Id : null)" method="post">
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    <div class="card"><div class="card-body"><div class="row g-3">
+        <div class="col-md-4"><label asp-for="ClassNameEn" class="form-label required"></label><input asp-for="ClassNameEn" class="form-control" list="classOptions"></div>
+        <div class="col-md-4"><label asp-for="ClassNameBn" class="form-label required"></label><input asp-for="ClassNameBn" class="form-control" placeholder="যেমন: ৬ষ্ঠ শ্রেণি"></div>
+        <div class="col-md-4"><label asp-for="Section" class="form-label"></label><input asp-for="Section" class="form-control" placeholder="e.g., A"></div>
+        <div class="col-md-4">
+            <label asp-for="DayOfWeek" class="form-label required"></label>
+            <select asp-for="DayOfWeek" class="form-select">
+                @foreach (var d in AcademicOptions.Days)
+                {
+                    <option value="@d" selected="@(Model.DayOfWeek == d)">@d</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4"><label asp-for="StartTime" class="form-label required"></label><input asp-for="StartTime" type="time" class="form-control" value="@Model.StartTime.ToString(@"hh\:mm")"></div>
+        <div class="col-md-4"><label asp-for="EndTime" class="form-label required"></label><input asp-for="EndTime" type="time" class="form-control" value="@Model.EndTime.ToString(@"hh\:mm")"></div>
+        <div class="col-md-6"><label asp-for="SubjectEn" class="form-label required"></label><input asp-for="SubjectEn" class="form-control"></div>
+        <div class="col-md-6"><label asp-for="SubjectBn" class="form-label required"></label><input asp-for="SubjectBn" class="form-control"></div>
+        <div class="col-md-6"><label asp-for="TeacherEn" class="form-label"></label><input asp-for="TeacherEn" class="form-control"></div>
+        <div class="col-md-6"><label asp-for="TeacherBn" class="form-label"></label><input asp-for="TeacherBn" class="form-control"></div>
+        <div class="col-md-4"><label asp-for="Room" class="form-label"></label><input asp-for="Room" class="form-control"></div>
+        <div class="col-md-8 d-flex align-items-end"><div class="form-check form-switch mb-2"><input asp-for="IsActive" class="form-check-input" role="switch"><label asp-for="IsActive" class="form-check-label">Show on website</label></div></div>
+    </div></div></div>
+    <partial name="_ClassDatalist" />
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        @if (!isEdit)
+        {
+            <button type="submit" name="addAnother" value="true" class="btn btn-outline-primary"><i class="fas fa-plus me-1"></i>Save &amp; Add Another</button>
+        }
+        <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-1"></i>Save</button>
+    </div>
+</form>

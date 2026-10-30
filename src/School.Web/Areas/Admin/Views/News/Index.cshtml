@@ -1,6 +1,8 @@
+@model List<NewsDto>
 @{
     ViewData["Title"] = "News";
     ViewBag.ActiveMenu = "News";
+    var sl = 0;
 }
 
 <div class="page-header">
@@ -14,7 +16,7 @@
         </nav>
     </div>
     <a asp-area="Admin" asp-controller="News" asp-action="Create" class="btn btn-primary">
-        <i class="fas fa-plus me-1"></i>Create New News
+        <i class="fas fa-plus me-1"></i>Add News
     </a>
 </div>
 
@@ -30,62 +32,51 @@
                         <th>Category</th>
                         <th>Featured</th>
                         <th>Status</th>
-                        <th>Date</th>
+                        <th>Publish Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td><img src="https://placehold.co/60x40/667eea/white?text=News" class="preview-img" alt="News"></td>
-                        <td>Annual Science Fair 2026 Winners Announced</td>
-                        <td><span class="badge bg-info">Science</span></td>
-                        <td><i class="fas fa-star text-warning"></i></td>
-                        <td><span class="badge bg-success">Published</span></td>
-                        <td>Jun 10, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="News" asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed) { window.location.href='@Url.Action("Delete", "News", new { area = "Admin", id = 1 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td><img src="https://placehold.co/60x40/43e97b/white?text=News" class="preview-img" alt="News"></td>
-                        <td>Inter-School Debate Competition Results</td>
-                        <td><span class="badge bg-primary">Co-Curricular</span></td>
-                        <td><i class="far fa-star text-muted"></i></td>
-                        <td><span class="badge bg-success">Published</span></td>
-                        <td>May 28, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="News" asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed) { window.location.href='@Url.Action("Delete", "News", new { area = "Admin", id = 2 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td><img src="https://placehold.co/60x40/f6d365/white?text=News" class="preview-img" alt="News"></td>
-                        <td>New Library Inauguration Ceremony</td>
-                        <td><span class="badge bg-success">Infrastructure</span></td>
-                        <td><i class="fas fa-star text-warning"></i></td>
-                        <td><span class="badge bg-info">Draft</span></td>
-                        <td>Jun 12, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="News" asp-action="Edit" asp-route-id="3" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed) { window.location.href='@Url.Action("Delete", "News", new { area = "Admin", id = 3 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    @foreach (var item in Model)
+                    {
+                        sl++;
+                        <tr>
+                            <td>@sl</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                {
+                                    <img src="@item.ImageUrl" class="preview-img" alt="" style="width:60px;height:40px;object-fit:cover;border-radius:4px;">
+                                }
+                                else
+                                {
+                                    <span class="text-muted"><i class="far fa-image"></i></span>
+                                }
+                            </td>
+                            <td>@item.TitleEn</td>
+                            <td><span class="badge bg-info">@(CategoryHelper.Label<NewsCategory>(item.Category))</span></td>
+                            <td>@if (item.IsFeatured) { <i class="fas fa-star text-warning"></i> } else { <i class="far fa-star text-muted"></i> }</td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success">Published</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Draft</span>
+                                }
+                            </td>
+                            <td data-order="@item.PublishDate.Ticks">@item.PublishDate.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <div class="table-actions d-flex gap-1">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></a>
+                                    <a asp-area="" asp-controller="News" asp-action="Details" asp-route-id="@item.Id" target="_blank" class="btn btn-sm btn-outline-secondary" title="View on website"><i class="fas fa-eye"></i></a>
+                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Delete this news article?');">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>

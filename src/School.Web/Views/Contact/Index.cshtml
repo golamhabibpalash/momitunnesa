@@ -9,7 +9,12 @@
             <div class="contact-form-wrapper card shadow-sm">
                 <div class="card-body p-4">
                     <h3 class="card-title mb-4">@(isRtl ? "আমাদের একটি বার্তা পাঠান" : "Send Us a Message")</h3>
-                    <form asp-action="Index" asp-controller="Contact" method="post" class="needs-validation" novalidate>
+                    <form asp-action="Submit" asp-controller="Contact" method="post" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        @if (TempData["SuccessMessage"] is string contactSuccess)
+                        {
+                            <div class="alert alert-success">@(isRtl ? "আপনার বার্তা সফলভাবে পাঠানো হয়েছে। আমরা শীঘ্রই যোগাযোগ করব।" : contactSuccess)</div>
+                        }
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label asp-for="Name" class="form-label">@(isRtl ? "আপনার নাম" : "Your Name") *</label>

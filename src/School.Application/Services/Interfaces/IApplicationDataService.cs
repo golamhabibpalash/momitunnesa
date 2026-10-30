@@ -14,4 +14,14 @@ public interface IApplicationDataService
     Task<SchoolInfo?> GetSchoolInfoAsync();
     Task AddOrUpdateSchoolInfoAsync(SchoolInfo schoolInfo);
     Task<int> SaveChangesAsync();
+
+    Task LogActivityAsync(ActivityLog log);
+
+    /// <summary>Newest first; <paramref name="search"/> matches user, action, section or description.</summary>
+    Task<(List<ActivityLog> Items, int TotalCount)> GetActivityLogsAsync(int page, int pageSize, string? search);
+
+    Task<int> DeleteActivityLogsOlderThanAsync(DateTime cutoffUtc);
+
+    /// <summary>Writes every content table (not user accounts or passwords) as one JSON document.</summary>
+    Task ExportContentAsJsonAsync(Stream output);
 }

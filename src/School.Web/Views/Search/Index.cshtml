@@ -33,7 +33,7 @@
                     @foreach (var item in results)
                     {
                         <div class="result-item p-3 border-bottom">
-                            <h5><a href="@item.Url">@(isRtl && !string.IsNullOrEmpty(item.TypeBn) ? item.Title : item.Title)</a></h5>
+                            <h5><a href="@item.Url">@item.Title</a></h5>
                             @if (!string.IsNullOrEmpty(item.Description))
                             {
                                 <p class="result-snippet">@item.Description</p>

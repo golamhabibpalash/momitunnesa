@@ -5,30 +5,33 @@
 }
 <div class="staff-page">
     <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="row g-4">
-                @if (Model.Staff != null)
-                {
-                    foreach (var staff in Model.Staff)
+        <div class="col-lg-9">
+            @if (Model.Staff == null || !Model.Staff.Any())
+            {
+                <div class="alert alert-light border text-center py-5">@(isRtl ? "কোনো কর্মচারী পাওয়া যায়নি।" : "No staff found.")</div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    @foreach (var staff in Model.Staff)
                     {
-                        <div class="col-md-4 col-sm-6">
-                            <div class="staff-card text-center p-3 shadow-sm rounded">
-                                <div class="staff-image mb-3">
-                                    <img src="@(staff.ImageUrl ?? "/images/avatar.jpg")" alt="@(isRtl ? staff.NameBn ?? staff.Name : staff.Name)"
-                                         class="img-fluid rounded-circle" width="120" height="120"
-                                         onerror="this.src='/images/avatar.jpg'" />
-                                </div>
-                                <h6 class="staff-name">@(isRtl ? staff.NameBn ?? staff.Name : staff.Name)</h6>
-                                <p class="staff-designation text-primary small mb-1">
-                                    @(isRtl ? staff.DesignationBn ?? staff.Designation : staff.Designation)
-                                </p>
-                            </div>
+                        var card = new PersonCardModel
+                        {
+                            Name = staff.Name,
+                            Role = staff.Designation,
+                            Meta = staff.Department,
+                            ImageUrl = staff.ImageUrl,
+                            Email = staff.Email,
+                            Phone = staff.Phone
+                        };
+                        <div class="col-xl-4 col-md-6">
+                            <partial name="_PersonCard" model="card" />
                         </div>
                     }
-                }
-            </div>
+                </div>
+            }
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <aside>
                 @await Html.PartialAsync("_ImportantLinks")
             </aside>

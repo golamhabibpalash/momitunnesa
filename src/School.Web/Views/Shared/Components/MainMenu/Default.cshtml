@@ -1,0 +1,42 @@
+@model IEnumerable<School.Application.Services.Interfaces.MenuDto>
+@* Admin-managed "Main" menu items, rendered after the built-in navigation. *@
+@{
+    string Title(School.Application.Services.Interfaces.MenuDto m) => LocalizationHelper.GetLocalizedContent(m.Title, string.IsNullOrWhiteSpace(m.TitleBn) ? m.Title : m.TitleBn);
+    string Href(School.Application.Services.Interfaces.MenuDto m) => !string.IsNullOrWhiteSpace(m.Url)
+        ? m.Url
+        : !string.IsNullOrWhiteSpace(m.Controller) ? (Url.Action(m.Action ?? "Index", m.Controller) ?? "#") : "#";
+    string? Rel(School.Application.Services.Interfaces.MenuDto m) => m.Target == "_blank" ? "noopener" : null;
+}
+@foreach (var menu in Model.Where(m => m.IsActive))
+{
+    var children = menu.Children.Where(c => c.IsActive).OrderBy(c => c.SortOrder).ToList();
+    if (children.Any())
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                @if (!string.IsNullOrEmpty(menu.Icon)) { <i class="@menu.Icon"></i> }
+                @Title(menu)
+            </a>
+            <ul class="dropdown-menu">
+                @if (!string.IsNullOrWhiteSpace(menu.Url))
+                {
+                    <li><a class="dropdown-item" href="@Href(menu)" target="@menu.Target" rel="@Rel(menu)">@Title(menu)</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                }
+                @foreach (var child in children)
+                {
+                    <li><a class="dropdown-item" href="@Href(child)" target="@child.Target" rel="@Rel(child)">@Title(child)</a></li>
+                }
+            </ul>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Href(menu)" target="@menu.Target" rel="@Rel(menu)">
+                @if (!string.IsNullOrEmpty(menu.Icon)) { <i class="@menu.Icon"></i> }
+                @Title(menu)
+            </a>
+        </li>
+    }
+}

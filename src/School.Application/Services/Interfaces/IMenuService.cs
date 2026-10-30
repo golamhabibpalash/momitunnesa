@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using School.Application.DTOs.Common;
 using School.Application.DTOs.Settings;
 using School.Domain.Enums;
@@ -9,6 +10,7 @@ public class MenuDto
     public int Id { get; set; }
     public int? ParentMenuId { get; set; }
     public string Title { get; set; } = string.Empty;
+    public string? TitleBn { get; set; }
     public string? Url { get; set; }
     public string? Icon { get; set; }
     public string MenuType { get; set; } = string.Empty;
@@ -26,6 +28,7 @@ public class MenuCreateDto
 {
     public int? ParentMenuId { get; set; }
     public string Title { get; set; } = string.Empty;
+    public string? TitleBn { get; set; }
     public string? Url { get; set; }
     public string? Icon { get; set; }
     public MenuType MenuType { get; set; }

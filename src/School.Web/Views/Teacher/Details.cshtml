@@ -14,9 +14,9 @@
         <div class="col-lg-4">
             <div class="teacher-photo-card card shadow-sm">
                 <div class="card-body text-center">
-                    <img src="@(Model?.ImageUrl ?? "/images/avatar.jpg")" alt="@Model?.Name"
+                    <img src="@(Model?.ImageUrl ?? "/images/avatar.svg")" alt="@Model?.Name"
                          class="img-fluid rounded-circle mb-3" width="200" height="200"
-                         onerror="this.src='/images/avatar.jpg'" />
+                         onerror="this.src='/images/avatar.svg'" />
                     <h4 class="teacher-detail-name">@(isRtl ? Model?.NameBn ?? Model?.Name : Model?.Name)</h4>
                     <p class="teacher-detail-designation text-primary">@(isRtl ? Model?.DesignationBn ?? Model?.Designation : Model?.Designation)</p>
                     <p class="teacher-detail-qualification"><i class="fas fa-graduation-cap me-2"></i>@Model?.Qualification</p>

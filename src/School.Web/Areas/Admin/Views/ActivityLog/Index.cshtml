@@ -1,0 +1,70 @@
+@model List<School.Domain.Entities.ActivityLog>
+@{
+    ViewData["Title"] = "Activity Log";
+    ViewBag.ActiveMenu = "ActivityLog";
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+    string? search = ViewBag.Search;
+}
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-history me-2"></i>Activity Log</h2>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Activity Log</li>
+        </ol></nav>
+    </div>
+    <form asp-action="Clear" method="post" class="d-flex gap-2 align-items-center" onsubmit="return confirm('Remove old log entries?');">
+        <select name="olderThanDays" class="form-select form-select-sm" style="width:auto;">
+            <option value="30">Older than 30 days</option>
+            <option value="90" selected>Older than 90 days</option>
+            <option value="365">Older than 1 year</option>
+        </select>
+        <button type="submit" class="btn btn-sm btn-outline-danger text-nowrap"><i class="fas fa-broom me-1"></i>Clean up</button>
+    </form>
+</div>
+<div class="card">
+    <div class="card-header">
+        <form method="get" class="d-flex gap-2">
+            <input type="search" name="search" value="@search" class="form-control form-control-sm" placeholder="Search by user, section, action or description" style="max-width:360px;">
+            <button type="submit" class="btn btn-sm btn-primary">Search</button>
+            <span class="ms-auto small text-muted align-self-center">@ViewBag.TotalCount entries</span>
+        </form>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light"><tr><th>Time</th><th>User</th><th>Section</th><th>Action</th><th>Description</th><th>IP</th></tr></thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="6" class="text-center text-muted py-4">No activity recorded yet. Changes made in the admin panel will appear here.</td></tr>
+                    }
+                    @foreach (var log in Model)
+                    {
+                        var actionClass = (log.Action ?? "").StartsWith("Delete") ? "bg-danger" : (log.Action ?? "").StartsWith("Create") || (log.Action ?? "").StartsWith("Upload") ? "bg-success" : "bg-info";
+                        <tr>
+                            <td class="text-nowrap">@log.Timestamp.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</td>
+                            <td>@log.UserName</td>
+                            <td>@log.Controller</td>
+                            <td><span class="badge @actionClass">@log.Action</span></td>
+                            <td>@log.Description</td>
+                            <td class="small text-muted">@log.IPAddress</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @if (totalPages > 1)
+    {
+        <div class="card-footer">
+            <ul class="pagination pagination-sm justify-content-center mb-0">
+                @for (var p = Math.Max(1, currentPage - 5); p <= Math.Min(totalPages, currentPage + 5); p++)
+                {
+                    <li class="page-item @(p == currentPage ? "active" : "")"><a class="page-link" asp-action="Index" asp-route-page="@p" asp-route-search="@search">@p</a></li>
+                }
+            </ul>
+        </div>
+    }
+</div>

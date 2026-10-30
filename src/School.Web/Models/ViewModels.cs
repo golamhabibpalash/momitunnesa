@@ -186,6 +186,9 @@ public class TeacherItem
     public string? Qualification { get; set; }
     public string? ImageUrl { get; set; }
     public string? Subject { get; set; }
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
+    public bool IsHeadTeacher { get; set; }
 }
 
 public class TeacherViewModel
@@ -221,12 +224,25 @@ public class StaffItem
     public string? NameBn { get; set; }
     public string? Designation { get; set; }
     public string? DesignationBn { get; set; }
+    public string? Department { get; set; }
     public string? ImageUrl { get; set; }
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
 }
 
 public class GalleryIndexViewModel
 {
     public List<GalleryAlbum>? Albums { get; set; }
+    public List<GalleryVideoItem> Videos { get; set; } = new();
+}
+
+public class GalleryVideoItem
+{
+    public int Id { get; set; }
+    public string? Title { get; set; }
+    public string? Description { get; set; }
+    public string? Url { get; set; }
+    public string? ThumbnailUrl { get; set; }
 }
 
 public class GalleryAlbum
@@ -311,4 +327,15 @@ public class SearchResult
     public string? Type { get; set; }
     public string? TypeBn { get; set; }
     public string? Date { get; set; }
+}
+
+public class PersonCardModel
+{
+    public string? Name { get; set; }
+    public string? Role { get; set; }
+    public string? Meta { get; set; }
+    public string? ImageUrl { get; set; }
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
+    public string? DetailsUrl { get; set; }
 }

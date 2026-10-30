@@ -1,0 +1,36 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    // Self-hosted TinyMCE (wwwroot/lib/tinymce). Do not switch to cdn.tiny.cloud: without an API key
+    // the cloud build shows an "API key required" prompt inside the editor.
+    var height = ViewData["EditorHeight"] as int? ?? 450;
+    var token = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+<script src="~/lib/tinymce/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea.tinymce',
+        height: @height,
+        menubar: 'edit view insert format table',
+        plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
+        toolbar: 'undo redo | blocks | bold italic underline forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | removeformat code fullscreen',
+        promotion: false,
+        branding: false,
+        convert_urls: false,
+        images_upload_handler: function (blobInfo) {
+            const data = new FormData();
+            data.append('file', blobInfo.blob(), blobInfo.filename());
+            return fetch('@Url.Action("EditorUpload", "Media", new { area = "Admin" })', {
+                method: 'POST',
+                body: data,
+                headers: { 'RequestVerificationToken': '@token' }
+            }).then(function (r) { return r.json(); }).then(function (json) {
+                if (!json.location) throw new Error(json.error || 'Upload failed');
+                return json.location;
+            });
+        },
+        setup: function (editor) {
+            // Keep the underlying textarea in sync so the posted form always carries the content.
+            editor.on('change input undo redo', function () { editor.save(); });
+        }
+    });
+</script>

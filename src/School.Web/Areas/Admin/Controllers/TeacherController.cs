@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using School.Application.DTOs.Teacher;
 using School.Application.Services.Interfaces;
+using School.Domain.Enums;
 
 namespace School.Web.Areas.Admin.Controllers;
 
@@ -9,14 +10,17 @@ namespace School.Web.Areas.Admin.Controllers;
 public class TeacherController : BaseAdminController
 {
     private readonly ITeacherService _teacherService;
+    private readonly IMediaService _mediaService;
 
     public TeacherController(
         ITeacherService teacherService,
+        IMediaService mediaService,
         ILogger<BaseAdminController> logger,
         IHttpContextAccessor httpContextAccessor)
         : base(logger, httpContextAccessor)
     {
         _teacherService = teacherService;
+        _mediaService = mediaService;
     }
 
     public async Task<IActionResult> Index()
@@ -29,19 +33,23 @@ public class TeacherController : BaseAdminController
             return View(new List<TeacherDto>());
         }
 
-        return View(result.Data.OrderBy(t => t.SortOrder));
+        return View(result.Data.OrderBy(t => t.SortOrder).ThenBy(t => t.NameEn).ToList());
     }
 
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new TeacherCreateDto());
+        return View(new TeacherCreateDto { Designation = Designation.JuniorTeacher });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(TeacherCreateDto model)
+    public async Task<IActionResult> Create(TeacherCreateDto model, IFormFile? Photo)
     {
+        var uploadedUrl = await UploadFileAsync(_mediaService, Photo, "teachers", nameof(model.ImageUrl));
+        if (uploadedUrl is not null)
+            model.ImageUrl = uploadedUrl;
+
         if (!ModelState.IsValid)
             return View(model);
 
@@ -73,7 +81,7 @@ public class TeacherController : BaseAdminController
         {
             NameEn = teacher.NameEn,
             NameBn = teacher.NameBn,
-            Designation = Enum.TryParse<Domain.Enums.Designation>(teacher.Designation, out var des) ? des : Domain.Enums.Designation.JuniorTeacher,
+            Designation = Enum.TryParse<Designation>(teacher.Designation, out var des) ? des : Designation.JuniorTeacher,
             ImageUrl = teacher.ImageUrl,
             Email = teacher.Email,
             Phone = teacher.Phone,
@@ -89,17 +97,25 @@ public class TeacherController : BaseAdminController
         };
 
         ViewBag.TeacherId = id;
-        return View(dto);
+        return View("Create", dto);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, TeacherCreateDto model)
+    public async Task<IActionResult> Edit(int id, TeacherCreateDto model, IFormFile? Photo, bool removeImage = false)
     {
+        var previousImage = model.ImageUrl;
+        if (removeImage)
+            model.ImageUrl = null;
+
+        var uploadedUrl = await UploadFileAsync(_mediaService, Photo, "teachers", nameof(model.ImageUrl));
+        if (uploadedUrl is not null)
+            model.ImageUrl = uploadedUrl;
+
         if (!ModelState.IsValid)
         {
             ViewBag.TeacherId = id;
-            return View(model);
+            return View("Create", model);
         }
 
         var updateDto = new TeacherUpdateDto
@@ -128,8 +144,11 @@ public class TeacherController : BaseAdminController
         {
             SetErrorNotification(result.Message ?? "Failed to update teacher.");
             ViewBag.TeacherId = id;
-            return View(model);
+            return View("Create", model);
         }
+
+        if (previousImage != model.ImageUrl)
+            await DeleteUploadAsync(_mediaService, previousImage);
 
         SetSuccessNotification("Teacher updated successfully.");
         return RedirectToAction(nameof(Index));
@@ -142,13 +161,9 @@ public class TeacherController : BaseAdminController
         var result = await _teacherService.DeleteAsync(id);
 
         if (!result.Success)
-        {
             SetErrorNotification(result.Message ?? "Failed to delete teacher.");
-        }
         else
-        {
             SetSuccessNotification("Teacher deleted successfully.");
-        }
 
         return RedirectToAction(nameof(Index));
     }

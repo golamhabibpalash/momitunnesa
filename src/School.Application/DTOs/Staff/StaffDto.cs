@@ -6,6 +6,8 @@ public class StaffDto
     public string NameEn { get; set; } = string.Empty;
     public string NameBn { get; set; } = string.Empty;
     public string Designation { get; set; } = string.Empty;
+    public string? PositionEn { get; set; }
+    public string? PositionBn { get; set; }
     public string? ImageUrl { get; set; }
     public string? Email { get; set; }
     public string? Phone { get; set; }

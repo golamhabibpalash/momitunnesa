@@ -1,16 +1,19 @@
+@model NoticeCreateDto
 @{
-    ViewData["Title"] = "Create Notice";
+    int? noticeId = ViewBag.NoticeId;
+    var isEdit = noticeId.HasValue;
+    ViewData["Title"] = isEdit ? "Edit Notice" : "Create Notice";
     ViewBag.ActiveMenu = "Notices";
 }
 
 <div class="page-header">
     <div>
-        <h2><i class="fas fa-plus-circle me-2"></i>Create New Notice</h2>
+        <h2><i class="fas @(isEdit ? "fa-edit" : "fa-plus-circle") me-2"></i>@(isEdit ? "Edit Notice" : "Create New Notice")</h2>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Notice" asp-action="Index">Notices</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Create</li>
+                <li class="breadcrumb-item active" aria-current="page">@(isEdit ? "Edit" : "Create")</li>
             </ol>
         </nav>
     </div>
@@ -19,9 +22,9 @@
     </a>
 </div>
 
-<form asp-area="Admin" asp-controller="Notice" asp-action="Create" method="post" enctype="multipart/form-data">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<form asp-area="Admin" asp-controller="Notice" asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@noticeId" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+    <input type="hidden" asp-for="AttachmentUrl" />
 
     <div class="row g-3">
         <div class="col-lg-8">
@@ -29,25 +32,38 @@
                 <div class="card-header"><i class="fas fa-info-circle me-2"></i>Notice Information</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label required">Title (English)</label>
-                        <input type="text" name="TitleEn" class="form-control" placeholder="Enter notice title in English" required>
+                        <label asp-for="TitleEn" class="form-label required">Title (English)</label>
+                        <input asp-for="TitleEn" class="form-control" placeholder="Enter notice title in English">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label required">Title (Bangla)</label>
-                        <input type="text" name="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম লিখুন" required>
+                        <label asp-for="TitleBn" class="form-label required">Title (Bangla)</label>
+                        <input asp-for="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম লিখুন">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description (English)</label>
-                        <textarea name="DescriptionEn" class="form-control" rows="5" placeholder="Notice details in English"></textarea>
+                        <label asp-for="DescriptionEn" class="form-label">Description (English)</label>
+                        <textarea asp-for="DescriptionEn" class="form-control" rows="5" placeholder="Notice details in English"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description (Bangla)</label>
-                        <textarea name="DescriptionBn" class="form-control" rows="5" placeholder="বাংলায় বিস্তারিত"></textarea>
+                        <label asp-for="DescriptionBn" class="form-label">Description (Bangla)</label>
+                        <textarea asp-for="DescriptionBn" class="form-control" rows="5" placeholder="বাংলায় বিস্তারিত"></textarea>
                     </div>
+                    @if (!string.IsNullOrEmpty(Model.AttachmentUrl))
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">Current Attachment</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <a href="@Model.AttachmentUrl" target="_blank"><i class="fas fa-paperclip me-1"></i>@System.IO.Path.GetFileName(Model.AttachmentUrl)</a>
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input" type="checkbox" name="removeAttachment" value="true" id="removeAttachment">
+                                    <label class="form-check-label text-danger" for="removeAttachment">Remove</label>
+                                </div>
+                            </div>
+                        </div>
+                    }
                     <div class="mb-3">
-                        <label class="form-label">Attachment</label>
-                        <input type="file" name="Attachment" class="form-control">
-                        <small class="text-muted">PDF, DOC, DOCX, max 10MB</small>
+                        <label class="form-label">@(string.IsNullOrEmpty(Model.AttachmentUrl) ? "Attachment" : "Replace Attachment")</label>
+                        <input type="file" name="Attachment" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
+                        <small class="text-muted">PDF, DOC, DOCX, XLS, XLSX or image, max 10MB</small>
                     </div>
                 </div>
             </div>
@@ -58,35 +74,32 @@
                 <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label required">Category</label>
-                        <select name="Category" class="form-select" required>
-                            <option value="">-- Select Category --</option>
-                            <option value="Academic">Academic</option>
-                            <option value="Exam">Exam</option>
-                            <option value="Holiday">Holiday</option>
-                            <option value="Admission">Admission</option>
-                            <option value="Sports">Sports</option>
-                            <option value="General">General</option>
+                        <label asp-for="NoticeCategory" class="form-label required">Category</label>
+                        <select asp-for="NoticeCategory" class="form-select">
+                            @foreach (var category in Enum.GetValues<NoticeCategory>())
+                            {
+                                <option value="@category" selected="@(Model.NoticeCategory == category)">@CategoryHelper.EnglishLabel(category)</option>
+                            }
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Publish Date</label>
-                        <input type="date" name="PublishDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        <label asp-for="PublishDate" class="form-label">Publish Date</label>
+                        <input asp-for="PublishDate" type="date" class="form-control" value="@Model.PublishDate.ToString("yyyy-MM-dd")">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Expiry Date</label>
-                        <input type="date" name="ExpiryDate" class="form-control">
+                        <label asp-for="ExpiryDate" class="form-label">Expiry Date</label>
+                        <input asp-for="ExpiryDate" type="date" class="form-control" value="@Model.ExpiryDate?.ToString("yyyy-MM-dd")">
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isFeatured" name="IsFeatured" value="true">
-                            <label class="form-check-label" for="isFeatured">Featured Notice</label>
+                            <input asp-for="IsFeatured" class="form-check-input" type="checkbox" role="switch">
+                            <label asp-for="IsFeatured" class="form-check-label">Featured Notice</label>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isActive" name="IsActive" value="true" checked>
-                            <label class="form-check-label" for="isActive">Active</label>
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch">
+                            <label asp-for="IsActive" class="form-check-label">Active</label>
                         </div>
                     </div>
                 </div>
@@ -97,7 +110,7 @@
     <div class="d-flex justify-content-end gap-2 mt-3">
         <a asp-area="Admin" asp-controller="Notice" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary px-4">
-            <i class="fas fa-save me-1"></i>Save Notice
+            <i class="fas fa-save me-1"></i>@(isEdit ? "Update Notice" : "Save Notice")
         </button>
     </div>
 </form>

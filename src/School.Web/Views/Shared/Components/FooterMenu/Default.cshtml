@@ -1,0 +1,13 @@
+@model IEnumerable<School.Application.Services.Interfaces.MenuDto>
+@* Admin-managed "Footer" menu items, appended to the footer Quick Links list. *@
+@{
+    string Title(School.Application.Services.Interfaces.MenuDto m) => LocalizationHelper.GetLocalizedContent(m.Title, string.IsNullOrWhiteSpace(m.TitleBn) ? m.Title : m.TitleBn);
+    string Href(School.Application.Services.Interfaces.MenuDto m) => !string.IsNullOrWhiteSpace(m.Url)
+        ? m.Url
+        : !string.IsNullOrWhiteSpace(m.Controller) ? (Url.Action(m.Action ?? "Index", m.Controller) ?? "#") : "#";
+}
+@foreach (var menu in Model.Where(m => m.IsActive).SelectMany(m => new[] { m }.Concat(m.Children.Where(c => c.IsActive))))
+{
+    if (string.IsNullOrWhiteSpace(menu.Url) && string.IsNullOrWhiteSpace(menu.Controller)) { continue; }
+    <li><a href="@Href(menu)" target="@menu.Target" rel="@(menu.Target == "_blank" ? "noopener" : null)">@Title(menu)</a></li>
+}

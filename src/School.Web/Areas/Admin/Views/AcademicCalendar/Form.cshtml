@@ -1,0 +1,34 @@
+@model School.Application.DTOs.Academic.AcademicCalendarUpdateDto
+@{
+    var isEdit = Model.Id > 0;
+    ViewData["Title"] = isEdit ? "Edit Calendar Date" : "Add Calendar Date";
+    ViewBag.ActiveMenu = "AcademicCalendar";
+}
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-calendar-check me-2"></i>@ViewData["Title"]</h2>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Academic Calendar</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@(isEdit ? "Edit" : "Create")</li>
+        </ol></nav>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back</a>
+</div>
+<form asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@(isEdit ? Model.Id : null)" method="post">
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    <div class="card"><div class="card-body"><div class="row g-3">
+        <div class="col-md-4">
+            <label asp-for="EventDate" class="form-label required"></label>
+            <input asp-for="EventDate" type="date" class="form-control" value="@Model.EventDate.ToString("yyyy-MM-dd")">
+        </div>
+        <div class="col-md-8 d-flex align-items-end">
+            <div class="form-check form-switch mb-2"><input asp-for="IsActive" class="form-check-input" role="switch"><label asp-for="IsActive" class="form-check-label">Show on website</label></div>
+        </div>
+        <div class="col-md-6"><label asp-for="TitleEn" class="form-label required"></label><input asp-for="TitleEn" class="form-control" placeholder="e.g., Half-Yearly Examination begins"></div>
+        <div class="col-md-6"><label asp-for="TitleBn" class="form-label required"></label><input asp-for="TitleBn" class="form-control" placeholder="যেমন: অর্ধবার্ষিক পরীক্ষা শুরু"></div>
+        <div class="col-md-6"><label asp-for="DescriptionEn" class="form-label"></label><textarea asp-for="DescriptionEn" class="form-control" rows="3"></textarea></div>
+        <div class="col-md-6"><label asp-for="DescriptionBn" class="form-label"></label><textarea asp-for="DescriptionBn" class="form-control" rows="3"></textarea></div>
+    </div></div></div>
+    <div class="text-end mt-3"><button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-1"></i>Save</button></div>
+</form>

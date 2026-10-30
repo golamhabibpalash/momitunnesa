@@ -1,3 +1,4 @@
+@model List<School.Application.DTOs.Gallery.GalleryVideoDto>
 @{
     ViewData["Title"] = "Videos";
     ViewBag.ActiveMenu = "Videos";
@@ -9,14 +10,11 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
-                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Gallery" asp-action="Videos">Gallery</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Videos</li>
             </ol>
         </nav>
     </div>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addVideoModal">
-        <i class="fas fa-plus me-1"></i>Add Video
-    </button>
+    <a asp-action="CreateVideo" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Add Video</a>
 </div>
 
 <div class="card">
@@ -25,120 +23,54 @@
             <table class="table table-hover table-datatable">
                 <thead>
                     <tr>
-                        <th>SL</th>
-                        <th>Thumbnail</th>
+                        <th>Order</th>
+                        <th>Preview</th>
                         <th>Title</th>
-                        <th>YouTube URL</th>
-                        <th>Duration</th>
+                        <th>Source</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>
-                            <div class="position-relative" style="width:120px;height:68px;">
-                                <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" class="preview-img" style="width:100%;height:100%;">
-                                <i class="fas fa-play position-absolute top-50 start-50 translate-middle text-white" style="font-size:1.5rem;text-shadow:0 2px 4px rgba(0,0,0,0.5);"></i>
-                            </div>
-                        </td>
-                        <td>School Annual Function 2026</td>
-                        <td><a href="https://youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="text-truncate d-inline-block" style="max-width:200px;">youtube.com/watch?v=...</a></td>
-                        <td>5:30</td>
-                        <td><span class="badge bg-success">Published</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <button class="btn btn-sm btn-info" onclick="previewVideo('dQw4w9WgXcQ')"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ } })"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>
-                            <div class="position-relative" style="width:120px;height:68px;">
-                                <img src="https://img.youtube.com/vi/9bZkp7q19f0/hqdefault.jpg" class="preview-img" style="width:100%;height:100%;">
-                                <i class="fas fa-play position-absolute top-50 start-50 translate-middle text-white" style="font-size:1.5rem;"></i>
-                            </div>
-                        </td>
-                        <td>Cultural Program Highlights</td>
-                        <td><a href="https://youtube.com/watch?v=9bZkp7q19f0" target="_blank">youtube.com/watch?v=...</a></td>
-                        <td>12:15</td>
-                        <td><span class="badge bg-success">Published</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
+                    @foreach (var video in Model)
+                    {
+                        var thumb = VideoHelper.GetThumbnail(video.YouTubeUrl, video.ThumbnailUrl);
+                        <tr>
+                            <td>@video.SortOrder</td>
+                            <td>
+                                @if (thumb is not null)
+                                {
+                                    <img src="@thumb" alt="" style="width:96px;height:54px;object-fit:cover;border-radius:4px;">
+                                }
+                                else
+                                {
+                                    <div class="bg-dark text-white d-flex align-items-center justify-content-center" style="width:96px;height:54px;border-radius:4px;"><i class="fas fa-play"></i></div>
+                                }
+                            </td>
+                            <td>@video.TitleEn<br><small class="text-muted">@video.TitleBn</small></td>
+                            <td>
+                                @if (VideoHelper.IsUploadedFile(video.YouTubeUrl))
+                                {
+                                    <span class="badge bg-secondary"><i class="fas fa-file-video me-1"></i>Uploaded file</span>
+                                }
+                                else
+                                {
+                                    <a href="@video.YouTubeUrl" target="_blank" rel="noopener"><i class="fab fa-youtube text-danger me-1"></i>YouTube</a>
+                                }
+                            </td>
+                            <td>@if (video.IsActive) { <span class="badge bg-success">Published</span> } else { <span class="badge bg-secondary">Hidden</span> }</td>
+                            <td>
+                                <div class="table-actions d-flex gap-1">
+                                    <a asp-action="EditVideo" asp-route-id="@video.Id" class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></a>
+                                    <form asp-action="DeleteVideo" asp-route-id="@video.Id" method="post" onsubmit="return confirm('Delete this video?');">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="addVideoModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-area="Admin" asp-controller="Gallery" asp-action="AddVideo" method="post">
-                @Html.AntiForgeryToken()
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-video me-2"></i>Add Video</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label required">Title (English)</label>
-                        <input type="text" name="TitleEn" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label required">Title (Bangla)</label>
-                        <input type="text" name="TitleBn" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label required">YouTube URL</label>
-                        <input type="url" name="VideoUrl" class="form-control" placeholder="https://youtube.com/watch?v=..." required>
-                        <small class="text-muted">Only YouTube links are supported</small>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="videoActive" name="IsActive" value="true" checked>
-                            <label class="form-check-label" for="videoActive">Published</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Add Video</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="previewVideoModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Video Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="ratio ratio-16x9">
-                    <iframe id="videoIframe" src="" allowfullscreen></iframe>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        function previewVideo(videoId) {
-            document.getElementById('videoIframe').src = 'https://www.youtube.com/embed/' + videoId;
-            new bootstrap.Modal(document.getElementById('previewVideoModal')).show();
-        }
-    </script>
-}

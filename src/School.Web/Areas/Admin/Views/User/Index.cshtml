@@ -1,11 +1,14 @@
+@model List<School.Application.DTOs.Account.UserDto>
 @{
     ViewData["Title"] = "Users";
     ViewBag.ActiveMenu = "Users";
+    string? currentUserId = ViewBag.CurrentUserId;
+    var sl = 0;
 }
 
 <div class="page-header">
     <div>
-        <h2><i class="fas fa-user-shield me-2"></i>User Management</h2>
+        <h2><i class="fas fa-user-shield me-2"></i>Users</h2>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
@@ -25,10 +28,9 @@
                 <thead>
                     <tr>
                         <th>SL</th>
-                        <th>Avatar</th>
-                        <th>Username</th>
-                        <th>Email</th>
                         <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
                         <th>Roles</th>
                         <th>Status</th>
                         <th>Last Login</th>
@@ -36,70 +38,44 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td><img src="https://ui-avatars.com/api/?name=Admin&background=667eea&color=fff&size=36" class="avatar-sm"></td>
-                        <td>admin</td>
-                        <td>admin@school.com</td>
-                        <td>Admin User</td>
-                        <td><span class="badge bg-danger">Super Admin</span></td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>Jul 06, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ } })"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td><img src="https://ui-avatars.com/api/?name=Moderator&background=43e97b&color=fff&size=36" class="avatar-sm"></td>
-                        <td>moderator</td>
-                        <td>mod@school.com</td>
-                        <td>Content Moderator</td>
-                        <td><span class="badge bg-primary">Editor</span> <span class="badge bg-info">Moderator</span></td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>Jul 05, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td><img src="https://ui-avatars.com/api/?name=Teacher&background=f6d365&color=fff&size=36" class="avatar-sm"></td>
-                        <td>teacher1</td>
-                        <td>teacher@school.com</td>
-                        <td>Mr. Rahim</td>
-                        <td><span class="badge bg-info">Teacher</span></td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>Jul 04, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td><img src="https://ui-avatars.com/api/?name=Writer&background=f093fb&color=fff&size=36" class="avatar-sm"></td>
-                        <td>writer1</td>
-                        <td>writer@school.com</td>
-                        <td>Content Writer</td>
-                        <td><span class="badge bg-secondary">Author</span></td>
-                        <td><span class="badge bg-warning">Inactive</span></td>
-                        <td>Jun 20, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
+                    @foreach (var user in Model)
+                    {
+                        sl++;
+                        <tr>
+                            <td>@sl</td>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                            <td>@user.Phone</td>
+                            <td>
+                                @foreach (var role in user.Roles)
+                                {
+                                    <span class="badge @(role == "SuperAdmin" ? "bg-danger" : role == "Admin" ? "bg-primary" : "bg-info") me-1">@role</span>
+                                }
+                            </td>
+                            <td>
+                                @if (user.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
+                            </td>
+                            <td data-order="@(user.LastLoginAt?.Ticks ?? 0)">@(user.LastLoginAt?.ToLocalTime().ToString("MMM dd, yyyy HH:mm") ?? "Never")</td>
+                            <td>
+                                <div class="table-actions d-flex gap-1">
+                                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></a>
+                                    @if (user.Id != currentUserId)
+                                    {
+                                        <form asp-action="Delete" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Delete this user?');">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>

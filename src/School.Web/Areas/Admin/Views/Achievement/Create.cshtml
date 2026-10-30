@@ -1,109 +1,91 @@
+@model School.Application.DTOs.Achievement.AchievementDto
 @{
-    ViewData["Title"] = "Add Achievement";
+    int? achievementId = ViewBag.AchievementId;
+    var isEdit = achievementId.HasValue;
+    ViewData["Title"] = isEdit ? "Edit Achievement" : "Add Achievement";
     ViewBag.ActiveMenu = "Achievements";
 }
 
 <div class="page-header">
     <div>
-        <h2><i class="fas fa-plus-circle me-2"></i>Add New Achievement</h2>
+        <h2><i class="fas fa-trophy me-2"></i>@ViewData["Title"]</h2>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Achievement" asp-action="Index">Achievements</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Create</li>
+                <li class="breadcrumb-item active" aria-current="page">@(isEdit ? "Edit" : "Create")</li>
             </ol>
         </nav>
     </div>
-    <a asp-area="Admin" asp-controller="Achievement" asp-action="Index" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-1"></i>Back to Achievements
-    </a>
+    <a asp-area="Admin" asp-controller="Achievement" asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back to List</a>
 </div>
 
-<form asp-area="Admin" asp-controller="Achievement" asp-action="Create" method="post" enctype="multipart/form-data">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<form asp-area="Admin" asp-controller="Achievement" asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@achievementId" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="ImageUrl" />
+    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
 
     <div class="row g-3">
         <div class="col-lg-8">
             <div class="card mb-3">
-                <div class="card-header"><i class="fas fa-info-circle me-2"></i>Achievement Details</div>
+                <div class="card-header"><i class="fas fa-info-circle me-2"></i>Achievement Information</div>
                 <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label required">Title (English)</label>
-                            <input type="text" name="TitleEn" class="form-control" placeholder="e.g., 1st Place - Science Olympiad" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label required">Title (Bangla)</label>
-                            <input type="text" name="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম" required>
-                        </div>
-                    </div>
-                    <div class="mb-3 mt-3">
-                        <label class="form-label required">Category</label>
-                        <select name="Category" class="form-select" required>
-                            <option value="">-- Select Category --</option>
-                            <option value="Academic">Academic</option>
-                            <option value="Sports">Sports</option>
-                            <option value="Cultural">Cultural</option>
-                            <option value="Science">Science</option>
-                            <option value="Other">Other</option>
-                        </select>
+                    <div class="mb-3">
+                        <label asp-for="TitleEn" class="form-label required">Title (English)</label>
+                        <input asp-for="TitleEn" class="form-control" placeholder="e.g., 1st Place - National Science Olympiad">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description (English)</label>
-                        <textarea name="DescriptionEn" class="form-control" rows="4" placeholder="Describe the achievement in English"></textarea>
+                        <label asp-for="TitleBn" class="form-label">Title (Bangla)</label>
+                        <input asp-for="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description (Bangla)</label>
-                        <textarea name="DescriptionBn" class="form-control" rows="4" placeholder="বাংলায় বর্ণনা"></textarea>
+                        <label asp-for="DescriptionEn" class="form-label">Description (English)</label>
+                        <textarea asp-for="DescriptionEn" class="form-control" rows="4"></textarea>
                     </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Achievement Year</label>
-                            <select name="Year" class="form-select">
-                                <option value="2026">2026</option>
-                                <option value="2025">2025</option>
-                                <option value="2024">2024</option>
-                                <option value="2023">2023</option>
-                                <option value="2022">2022</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Position</label>
-                            <input type="text" name="Position" class="form-control" placeholder="1st, Champion, Runner-up, etc.">
-                        </div>
+                    <div class="mb-0">
+                        <label asp-for="DescriptionBn" class="form-label">Description (Bangla)</label>
+                        <textarea asp-for="DescriptionBn" class="form-control" rows="4"></textarea>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="col-lg-4">
-            <div class="card mb-3">
-                <div class="card-header"><i class="fas fa-image me-2"></i>Image</div>
-                <div class="card-body">
-                    <input type="file" name="Image" class="form-control" accept="image/*">
-                    <small class="text-muted">Optional achievement photo or certificate</small>
-                    <div id="imagePreview" class="mt-2 text-center d-none">
-                        <img src="#" alt="Preview" class="img-fluid rounded" style="max-height:150px;">
-                    </div>
-                </div>
-            </div>
-
             <div class="card mb-3">
                 <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isActive" name="IsActive" value="true" checked>
-                            <label class="form-check-label" for="isActive">Active</label>
-                        </div>
+                        <label asp-for="AchievementCategory" class="form-label required">Category</label>
+                        <select asp-for="AchievementCategory" class="form-select">
+                            @foreach (var c in Enum.GetValues<AchievementCategory>())
+                            {
+                                <option value="@c" selected="@(Model.AchievementCategory == c.ToString())">@CategoryHelper.EnglishLabel(c)</option>
+                            }
+                        </select>
+                        <small class="text-muted">The same categories are used for the website filter and the homepage counters.</small>
                     </div>
                     <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isFeatured" name="IsFeatured" value="true">
-                            <label class="form-check-label" for="isFeatured">Featured</label>
-                        </div>
+                        <label asp-for="Date" class="form-label">Date</label>
+                        <input asp-for="Date" type="date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")">
                     </div>
+                    <div class="form-check form-switch">
+                        <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch">
+                        <label asp-for="IsActive" class="form-check-label">Active (shown on website)</label>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-image me-2"></i>Image</div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-3 text-center">
+                            <img src="@Model.ImageUrl" class="img-fluid rounded mb-2" style="max-height:150px;" alt="Achievement image" />
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="checkbox" name="removeImage" value="true" id="removeImage">
+                                <label class="form-check-label text-danger" for="removeImage">Remove image</label>
+                            </div>
+                        </div>
+                    }
+                    <input type="file" name="Image" class="form-control" accept="image/*">
                 </div>
             </div>
         </div>
@@ -111,24 +93,6 @@
 
     <div class="d-flex justify-content-end gap-2 mt-3">
         <a asp-area="Admin" asp-controller="Achievement" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
-        <button type="submit" class="btn btn-primary px-4">
-            <i class="fas fa-save me-1"></i>Save Achievement
-        </button>
+        <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-1"></i>@(isEdit ? "Update Achievement" : "Save Achievement")</button>
     </div>
 </form>
-
-@section Scripts {
-    <script>
-        document.querySelector('input[name="Image"]').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('imagePreview').classList.remove('d-none');
-                    document.querySelector('#imagePreview img').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    </script>
-}

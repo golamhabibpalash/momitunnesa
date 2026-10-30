@@ -1,106 +1,40 @@
+@model List<School.Application.DTOs.Download.DownloadDto>
 @{
     ViewData["Title"] = "Downloads";
     ViewBag.ActiveMenu = "Downloads";
+    var sl = 0;
+    string Size(long b) => b <= 0 ? "-" : b >= 1024 * 1024 ? $"{b / 1024d / 1024d:0.0} MB" : $"{Math.Max(1, b / 1024)} KB";
 }
-
 <div class="page-header">
     <div>
         <h2><i class="fas fa-download me-2"></i>Downloads</h2>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Downloads</li>
-            </ol>
-        </nav>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Downloads</li>
+        </ol></nav>
     </div>
-    <a asp-area="Admin" asp-controller="Download" asp-action="Create" class="btn btn-primary">
-        <i class="fas fa-plus me-1"></i>Add New Download
-    </a>
+    <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Add Download</a>
 </div>
-
-<div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover table-datatable">
-                <thead>
-                    <tr>
-                        <th>SL</th>
-                        <th>File Type</th>
-                        <th>Title (English)</th>
-                        <th>Category</th>
-                        <th>File Size</th>
-                        <th>Downloads</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td><i class="fas fa-file-pdf text-danger fs-4"></i></td>
-                        <td>Admission Form 2026</td>
-                        <td><span class="badge bg-primary">Forms</span></td>
-                        <td>245 KB</td>
-                        <td>1,254</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <a href="#" class="btn btn-sm btn-outline-secondary"><i class="fas fa-download"></i></a>
-                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ } })"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td><i class="fas fa-file-word text-primary fs-4"></i></td>
-                        <td>School Prospectus</td>
-                        <td><span class="badge bg-info">Prospectus</span></td>
-                        <td>1.2 MB</td>
-                        <td>856</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <a href="#" class="btn btn-sm btn-outline-secondary"><i class="fas fa-download"></i></a>
-                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td><i class="fas fa-file-excel text-success fs-4"></i></td>
-                        <td>Exam Results 2025</td>
-                        <td><span class="badge bg-warning">Results</span></td>
-                        <td>580 KB</td>
-                        <td>2,340</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <a href="#" class="btn btn-sm btn-outline-secondary"><i class="fas fa-download"></i></a>
-                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td><i class="fas fa-file-image text-info fs-4"></i></td>
-                        <td>School Calendar 2026</td>
-                        <td><span class="badge bg-secondary">Calendar</span></td>
-                        <td>3.5 MB</td>
-                        <td>1,789</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <a href="#" class="btn btn-sm btn-outline-secondary"><i class="fas fa-download"></i></a>
-                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+<div class="card"><div class="card-body"><div class="table-responsive">
+    <table class="table table-hover table-datatable">
+        <thead><tr><th>SL</th><th>Title</th><th>Category</th><th>Type</th><th>Size</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+            @foreach (var d in Model)
+            {
+                sl++;
+                <tr>
+                    <td>@sl</td>
+                    <td><a href="@d.FileUrl" target="_blank">@d.TitleEn</a><br><small class="text-muted">@d.TitleBn</small></td>
+                    <td><span class="badge bg-info">@d.DownloadCategory</span></td>
+                    <td>@d.FileType</td>
+                    <td data-order="@d.FileSize">@Size(d.FileSize)</td>
+                    <td>@if (d.IsActive) { <span class="badge bg-success">Active</span> } else { <span class="badge bg-secondary">Hidden</span> }</td>
+                    <td><div class="d-flex gap-1">
+                        <a asp-action="Edit" asp-route-id="@d.Id" class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></a>
+                        <form asp-action="Delete" asp-route-id="@d.Id" method="post" onsubmit="return confirm('Delete this download and its file?');"><button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button></form>
+                    </div></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div></div></div>

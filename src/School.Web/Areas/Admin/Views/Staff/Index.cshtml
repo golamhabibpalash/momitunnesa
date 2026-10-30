@@ -1,11 +1,13 @@
+@model List<School.Application.DTOs.Staff.StaffDto>
 @{
     ViewData["Title"] = "Staff";
     ViewBag.ActiveMenu = "Staff";
+    var sl = 0;
 }
 
 <div class="page-header">
     <div>
-        <h2><i class="fas fa-users me-2"></i>Staff Members</h2>
+        <h2><i class="fas fa-users me-2"></i>Staff</h2>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
@@ -13,9 +15,7 @@
             </ol>
         </nav>
     </div>
-    <a asp-area="Admin" asp-controller="Staff" asp-action="Create" class="btn btn-primary">
-        <i class="fas fa-plus me-1"></i>Add New Staff
-    </a>
+    <a asp-area="Admin" asp-controller="Staff" asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Add Staff</a>
 </div>
 
 <div class="card">
@@ -25,67 +25,39 @@
                 <thead>
                     <tr>
                         <th>SL</th>
-                        <th>Image</th>
+                        <th>Photo</th>
                         <th>Name</th>
                         <th>Designation</th>
                         <th>Department</th>
                         <th>Phone</th>
+                        <th>Order</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td><img src="https://ui-avatars.com/api/?name=Khalid+Hasan&background=667eea&color=fff&size=36" class="avatar-sm" alt="Staff"></td>
-                        <td>Khalid Hasan</td>
-                        <td>Office Assistant</td>
-                        <td>Administration</td>
-                        <td>+880 1712-345678</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Staff" asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Staff", new { area = "Admin", id = 1 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td><img src="https://ui-avatars.com/api/?name=Rokeya+Akter&background=43e97b&color=fff&size=36" class="avatar-sm" alt="Staff"></td>
-                        <td>Rokeya Akter</td>
-                        <td>Librarian</td>
-                        <td>Library</td>
-                        <td>+880 1713-456789</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Staff" asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Staff", new { area = "Admin", id = 2 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td><img src="https://ui-avatars.com/api/?name=Shahidul+Islam&background=f6d365&color=fff&size=36" class="avatar-sm" alt="Staff"></td>
-                        <td>Shahidul Islam</td>
-                        <td>Accountant</td>
-                        <td>Finance</td>
-                        <td>+880 1714-567890</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Staff" asp-action="Edit" asp-route-id="3" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Staff", new { area = "Admin", id = 3 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    @foreach (var s in Model)
+                    {
+                        sl++;
+                        <tr>
+                            <td>@sl</td>
+                            <td><img src="@(string.IsNullOrEmpty(s.ImageUrl) ? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(s.NameEn)}&size=36" : s.ImageUrl)" class="avatar-sm rounded-circle" style="width:36px;height:36px;object-fit:cover;" alt=""></td>
+                            <td>@s.NameEn<br><small class="text-muted">@s.NameBn</small></td>
+                            <td>@s.PositionEn</td>
+                            <td>@s.Department</td>
+                            <td>@s.Phone</td>
+                            <td>@s.SortOrder</td>
+                            <td>@if (s.IsActive) { <span class="badge bg-success">Active</span> } else { <span class="badge bg-secondary">Inactive</span> }</td>
+                            <td>
+                                <div class="table-actions d-flex gap-1">
+                                    <a asp-action="Edit" asp-route-id="@s.Id" class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></a>
+                                    <form asp-action="Delete" asp-route-id="@s.Id" method="post" onsubmit="return confirm('Delete this staff member?');">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>

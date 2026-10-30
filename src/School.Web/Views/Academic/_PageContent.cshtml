@@ -1,0 +1,4 @@
+@if (!string.IsNullOrEmpty(ViewBag.Content as string))
+{
+    <div class="page-content mb-4">@Html.Raw(ViewBag.Content)</div>
+}

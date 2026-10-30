@@ -1,0 +1,40 @@
+@model School.Application.DTOs.Academic.SyllabusUpdateDto
+@{
+    var isEdit = Model.Id > 0;
+    ViewData["Title"] = isEdit ? "Edit Syllabus" : "Add Syllabus";
+    ViewBag.ActiveMenu = "Syllabus";
+}
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-book me-2"></i>@ViewData["Title"]</h2>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Syllabus</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@(isEdit ? "Edit" : "Create")</li>
+        </ol></nav>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back</a>
+</div>
+<form asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@(isEdit ? Model.Id : null)" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="FileUrl" />
+    <input type="hidden" asp-for="FileType" />
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    <div class="card"><div class="card-body"><div class="row g-3">
+        <div class="col-md-6"><label asp-for="TitleEn" class="form-label required"></label><input asp-for="TitleEn" class="form-control" placeholder="e.g., Class 6 Syllabus 2026"></div>
+        <div class="col-md-6"><label asp-for="TitleBn" class="form-label required"></label><input asp-for="TitleBn" class="form-control" placeholder="যেমন: ৬ষ্ঠ শ্রেণির সিলেবাস ২০২৬"></div>
+        <div class="col-md-4"><label asp-for="ClassName" class="form-label required"></label><input asp-for="ClassName" class="form-control" list="classOptions"></div>
+        <div class="col-md-4"><label asp-for="Subject" class="form-label">Subject (optional)</label><input asp-for="Subject" class="form-control" placeholder="Leave empty for all subjects"></div>
+        <div class="col-md-4 d-flex align-items-end"><div class="form-check form-switch mb-2"><input asp-for="IsActive" class="form-check-input" role="switch"><label asp-for="IsActive" class="form-check-label">Show on website</label></div></div>
+        <div class="col-12">
+            <label class="form-label @(isEdit ? "" : "required")">Syllabus File</label>
+            @if (!string.IsNullOrEmpty(Model.FileUrl))
+            {
+                <div class="mb-2"><a href="@Model.FileUrl" target="_blank"><i class="fas fa-paperclip me-1"></i>@System.IO.Path.GetFileName(Model.FileUrl)</a> <small class="text-muted">(upload a new file to replace it)</small></div>
+            }
+            <input type="file" name="File" class="form-control" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+            <small class="text-muted">PDF, Word or image, max 10MB.</small>
+        </div>
+    </div></div></div>
+    <partial name="_ClassDatalist" />
+    <div class="text-end mt-3"><button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-1"></i>Save</button></div>
+</form>

@@ -13,6 +13,9 @@ public class Menu : BaseEntity
     [MaxLength(200)]
     public string Title { get; set; } = string.Empty;
 
+    [MaxLength(200)]
+    public string? TitleBn { get; set; }
+
     [MaxLength(500)]
     public string? Url { get; set; }
 

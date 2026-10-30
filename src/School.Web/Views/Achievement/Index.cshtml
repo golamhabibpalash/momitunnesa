@@ -4,21 +4,25 @@
     var isRtl = (ViewData["CurrentLanguage"]?.ToString() ?? "en") == "bn";
 }
 <div class="achievements-page">
-    <ul class="nav nav-pills mb-4" id="achievementTab">
-        <li class="nav-item"><a class="nav-link active" href="#">@(isRtl ? "সব" : "All")</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">@(isRtl ? "একাডেমিক" : "Academic")</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">@(isRtl ? "ক্রীড়া" : "Sports")</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">@(isRtl ? "সাংস্কৃতিক" : "Cultural")</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">@(isRtl ? "বিজ্ঞান" : "Science")</a></li>
+    @{ var selectedCategory = ViewBag.Category as string; }
+    <ul class="nav nav-pills mb-4 flex-wrap gap-1" id="achievementTab">
+        <li class="nav-item"><a class="nav-link @(string.IsNullOrEmpty(selectedCategory) ? "active" : "")" href="@Url.Action("Index")">@(isRtl ? "সব" : "All")</a></li>
+        @foreach (var c in Enum.GetValues<School.Domain.Enums.AchievementCategory>())
+        {
+            <li class="nav-item"><a class="nav-link @(selectedCategory == c.ToString() ? "active" : "")" href="@Url.Action("Index", new { category = c.ToString() })">@CategoryHelper.Label(c)</a></li>
+        }
     </ul>
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-light border text-center py-5">@(isRtl ? "কোনো সাফল্য পাওয়া যায়নি।" : "No achievements found.")</div>
+    }
     <div class="row g-4">
         @if (Model != null)
         {
             foreach (var item in Model)
             {
                 var category = item.AchievementCategory;
-                var badgeColor = category == "Academic" ? "primary" : category == "Sports" ? "success" : category == "Cultural" ? "info" : "warning";
-                var categoryBn = category == "Academic" ? "একাডেমিক" : category == "Sports" ? "ক্রীড়া" : category == "Cultural" ? "সাংস্কৃতিক" : "বিজ্ঞান";
+                var badgeColor = category switch { "Student" => "primary", "Teacher" => "info", "Institution" => "dark", "Sports" => "success", _ => "warning" };
                 <div class="col-lg-4 col-md-6">
                     <div class="achievement-card card h-100 shadow-sm">
                         <div class="card-body p-4">
@@ -28,13 +32,13 @@
                                 </div>
                                 <div>
                                     <span class="badge bg-@badgeColor mb-2">
-                                        @(isRtl ? categoryBn : category)
+                                        @(CategoryHelper.Label<School.Domain.Enums.AchievementCategory>(category))
                                     </span>
-                                    <h5 class="mb-0">@(isRtl ? item.TitleBn : item.TitleEn)</h5>
+                                    <h5 class="mb-0">@(isRtl && !string.IsNullOrWhiteSpace(item.TitleBn) ? item.TitleBn : item.TitleEn)</h5>
                                 </div>
                             </div>
                             <p class="achievement-description text-muted">
-                                @(isRtl ? item.DescriptionBn ?? item.DescriptionEn : item.DescriptionEn)
+                                @(isRtl && !string.IsNullOrWhiteSpace(item.DescriptionBn) ? item.DescriptionBn : item.DescriptionEn)
                             </p>
                             <div class="achievement-meta d-flex justify-content-between align-items-center">
                                 <small class="text-muted"><i class="far fa-calendar me-1"></i>@item.Date.ToString("MMM yyyy")</small>

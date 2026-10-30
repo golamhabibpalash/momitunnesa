@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using School.Application.Services.Interfaces;
+using School.Domain.Enums;
 using School.Web.Models;
 
 namespace School.Web.Controllers;
@@ -12,14 +13,23 @@ public class HomeController : BaseController
     private readonly INewsService _newsService;
     private readonly IEventService _eventService;
     private readonly ITeacherService _teacherService;
+    private readonly IStaffService _staffService;
+    private readonly IAchievementService _achievementService;
+    private readonly ISettingsService _settingsService;
 
     public HomeController(
         ISliderService sliderService,
         INoticeService noticeService,
         INewsService newsService,
         IEventService eventService,
-        ITeacherService teacherService)
+        ITeacherService teacherService,
+        IStaffService staffService,
+        IAchievementService achievementService,
+        ISettingsService settingsService)
     {
+        _staffService = staffService;
+        _achievementService = achievementService;
+        _settingsService = settingsService;
         _sliderService = sliderService;
         _noticeService = noticeService;
         _newsService = newsService;
@@ -62,6 +72,23 @@ public class HomeController : BaseController
         ViewBag.Notices = notices?.Take(5);
         ViewBag.News = news?.Take(3);
         ViewBag.Events = events?.Take(4);
+
+        // Homepage counters come from the same data as the Teachers, Staff and Achievements pages.
+        var teachersResult = await _teacherService.GetActiveTeachersAsync();
+        var staffResult = await _staffService.GetActiveStaffAsync();
+        var achievementsResult = await _achievementService.GetAllAsync();
+        var studentsSetting = await _settingsService.GetSettingByKeyAsync("TotalStudents");
+        var activeAchievements = achievementsResult.Data?.Where(a => a.IsActive).ToList() ?? new();
+
+        ViewBag.AchievementCounts = Enum.GetValues<AchievementCategory>()
+            .ToDictionary(c => c, c => activeAchievements.Count(a => a.AchievementCategory == c.ToString()));
+        ViewBag.Statistics = new StatisticsViewModel
+        {
+            Teachers = teachersResult.Data?.Count() ?? 0,
+            Staff = staffResult.Data?.Count() ?? 0,
+            Achievements = activeAchievements.Count,
+            Students = int.TryParse(studentsSetting.Data?.Value, out var students) ? students : 0
+        };
 
         if (headTeacher is not null)
         {

@@ -19,6 +19,20 @@
     var logoUrl = schoolInfo.Success ? schoolInfo.Data?.LogoUrl : null;
     var faviconUrl = schoolInfo.Success ? schoolInfo.Data?.FaviconUrl : null;
 
+    var siteSettings = (await SettingsService.GetAllSettingsAsync()).Data?.ToDictionary(x => x.Key, x => x.Value) ?? new();
+    string? Setting(string key) => siteSettings.TryGetValue(key, out var v) && !string.IsNullOrWhiteSpace(v) ? v : null;
+    var defaultDescription = isRtl
+        ? Setting(SeoSettingKeys.MetaDescriptionBn) ?? Setting(SeoSettingKeys.MetaDescription) ?? schoolNameBn
+        : Setting(SeoSettingKeys.MetaDescription) ?? schoolName;
+    var metaDescription = ViewData["MetaDescription"] as string ?? defaultDescription;
+    var metaKeywords = ViewData["MetaKeywords"] as string ?? Setting(SeoSettingKeys.MetaKeywords) ?? "";
+    var robots = Setting(SeoSettingKeys.AllowIndexing) == "False" ? "noindex, nofollow" : "index, follow";
+    var shareImage = Setting(SeoSettingKeys.OgImageUrl) ?? logoUrl;
+    var ogImage = ViewData["OgImage"] as string
+        ?? (shareImage is null ? null : $"{Context.Request.Scheme}://{Context.Request.Host}{shareImage}");
+    var googleVerification = Setting(SeoSettingKeys.GoogleSiteVerification);
+    var analyticsId = Setting(SeoSettingKeys.GoogleAnalyticsId);
+
     var socialLinksResult = await SettingsService.GetAllSocialLinksAsync();
     var socialLinks = socialLinksResult.Success && socialLinksResult.Data is not null
         ? socialLinksResult.Data.Where(l => l.IsActive).OrderBy(l => l.SortOrder).ToList()
@@ -29,23 +43,33 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <meta name="description" content="@(ViewData["MetaDescription"] ?? "মোমিতুন্নেসা উচ্চ বিদ্যালয় - একটি উন্নতমানের শিক্ষাপ্রতিষ্ঠান")" />
-    <meta name="keywords" content="@(ViewData["MetaKeywords"] ?? "মোমিতুন্নেসা, উচ্চ বিদ্যালয়, শিক্ষা, বাংলাদেশ, স্কুল")" />
-    <meta name="author" content="Momitunnesa High School" />
-    <meta name="robots" content="index, follow" />
+    <meta name="description" content="@metaDescription" />
+    <meta name="keywords" content="@metaKeywords" />
+    <meta name="author" content="@schoolName" />
+    <meta name="robots" content="@robots" />
+    @if (googleVerification is not null)
+    {
+        <meta name="google-site-verification" content="@googleVerification" />
+    }
 
     <meta property="og:title" content="@ViewData["Title"] - @displayName" />
-    <meta property="og:description" content="@(ViewData["MetaDescription"] ?? "মোমিতুন্নেসা উচ্চ বিদ্যালয় - একটি উন্নতমানের শিক্ষাপ্রতিষ্ঠান")" />
+    <meta property="og:description" content="@metaDescription" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="@canonicalUrl" />
-    <meta property="og:image" content="@(ViewData["OgImage"] ?? $"{Context.Request.Scheme}://{Context.Request.Host}/images/og-default.jpg")" />
+    @if (ogImage is not null)
+    {
+        <meta property="og:image" content="@ogImage" />
+    }
     <meta property="og:site_name" content="@displayName" />
     <meta property="og:locale" content="@(isRtl ? "bn_BD" : "en_US")" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="@ViewData["Title"] - @displayName" />
-    <meta name="twitter:description" content="@(ViewData["MetaDescription"] ?? "মোমিতুন্নেসা উচ্চ বিদ্যালয়")" />
-    <meta name="twitter:image" content="@(ViewData["OgImage"] ?? $"{Context.Request.Scheme}://{Context.Request.Host}/images/og-default.jpg")" />
+    <meta name="twitter:description" content="@metaDescription" />
+    @if (ogImage is not null)
+    {
+        <meta name="twitter:image" content="@ogImage" />
+    }
 
     <link rel="canonical" href="@canonicalUrl" />
 
@@ -88,6 +112,16 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     @await RenderSectionAsync("Styles", required: false)
+    @if (analyticsId is not null)
+    {
+        <script async src="https://www.googletagmanager.com/gtag/js?id=@analyticsId"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '@analyticsId');
+        </script>
+    }
 </head>
 <body class="ltr-mode">
     <div class="school-wrapper">
@@ -188,8 +222,6 @@
                                 <li><a class="dropdown-item" asp-controller="About" asp-action="Index">@(isRtl ? "পরিচিতি" : "About Us")</a></li>
                                 <li><a class="dropdown-item" asp-controller="About" asp-action="SchoolProfile">@(isRtl ? "স্কুল প্রোফাইল" : "School Profile")</a></li>
                                 <li><a class="dropdown-item" asp-controller="About" asp-action="History">@(isRtl ? "ইতিহাস" : "History")</a></li>
-                                <li><a class="dropdown-item" asp-controller="Teacher" asp-action="Index">@(isRtl ? "শিক্ষকগণ" : "Teachers")</a></li>
-                                <li><a class="dropdown-item" asp-controller="Staff" asp-action="Index">@(isRtl ? "কর্মচারীবৃন্দ" : "Staff")</a></li>
                                 <li><a class="dropdown-item" asp-controller="Administration" asp-action="Index">@(isRtl ? "প্রশাসন" : "Administration")</a></li>
                             </ul>
                         </li>
@@ -198,9 +230,13 @@
                                 @(isRtl ? "একাডেমিক" : "Academic")
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-controller="Academic" asp-action="Calendar">@(isRtl ? "একাডেমিক ক্যালেন্ডার" : "Calendar")</a></li>
+                                <li><a class="dropdown-item" asp-controller="Teacher" asp-action="Index">@(isRtl ? "শিক্ষকগণ" : "Teachers")</a></li>
+                                <li><a class="dropdown-item" asp-controller="Staff" asp-action="Index">@(isRtl ? "কর্মচারীবৃন্দ" : "Staff")</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" asp-controller="Academic" asp-action="Calendar">@(isRtl ? "একাডেমিক ক্যালেন্ডার" : "Academic Calendar")</a></li>
                                 <li><a class="dropdown-item" asp-controller="Academic" asp-action="Routine">@(isRtl ? "ক্লাস রুটিন" : "Class Routine")</a></li>
                                 <li><a class="dropdown-item" asp-controller="Academic" asp-action="Syllabus">@(isRtl ? "সিলেবাস" : "Syllabus")</a></li>
+                                <li><a class="dropdown-item" asp-controller="Academic" asp-action="Subjects">@(isRtl ? "বিষয়সমূহ" : "Subjects")</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
@@ -227,6 +263,7 @@
                                 <li><a class="dropdown-item" asp-controller="Download" asp-action="Index">@(isRtl ? "ডাউনলোড" : "Downloads")</a></li>
                             </ul>
                         </li>
+                        @await Component.InvokeAsync("MainMenu")
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Contact" asp-action="Index">@(isRtl ? "যোগাযোগ" : "Contact")</a>
                         </li>
@@ -309,6 +346,7 @@
                                     <li><a asp-controller="Event" asp-action="Index">@(isRtl ? "ইভেন্ট" : "Events")</a></li>
                                     <li><a asp-controller="Gallery" asp-action="Index">@(isRtl ? "গ্যালারি" : "Gallery")</a></li>
                                     <li><a asp-controller="Download" asp-action="Index">@(isRtl ? "ডাউনলোড" : "Downloads")</a></li>
+                                    @await Component.InvokeAsync("FooterMenu")
                                 </ul>
                             </div>
                         </div>

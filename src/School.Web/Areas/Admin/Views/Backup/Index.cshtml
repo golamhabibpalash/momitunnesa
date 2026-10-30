@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Backup";
+    ViewBag.ActiveMenu = "Backup";
+    long uploadSize = ViewBag.UploadSize;
+    var sizeText = uploadSize >= 1024 * 1024 ? $"{uploadSize / 1024d / 1024d:0.0} MB" : $"{uploadSize / 1024d:0} KB";
+}
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-database me-2"></i>Backup</h2>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Backup</li>
+        </ol></nav>
+    </div>
+</div>
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header"><i class="fas fa-download me-2"></i>Download a Backup</div>
+            <div class="card-body">
+                <p>The backup is a ZIP file containing:</p>
+                <ul>
+                    <li><strong>data.json</strong> — all website content: school info, settings, menus, pages, notices, news, events, gallery, teachers, staff, downloads, achievements, academic data and contact messages.</li>
+                    <li><strong>uploads/</strong> — every uploaded image and document (@ViewBag.UploadCount files, @sizeText).</li>
+                </ul>
+                <p class="text-muted small">User accounts and passwords are not included. Keep backups somewhere safe; they contain contact messages from visitors.</p>
+                <form asp-action="Download" method="post">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="includeUploads" value="true" id="includeUploads" checked>
+                        <input type="hidden" name="includeUploads" value="false">
+                        <label class="form-check-label" for="includeUploads">Include uploaded files</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-file-archive me-1"></i>Download Backup</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header"><i class="fas fa-server me-2"></i>Full Database Backup</div>
+            <div class="card-body small">
+                <p>For a complete restorable copy (including user accounts), also back up the SQL Server database itself, for example from SQL Server Management Studio (<em>Tasks → Back Up…</em>) or your hosting control panel. Schedule it daily if your host supports it.</p>
+            </div>
+        </div>
+    </div>
+</div>

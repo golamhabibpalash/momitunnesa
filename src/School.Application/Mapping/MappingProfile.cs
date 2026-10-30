@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using School.Application.DTOs.Account;
+using School.Application.DTOs.Academic;
 using School.Application.DTOs.Achievement;
 using School.Application.DTOs.Contact;
 using School.Application.DTOs.Download;
@@ -79,7 +80,22 @@ public class MappingProfile : Profile
 
         CreateMap<Achievement, AchievementDto>()
             .ForMember(d => d.AchievementCategory, o => o.MapFrom(s => s.AchievementCategory.ToString()));
-        CreateMap<Achievement, AchievementDto>().ReverseMap();
+        CreateMap<AchievementDto, Achievement>()
+            .ForMember(d => d.Id, o => o.Ignore())
+            .ForMember(d => d.CreatedAt, o => o.Ignore());
+
+        CreateMap<AcademicCalendar, AcademicCalendarDto>();
+        CreateMap<AcademicCalendarCreateDto, AcademicCalendar>();
+        CreateMap<AcademicCalendarUpdateDto, AcademicCalendar>();
+        CreateMap<Subject, SubjectDto>();
+        CreateMap<SubjectCreateDto, Subject>();
+        CreateMap<SubjectUpdateDto, Subject>();
+        CreateMap<Syllabus, SyllabusDto>();
+        CreateMap<SyllabusCreateDto, Syllabus>();
+        CreateMap<SyllabusUpdateDto, Syllabus>();
+        CreateMap<Routine, RoutineDto>();
+        CreateMap<RoutineCreateDto, Routine>();
+        CreateMap<RoutineUpdateDto, Routine>();
 
         CreateMap<SiteSetting, SiteSettingDto>().ReverseMap();
         CreateMap<SiteSetting, SiteSettingUpdateDto>().ReverseMap();

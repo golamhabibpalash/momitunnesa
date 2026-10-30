@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using School.Application.DTOs.Account;
+using School.Application.DTOs.Common;
 using School.Application.Services.Interfaces;
+using School.Domain.Entities;
 
 namespace School.Web.Areas.Admin.Controllers;
 
@@ -10,20 +13,22 @@ public class UserController : BaseAdminController
 {
     private readonly IUserService _userService;
     private readonly IRoleService _roleService;
-    private const int PageSize = 20;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public UserController(
         IUserService userService,
         IRoleService roleService,
+        UserManager<ApplicationUser> userManager,
         ILogger<BaseAdminController> logger,
         IHttpContextAccessor httpContextAccessor)
         : base(logger, httpContextAccessor)
     {
         _userService = userService;
         _roleService = roleService;
+        _userManager = userManager;
     }
 
-    public async Task<IActionResult> Index(int page = 1)
+    public async Task<IActionResult> Index()
     {
         var result = await _userService.GetAllAsync();
 
@@ -33,24 +38,14 @@ public class UserController : BaseAdminController
             return View(new List<UserDto>());
         }
 
-        var users = result.Data.ToList();
-        var totalPages = (int)Math.Ceiling(users.Count / (double)PageSize);
-        var pagedItems = users.Skip((page - 1) * PageSize).Take(PageSize).ToList();
-
-        ViewBag.CurrentPage = page;
-        ViewBag.TotalPages = totalPages;
-
-        return View(pagedItems);
+        ViewBag.CurrentUserId = _userManager.GetUserId(User);
+        return View(result.Data.OrderBy(u => u.Email).ToList());
     }
 
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        var rolesResult = await _roleService.GetAllAsync();
-        ViewBag.Roles = rolesResult.Success && rolesResult.Data is not null
-            ? rolesResult.Data
-            : new List<RoleDto>();
-
+        await LoadRolesAsync();
         return View(new UserCreateDto());
     }
 
@@ -60,10 +55,7 @@ public class UserController : BaseAdminController
     {
         if (!ModelState.IsValid)
         {
-            var rolesResult = await _roleService.GetAllAsync();
-            ViewBag.Roles = rolesResult.Success && rolesResult.Data is not null
-                ? rolesResult.Data
-                : new List<RoleDto>();
+            await LoadRolesAsync();
             return View(model);
         }
 
@@ -71,11 +63,8 @@ public class UserController : BaseAdminController
 
         if (!result.Success)
         {
-            SetErrorNotification(result.Message ?? "Failed to create user.");
-            var rolesResult = await _roleService.GetAllAsync();
-            ViewBag.Roles = rolesResult.Success && rolesResult.Data is not null
-                ? rolesResult.Data
-                : new List<RoleDto>();
+            AddErrors(result);
+            await LoadRolesAsync();
             return View(model);
         }
 
@@ -87,7 +76,6 @@ public class UserController : BaseAdminController
     public async Task<IActionResult> Edit(string id)
     {
         var userResult = await _userService.GetByIdAsync(id);
-        var rolesResult = await _roleService.GetAllAsync();
 
         if (!userResult.Success || userResult.Data is null)
         {
@@ -106,10 +94,7 @@ public class UserController : BaseAdminController
 
         ViewBag.UserId = id;
         ViewBag.UserEmail = user.Email;
-        ViewBag.AllRoles = rolesResult.Success && rolesResult.Data is not null
-            ? rolesResult.Data
-            : new List<RoleDto>();
-
+        await LoadRolesAsync();
         return View(dto);
     }
 
@@ -117,13 +102,15 @@ public class UserController : BaseAdminController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(string id, UserUpdateDto model)
     {
+        ViewBag.UserId = id;
+        ViewBag.UserEmail = (await _userService.GetByIdAsync(id)).Data?.Email;
+
+        if (id == _userManager.GetUserId(User) && (!model.IsActive || !model.Roles.Contains("SuperAdmin")))
+            ModelState.AddModelError(string.Empty, "You cannot deactivate your own account or remove your own SuperAdmin role.");
+
         if (!ModelState.IsValid)
         {
-            ViewBag.UserId = id;
-            var rolesResult = await _roleService.GetAllAsync();
-            ViewBag.AllRoles = rolesResult.Success && rolesResult.Data is not null
-                ? rolesResult.Data
-                : new List<RoleDto>();
+            await LoadRolesAsync();
             return View(model);
         }
 
@@ -131,16 +118,47 @@ public class UserController : BaseAdminController
 
         if (!result.Success)
         {
-            SetErrorNotification(result.Message ?? "Failed to update user.");
-            ViewBag.UserId = id;
-            var rolesResult = await _roleService.GetAllAsync();
-            ViewBag.AllRoles = rolesResult.Success && rolesResult.Data is not null
-                ? rolesResult.Data
-                : new List<RoleDto>();
+            AddErrors(result);
+            await LoadRolesAsync();
             return View(model);
         }
 
         SetSuccessNotification("User updated successfully.");
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(string id)
+    {
+        if (id == _userManager.GetUserId(User))
+        {
+            SetErrorNotification("You cannot delete your own account.");
+            return RedirectToAction(nameof(Index));
+        }
+
+        var result = await _userService.DeleteAsync(id);
+
+        if (!result.Success)
+            SetErrorNotification(result.Message ?? "Failed to delete user.");
+        else
+            SetSuccessNotification("User deleted successfully.");
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    private async Task LoadRolesAsync()
+    {
+        var rolesResult = await _roleService.GetAllAsync();
+        ViewBag.Roles = rolesResult.Success && rolesResult.Data is not null
+            ? rolesResult.Data.ToList()
+            : new List<RoleDto>();
+    }
+
+    private void AddErrors<T>(ResponseDto<T> result)
+    {
+        ModelState.AddModelError(string.Empty, result.Message ?? "The operation failed.");
+        foreach (var error in result.Errors ?? new List<string>())
+            ModelState.AddModelError(string.Empty, error);
     }
 }
