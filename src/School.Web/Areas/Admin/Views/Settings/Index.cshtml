@@ -5,6 +5,12 @@
     var socialLinks = (ViewBag.SocialLinks as IEnumerable<SocialLinkDto> ?? Enumerable.Empty<SocialLinkDto>())
         .OrderBy(l => l.SortOrder)
         .ToList();
+    var siteSettings = ((ViewBag.SiteSettings as IEnumerable<SiteSettingDto>) ?? Enumerable.Empty<SiteSettingDto>())
+        .GroupBy(s => s.Key)
+        .ToDictionary(g => g.Key, g => g.First().Value, StringComparer.OrdinalIgnoreCase);
+
+    Func<string, string, string> setting = (key, fallback) =>
+        siteSettings.TryGetValue(key, out var v) && !string.IsNullOrWhiteSpace(v) ? v! : fallback;
 }
 
 <div class="page-header">
@@ -48,11 +54,6 @@
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="seo-tab" data-bs-toggle="pill" data-bs-target="#seo" type="button" role="tab">
             <i class="fas fa-search me-1"></i>SEO
-        </button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link" id="email-tab" data-bs-toggle="pill" data-bs-target="#email" type="button" role="tab">
-            <i class="fas fa-envelope me-1"></i>Email
         </button>
     </li>
 </ul>
@@ -344,6 +345,26 @@
                                 <input type="text" name="SchoolNameBn" class="form-control" value="@info.SchoolNameBn" required>
                             </div>
                         </div>
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
+                                <label class="form-label">Slogan (English)</label>
+                                <input type="text" name="SloganEn" class="form-control" value="@info.SloganEn">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Slogan (Bangla)</label>
+                                <input type="text" name="SloganBn" class="form-control" value="@info.SloganBn">
+                            </div>
+                        </div>
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
+                                <label class="form-label">Address (English)</label>
+                                <textarea name="AddressEn" class="form-control" rows="2">@info.AddressEn</textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Address (Bangla)</label>
+                                <textarea name="AddressBn" class="form-control" rows="2">@info.AddressBn</textarea>
+                            </div>
+                        </div>
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label">Phone</label>
@@ -356,6 +377,12 @@
                             <div class="col-md-4">
                                 <label class="form-label">Website</label>
                                 <input type="url" name="Website" class="form-control" value="@info.Website">
+                            </div>
+                        </div>
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-12">
+                                <label class="form-label">Google Map Embed URL</label>
+                                <input type="text" name="GoogleMapEmbedUrl" class="form-control" value="@info.GoogleMapEmbedUrl">
                             </div>
                         </div>
                         <div class="row g-3 mt-2">
@@ -384,88 +411,31 @@
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
                         <label class="form-label">Google Analytics Tracking ID</label>
-                        <input type="text" name="AnalyticsId" class="form-control" placeholder="G-XXXXXXXXXX">
+                        <input type="text" name="AnalyticsId" class="form-control" placeholder="G-XXXXXXXXXX" value="@setting("AnalyticsId", "")">
                         <small class="text-muted">Your Google Analytics 4 measurement ID</small>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Google Site Verification</label>
-                        <input type="text" name="SiteVerification" class="form-control" placeholder="Google site verification code">
+                        <input type="text" name="SiteVerification" class="form-control" placeholder="Google site verification code" value="@setting("SiteVerification", "")">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Meta Description (Default)</label>
-                        <textarea name="DefaultMetaDescription" class="form-control" rows="2">Momitunnesa School - Providing quality education since 1995. Located in Dhaka, Bangladesh.</textarea>
+                        <textarea name="DefaultMetaDescription" class="form-control" rows="2">@setting("DefaultMetaDescription", "")</textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Meta Keywords (Default)</label>
-                        <input type="text" name="DefaultMetaKeywords" class="form-control" value="school, education, momitunnesa, dhaka, bangladesh, academic">
+                        <input type="text" name="DefaultMetaKeywords" class="form-control" value="@setting("DefaultMetaKeywords", "")">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Custom Header Scripts</label>
-                        <textarea name="HeaderScripts" class="form-control" rows="4" placeholder="<!-- Any custom scripts for <head> tag -->"></textarea>
+                        <textarea name="HeaderScripts" class="form-control" rows="4" placeholder="<!-- Any custom scripts for <head> tag -->">@setting("HeaderScripts", "")</textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Custom Footer Scripts</label>
-                        <textarea name="FooterScripts" class="form-control" rows="4" placeholder="<!-- Any custom scripts before </body> tag -->"></textarea>
+                        <textarea name="FooterScripts" class="form-control" rows="4" placeholder="<!-- Any custom scripts before </body> tag -->">@setting("FooterScripts", "")</textarea>
                     </div>
                     <div class="mt-3">
                         <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save SEO Settings</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="tab-pane fade" id="email" role="tabpanel">
-        <div class="card">
-            <div class="card-header"><i class="fas fa-envelope me-2"></i>Email Settings (SMTP)</div>
-            <div class="card-body">
-                <form asp-area="Admin" asp-controller="Settings" asp-action="SaveEmail" method="post">
-                    @Html.AntiForgeryToken()
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">SMTP Host</label>
-                            <input type="text" name="SmtpHost" class="form-control" value="smtp.gmail.com">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">SMTP Port</label>
-                            <input type="number" name="SmtpPort" class="form-control" value="587">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">&nbsp;</label>
-                            <div class="form-check form-switch mt-2">
-                                <input class="form-check-input" type="checkbox" role="switch" id="useSsl" name="UseSsl" value="true" checked>
-                                <label class="form-check-label" for="useSsl">Use SSL/TLS</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row g-3 mt-2">
-                        <div class="col-md-6">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" name="EmailAddress" class="form-control" value="noreply@momitunnesa.edu.bd">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Display Name</label>
-                            <input type="text" name="DisplayName" class="form-control" value="Momitunnesa School">
-                        </div>
-                    </div>
-                    <div class="row g-3 mt-2">
-                        <div class="col-md-6">
-                            <label class="form-label">Username</label>
-                            <input type="text" name="SmtpUsername" class="form-control" value="noreply@momitunnesa.edu.bd">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Password</label>
-                            <div class="input-group">
-                                <input type="password" name="SmtpPassword" class="form-control" value="********">
-                                <button class="btn btn-outline-secondary" type="button" onclick="this.previousElementSibling.type='text';">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <button type="button" class="btn btn-info me-2"><i class="fas fa-vial me-1"></i>Test Connection</button>
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save Email Settings</button>
                     </div>
                 </form>
             </div>

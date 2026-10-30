@@ -1,0 +1,113 @@
+@model School.Application.DTOs.News.NewsCreateDto
+@{
+    ViewData["Title"] = "Edit News";
+    ViewBag.ActiveMenu = "News";
+    var newsId = ViewBag.NewsId as int? ?? 0;
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-edit me-2"></i>Edit News Article</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="News" asp-action="Index">News</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="News" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<form asp-area="Admin" asp-controller="News" asp-action="Edit" asp-route-id="@newsId" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-info-circle me-2"></i>Article Information</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="TitleEn" class="form-label required">Title (English)</label>
+                        <input asp-for="TitleEn" class="form-control" required>
+                        <span asp-validation-for="TitleEn" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="TitleBn" class="form-label required">Title (Bangla)</label>
+                        <input asp-for="TitleBn" class="form-control" required>
+                        <span asp-validation-for="TitleBn" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ContentEn" class="form-label">Content (English)</label>
+                        <textarea asp-for="ContentEn" class="form-control tinymce"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ContentBn" class="form-label">Content (Bangla)</label>
+                        <textarea asp-for="ContentBn" class="form-control tinymce"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="Category" class="form-label required">Category</label>
+                        <select asp-for="Category" class="form-select" asp-items="Html.GetEnumSelectList<NewsCategory>()" required></select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PublishDate" class="form-label">Publish Date</label>
+                        <input asp-for="PublishDate" type="date" class="form-control" value="@Model.PublishDate.ToString("yyyy-MM-dd")">
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ImageUrl" class="form-label">Featured Image URL</label>
+                        <input asp-for="ImageUrl" class="form-control" placeholder="/uploads/news/photo.jpg">
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <div class="mt-2 text-center">
+                                <img src="@Model.ImageUrl" class="img-fluid rounded" style="max-height:120px;" />
+                            </div>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsFeatured" class="form-check-input" role="switch">
+                            <label asp-for="IsFeatured" class="form-check-label">Featured Article</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsActive" class="form-check-input" role="switch">
+                            <label asp-for="IsActive" class="form-check-label">Active (Published)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <a asp-area="Admin" asp-controller="News" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="fas fa-save me-1"></i>Update News
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: '.tinymce',
+            height: 400,
+            plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
+            toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+            promotion: false
+        });
+    </script>
+}

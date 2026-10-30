@@ -339,6 +339,9 @@ public class SettingsController : BaseAdminController
         var result = true;
         foreach (var kvp in model)
         {
+            if (kvp.Key.StartsWith("__", StringComparison.Ordinal))
+                continue;
+
             var settingDto = new SiteSettingUpdateDto
             {
                 Key = kvp.Key,

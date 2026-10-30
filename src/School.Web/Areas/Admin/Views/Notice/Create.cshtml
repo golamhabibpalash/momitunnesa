@@ -1,3 +1,4 @@
+@model School.Application.DTOs.Notice.NoticeCreateDto
 @{
     ViewData["Title"] = "Create Notice";
     ViewBag.ActiveMenu = "Notices";
@@ -19,7 +20,7 @@
     </a>
 </div>
 
-<form asp-area="Admin" asp-controller="Notice" asp-action="Create" method="post" enctype="multipart/form-data">
+<form asp-area="Admin" asp-controller="Notice" asp-action="Create" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
@@ -29,25 +30,26 @@
                 <div class="card-header"><i class="fas fa-info-circle me-2"></i>Notice Information</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label required">Title (English)</label>
-                        <input type="text" name="TitleEn" class="form-control" placeholder="Enter notice title in English" required>
+                        <label asp-for="TitleEn" class="form-label required">Title (English)</label>
+                        <input asp-for="TitleEn" class="form-control" placeholder="Enter notice title in English" required>
+                        <span asp-validation-for="TitleEn" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label required">Title (Bangla)</label>
-                        <input type="text" name="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম লিখুন" required>
+                        <label asp-for="TitleBn" class="form-label required">Title (Bangla)</label>
+                        <input asp-for="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম লিখুন" required>
+                        <span asp-validation-for="TitleBn" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description (English)</label>
-                        <textarea name="DescriptionEn" class="form-control" rows="5" placeholder="Notice details in English"></textarea>
+                        <label asp-for="DescriptionEn" class="form-label">Description (English)</label>
+                        <textarea asp-for="DescriptionEn" class="form-control" rows="5"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description (Bangla)</label>
-                        <textarea name="DescriptionBn" class="form-control" rows="5" placeholder="বাংলায় বিস্তারিত"></textarea>
+                        <label asp-for="DescriptionBn" class="form-label">Description (Bangla)</label>
+                        <textarea asp-for="DescriptionBn" class="form-control" rows="5"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Attachment</label>
-                        <input type="file" name="Attachment" class="form-control">
-                        <small class="text-muted">PDF, DOC, DOCX, max 10MB</small>
+                        <label asp-for="AttachmentUrl" class="form-label">Attachment URL</label>
+                        <input asp-for="AttachmentUrl" class="form-control" placeholder="/uploads/notices/file.pdf">
                     </div>
                 </div>
             </div>
@@ -58,35 +60,27 @@
                 <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label required">Category</label>
-                        <select name="Category" class="form-select" required>
-                            <option value="">-- Select Category --</option>
-                            <option value="Academic">Academic</option>
-                            <option value="Exam">Exam</option>
-                            <option value="Holiday">Holiday</option>
-                            <option value="Admission">Admission</option>
-                            <option value="Sports">Sports</option>
-                            <option value="General">General</option>
-                        </select>
+                        <label asp-for="NoticeCategory" class="form-label required">Category</label>
+                        <select asp-for="NoticeCategory" class="form-select" asp-items="Html.GetEnumSelectList<NoticeCategory>()" required></select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Publish Date</label>
-                        <input type="date" name="PublishDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        <label asp-for="PublishDate" class="form-label">Publish Date</label>
+                        <input asp-for="PublishDate" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Expiry Date</label>
-                        <input type="date" name="ExpiryDate" class="form-control">
+                        <label asp-for="ExpiryDate" class="form-label">Expiry Date</label>
+                        <input asp-for="ExpiryDate" type="date" class="form-control">
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isFeatured" name="IsFeatured" value="true">
-                            <label class="form-check-label" for="isFeatured">Featured Notice</label>
+                            <input asp-for="IsFeatured" class="form-check-input" role="switch">
+                            <label asp-for="IsFeatured" class="form-check-label">Featured Notice</label>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isActive" name="IsActive" value="true" checked>
-                            <label class="form-check-label" for="isActive">Active</label>
+                            <input asp-for="IsActive" class="form-check-input" role="switch" checked>
+                            <label asp-for="IsActive" class="form-check-label">Active</label>
                         </div>
                     </div>
                 </div>

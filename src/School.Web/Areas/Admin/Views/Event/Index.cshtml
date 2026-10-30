@@ -1,3 +1,4 @@
+@model IEnumerable<School.Application.DTOs.Event.EventDto>
 @{
     ViewData["Title"] = "Events";
     ViewBag.ActiveMenu = "Events";
@@ -25,89 +26,78 @@
                 <thead>
                     <tr>
                         <th>SL</th>
+                        <th>Title (English)</th>
                         <th>Event Date</th>
-                        <th>Title</th>
+                        <th>Time</th>
                         <th>Location</th>
+                        <th>Featured</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Jun 15, 2026</td>
-                        <td>Annual Science Fair</td>
-                        <td>School Auditorium</td>
-                        <td><span class="badge bg-success">Upcoming</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Event" asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Event", new { area = "Admin", id = 1 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Jul 20, 2026</td>
-                        <td>Parent-Teacher Conference</td>
-                        <td>Academic Building</td>
-                        <td><span class="badge bg-success">Upcoming</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Event" asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Event", new { area = "Admin", id = 2 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>May 10, 2026</td>
-                        <td>Sports Day</td>
-                        <td>School Playground</td>
-                        <td><span class="badge bg-secondary">Completed</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Event" asp-action="Edit" asp-route-id="3" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Event", new { area = "Admin", id = 3 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Apr 05, 2026</td>
-                        <td>Cultural Program</td>
-                        <td>Multi-Purpose Hall</td>
-                        <td><span class="badge bg-secondary">Completed</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Event" asp-action="Edit" asp-route-id="4" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Event", new { area = "Admin", id = 4 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Aug 30, 2026</td>
-                        <td>Admission Open House</td>
-                        <td>Main Campus</td>
-                        <td><span class="badge bg-success">Upcoming</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Event" asp-action="Edit" asp-route-id="5" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ window.location.href='@Url.Action("Delete", "Event", new { area = "Admin", id = 5 })'; } })">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    @if (Model != null && Model.Any())
+                    {
+                        var sl = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@(sl++)</td>
+                                <td>@item.TitleEn</td>
+                                <td>@item.EventDate.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    @if (item.StartTime.HasValue)
+                                    {
+                                        @($"{DateTime.Today.Add(item.StartTime.Value):hh:mm tt}")
+                                        @if (item.EndTime.HasValue)
+                                        {
+                                            @($" - {DateTime.Today.Add(item.EndTime.Value):hh:mm tt}")
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>@(string.IsNullOrEmpty(item.Location) ? "-" : item.Location)</td>
+                                <td>
+                                    @if (item.IsFeatured)
+                                    {
+                                        <i class="fas fa-star text-warning"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="far fa-star text-muted"></i>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="table-actions d-flex gap-1">
+                                        <a asp-area="Admin" asp-controller="Event" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                        <form asp-area="Admin" asp-controller="Event" asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Are you sure you want to delete this event?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">No events found.</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>

@@ -1,6 +1,9 @@
+@model IEnumerable<School.Application.DTOs.Contact.ContactMessageDto>
 @{
     ViewData["Title"] = "Contact Messages";
     ViewBag.ActiveMenu = "Contact";
+    var currentPage = ViewBag.CurrentPage as int? ?? 1;
+    var totalPages = ViewBag.TotalPages as int? ?? 1;
 }
 
 <div class="page-header">
@@ -32,88 +35,63 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="table-primary">
-                        <td>1</td>
-                        <td><span class="badge bg-warning">Unread</span></td>
-                        <td>John Doe</td>
-                        <td>john@example.com</td>
-                        <td>Admission Inquiry</td>
-                        <td class="text-truncate" style="max-width:200px;">I would like to know about the admission process for class 1...</td>
-                        <td>Jul 05, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="1" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
-                                <button class="btn btn-sm btn-success"><i class="fas fa-reply"></i></button>
-                                <button class="btn btn-sm btn-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ } })"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td><span class="badge bg-warning">Unread</span></td>
-                        <td>Sarah Khan</td>
-                        <td>sarah@example.com</td>
-                        <td>Transfer Certificate</td>
-                        <td class="text-truncate" style="max-width:200px;">I need a transfer certificate for my daughter who is currently...</td>
-                        <td>Jul 04, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="2" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
-                                <button class="btn btn-sm btn-success"><i class="fas fa-reply"></i></button>
-                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td><span class="badge bg-success">Read</span></td>
-                        <td>Md. Ali</td>
-                        <td>ali@example.com</td>
-                        <td>Fee Structure</td>
-                        <td class="text-truncate" style="max-width:200px;">Could you please share the fee structure for the academic year...</td>
-                        <td>Jul 02, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="3" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
-                                <button class="btn btn-sm btn-success"><i class="fas fa-reply"></i></button>
-                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td><span class="badge bg-success">Read</span></td>
-                        <td>Fatima Rahman</td>
-                        <td>fatima@example.com</td>
-                        <td>Complaint</td>
-                        <td class="text-truncate" style="max-width:200px;">I would like to raise a concern about the school bus service...</td>
-                        <td>Jun 30, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="4" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
-                                <button class="btn btn-sm btn-success"><i class="fas fa-reply"></i></button>
-                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td><span class="badge bg-success">Read</span></td>
-                        <td>Kabir Hasan</td>
-                        <td>kabir@example.com</td>
-                        <td>Volunteer Opportunity</td>
-                        <td class="text-truncate" style="max-width:200px;">I am interested in volunteering at the upcoming school event...</td>
-                        <td>Jun 28, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="5" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
-                                <button class="btn btn-sm btn-success"><i class="fas fa-reply"></i></button>
-                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
+                    @if (Model != null && Model.Any())
+                    {
+                        var sl = (currentPage - 1) * 20 + 1;
+                        foreach (var msg in Model)
+                        {
+                            <tr class="@(msg.IsRead ? "" : "table-primary")">
+                                <td>@(sl++)</td>
+                                <td>
+                                    @if (msg.IsRead)
+                                    {
+                                        <span class="badge bg-success">Read</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Unread</span>
+                                    }
+                                </td>
+                                <td>@msg.Name</td>
+                                <td>@msg.Email</td>
+                                <td>@msg.Subject</td>
+                                <td class="text-truncate" style="max-width:200px;">@msg.Message</td>
+                                <td>@msg.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a asp-area="Admin" asp-controller="Contact" asp-action="Details" asp-route-id="@msg.Id" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">No messages found.</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
+        @if (totalPages > 1)
+        {
+            <nav class="mt-3">
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                        <a class="page-link" asp-area="Admin" asp-controller="Contact" asp-action="Index" asp-route-page="@(currentPage - 1)"><i class="fas fa-chevron-left"></i></a>
+                    </li>
+                    @for (int p = 1; p <= totalPages; p++)
+                    {
+                        <li class="page-item @(p == currentPage ? "active" : "")">
+                            <a class="page-link" asp-area="Admin" asp-controller="Contact" asp-action="Index" asp-route-page="@p">@p</a>
+                        </li>
+                    }
+                    <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                        <a class="page-link" asp-area="Admin" asp-controller="Contact" asp-action="Index" asp-route-page="@(currentPage + 1)"><i class="fas fa-chevron-right"></i></a>
+                    </li>
+                </ul>
+            </nav>
+        }
     </div>
 </div>

@@ -1,6 +1,9 @@
 @{
     ViewData["Title"] = "Media Manager";
     ViewBag.ActiveMenu = "Media";
+    var currentFolder = ViewBag.CurrentFolder as string ?? "";
+    var files = ViewBag.Files as IEnumerable<string> ?? Enumerable.Empty<string>();
+    var imageExts = new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".svg" };
 }
 
 <div class="page-header">
@@ -9,185 +12,68 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Media</li>
+                <li class="breadcrumb-item active" aria-current="page">Media@(string.IsNullOrEmpty(currentFolder) ? "" : " / " + currentFolder)</li>
             </ol>
         </nav>
     </div>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadMediaModal">
-        <i class="fas fa-upload me-1"></i>Upload Media
-    </button>
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createFolderModal">
+            <i class="fas fa-folder-plus me-1"></i>New Folder
+        </button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadMediaModal">
+            <i class="fas fa-upload me-1"></i>Upload Media
+        </button>
+    </div>
 </div>
 
-<div class="row g-3">
-    <div class="col-lg-3">
-        <div class="card">
-            <div class="card-header"><i class="fas fa-folder me-2"></i>Folders</div>
-            <div class="card-body p-0">
-                <ul class="folder-tree p-2">
-                    <li class="active">
-                        <i class="fas fa-folder-open text-warning"></i>
-                        <span>All Media</span>
-                        <span class="badge bg-secondary ms-auto">1,247</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-folder text-warning"></i>
-                        <span>Gallery</span>
-                        <span class="badge bg-secondary ms-auto">856</span>
-                    </li>
-                    <li style="padding-left:30px;">
-                        <i class="fas fa-folder text-warning"></i>
-                        <span>Sports Day 2026</span>
-                        <span class="badge bg-secondary ms-auto">124</span>
-                    </li>
-                    <li style="padding-left:30px;">
-                        <i class="fas fa-folder text-warning"></i>
-                        <span>Cultural Program</span>
-                        <span class="badge bg-secondary ms-auto">98</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-folder text-warning"></i>
-                        <span>Teachers</span>
-                        <span class="badge bg-secondary ms-auto">128</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-folder text-warning"></i>
-                        <span>Sliders</span>
-                        <span class="badge bg-secondary ms-auto">45</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-folder text-warning"></i>
-                        <span>Documents</span>
-                        <span class="badge bg-secondary ms-auto">218</span>
-                    </li>
-                    <li class="mt-2">
-                        <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#createFolderModal">
-                            <i class="fas fa-folder-plus me-1"></i>New Folder
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="card mt-3">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <strong>Storage Usage</strong>
-                    <small class="text-muted">45%</small>
-                </div>
-                <div class="progress" style="height:8px;">
-                    <div class="progress-bar bg-gradient-primary" role="progressbar" style="width:45%;"></div>
-                </div>
-                <small class="text-muted mt-1 d-block">2.3 GB / 5 GB used</small>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-9">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-2">
-                    <span><i class="fas fa-images me-1"></i>All Media</span>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-secondary active" id="gridViewBtn"><i class="fas fa-th"></i></button>
-                        <button class="btn btn-outline-secondary" id="listViewBtn"><i class="fas fa-list"></i></button>
-                    </div>
-                </div>
-                <div class="d-flex gap-2">
-                    <input type="text" class="form-control form-control-sm" placeholder="Search files..." style="width:200px;" id="mediaSearch">
-                    <select class="form-select form-select-sm" style="width:130px;">
-                        <option value="">All Types</option>
-                        <option value="image">Images</option>
-                        <option value="document">Documents</option>
-                        <option value="video">Videos</option>
-                    </select>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="media-grid" id="mediaGrid">
-                    <div class="media-item selected">
-                        <img src="https://placehold.co/300x200/667eea/white?text=Photo+1" alt="Photo 1">
-                        <div class="media-name">sports_day_01.jpg</div>
-                        <div class="media-actions">
-                            <button class="btn btn-light btn-sm" title="Copy URL"><i class="fas fa-link"></i></button>
-                            <button class="btn btn-light btn-sm" title="Rename"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-light btn-sm" title="Delete" onclick="confirmDelete().then(r => { if(r.isConfirmed) { $(this).closest('.media-item').remove(); } })"><i class="fas fa-trash text-danger"></i></button>
+<div class="card">
+    <div class="card-header"><i class="fas fa-images me-1"></i>Files@(string.IsNullOrEmpty(currentFolder) ? " (Root)" : " in " + currentFolder)</div>
+    <div class="card-body">
+        <div class="row g-3">
+            @if (files.Any())
+            {
+                foreach (var file in files)
+                {
+                    var name = System.IO.Path.GetFileName(file);
+                    var ext = System.IO.Path.GetExtension(file).ToLowerInvariant();
+                    var isImage = imageExts.Contains(ext);
+                    <div class="col-md-3 col-6">
+                        <div class="border rounded overflow-hidden">
+                            @if (isImage)
+                            {
+                                <img src="@file" alt="@name" style="width:100%;height:120px;object-fit:cover;">
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center justify-content-center" style="height:120px;background:#f4f6f9;">
+                                    <i class="fas fa-file text-muted" style="font-size:2rem;"></i>
+                                </div>
+                            }
+                            <div class="p-2">
+                                <small class="d-block text-truncate" title="@name">@name</small>
+                                <div class="d-flex gap-1 mt-1">
+                                    <a href="@file" target="_blank" rel="noopener" class="btn btn-sm btn-light" title="Open"><i class="fas fa-external-link-alt"></i></a>
+                                    <form asp-area="Admin" asp-controller="Media" asp-action="Delete" method="post" onsubmit="return confirm('Delete this file?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="path" value="@file">
+                                        <button type="submit" class="btn btn-sm btn-light" title="Delete"><i class="fas fa-trash text-danger"></i></button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="media-item">
-                        <img src="https://placehold.co/300x200/43e97b/white?text=Photo+2" alt="Photo 2">
-                        <div class="media-name">cultural_2026.jpg</div>
-                        <div class="media-actions">
-                            <button class="btn btn-light btn-sm"><i class="fas fa-link"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-trash text-danger"></i></button>
-                        </div>
-                    </div>
-                    <div class="media-item">
-                        <img src="https://placehold.co/300x200/f6d365/white?text=Photo+3" alt="Photo 3">
-                        <div class="media-name">science_fair.jpg</div>
-                        <div class="media-actions">
-                            <button class="btn btn-light btn-sm"><i class="fas fa-link"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-trash text-danger"></i></button>
-                        </div>
-                    </div>
-                    <div class="media-item">
-                        <img src="https://placehold.co/300x200/f093fb/white?text=Photo+4" alt="Photo 4">
-                        <div class="media-name">teachers_group.jpg</div>
-                        <div class="media-actions">
-                            <button class="btn btn-light btn-sm"><i class="fas fa-link"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-trash text-danger"></i></button>
-                        </div>
-                    </div>
-                    <div class="media-item">
-                        <img src="https://placehold.co/300x200/4facfe/white?text=Photo+5" alt="Photo 5">
-                        <div class="media-name">library_inauguration.jpg</div>
-                        <div class="media-actions">
-                            <button class="btn btn-light btn-sm"><i class="fas fa-link"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-trash text-danger"></i></button>
-                        </div>
-                    </div>
-                    <div class="media-item">
-                        <img src="https://placehold.co/300x200/434343/white?text=Photo+6" alt="Photo 6">
-                        <div class="media-name">admission_event.jpg</div>
-                        <div class="media-actions">
-                            <button class="btn btn-light btn-sm"><i class="fas fa-link"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-trash text-danger"></i></button>
-                        </div>
-                    </div>
-                    <div class="media-item">
-                        <div class="d-flex align-items-center justify-content-center" style="height:120px;background:#f4f6f9;">
-                            <i class="fas fa-file-pdf text-danger" style="font-size:2rem;"></i>
-                        </div>
-                        <div class="media-name">prospectus_2026.pdf</div>
-                        <div class="media-actions">
-                            <button class="btn btn-light btn-sm"><i class="fas fa-link"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-trash text-danger"></i></button>
-                        </div>
-                    </div>
-                    <div class="media-item">
-                        <div class="d-flex align-items-center justify-content-center" style="height:120px;background:#f4f6f9;">
-                            <i class="fas fa-file-word text-primary" style="font-size:2rem;"></i>
-                        </div>
-                        <div class="media-name">admission_form.doc</div>
-                        <div class="media-actions">
-                            <button class="btn btn-light btn-sm"><i class="fas fa-link"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-light btn-sm"><i class="fas fa-trash text-danger"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center text-muted py-4">No files found@(string.IsNullOrEmpty(currentFolder) ? "" : " in this folder").</div>
+            }
         </div>
     </div>
 </div>
 
 <div class="modal fade" id="uploadMediaModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content">
             <form asp-area="Admin" asp-controller="Media" asp-action="Upload" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
@@ -198,27 +84,17 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Upload to Folder</label>
-                        <select name="Folder" class="form-select">
-                            <option value="">Root</option>
-                            <option value="gallery">Gallery</option>
-                            <option value="teachers">Teachers</option>
-                            <option value="sliders">Sliders</option>
-                            <option value="documents">Documents</option>
-                        </select>
+                        <input type="text" name="folder" class="form-control" value="@currentFolder" placeholder="Leave empty for root">
                     </div>
                     <div class="mb-3">
-                        <div class="border-2 border-dashed rounded p-5 text-center" id="uploadDropZone" style="border:2px dashed #dee2e6;cursor:pointer;">
-                            <i class="fas fa-cloud-upload-alt text-muted" style="font-size:3rem;"></i>
-                            <h5 class="mt-3">Drop files here or click to upload</h5>
-                            <p class="text-muted mb-0">Supports JPG, PNG, WEBP, GIF, PDF, DOC, DOCX, MP4. Max 25MB.</p>
-                            <input type="file" name="Files" class="d-none" id="mediaFileInput" multiple>
-                        </div>
+                        <label class="form-label required">File</label>
+                        <input type="file" name="file" class="form-control" required>
+                        <small class="text-muted">Max 25MB.</small>
                     </div>
-                    <div id="mediaFilePreview" class="row g-2 mt-3"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-upload me-1"></i>Upload Files</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-upload me-1"></i>Upload File</button>
                 </div>
             </form>
         </div>
@@ -236,17 +112,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Parent Folder</label>
-                        <select name="ParentFolder" class="form-select">
-                            <option value="">Root</option>
-                            <option value="gallery">Gallery</option>
-                            <option value="teachers">Teachers</option>
-                            <option value="sliders">Sliders</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label required">Folder Name</label>
-                        <input type="text" name="FolderName" class="form-control" placeholder="e.g., Annual Sports 2026" required>
+                        <input type="text" name="name" class="form-control" placeholder="e.g., gallery/sports-2026" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -257,126 +124,3 @@
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="mediaPreviewModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">File Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                <img src="" id="previewImage" class="img-fluid rounded" style="max-height:400px;">
-                <div class="mt-3 text-start">
-                    <div class="row g-2">
-                        <div class="col-md-6">
-                            <small class="text-muted d-block">File Name: <strong id="previewFileName">sports_day_01.jpg</strong></small>
-                            <small class="text-muted d-block">File Size: <strong id="previewFileSize">1.2 MB</strong></small>
-                        </div>
-                        <div class="col-md-6">
-                            <small class="text-muted d-block">Dimensions: <strong id="previewDimensions">1920x1280</strong></small>
-                            <small class="text-muted d-block">Uploaded: <strong id="previewDate">Jul 05, 2026</strong></small>
-                        </div>
-                    </div>
-                    <div class="mt-2">
-                        <label class="form-label">File URL</label>
-                        <div class="input-group input-group-sm">
-                            <input type="text" class="form-control" value="https://school.com/uploads/sports_day_01.jpg" readonly id="fileUrl">
-                            <button class="btn btn-outline-primary" onclick="copyUrl()"><i class="fas fa-copy"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        document.getElementById('uploadDropZone').addEventListener('click', function() {
-            document.getElementById('mediaFileInput').click();
-        });
-
-        document.getElementById('uploadDropZone').addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('drag-over');
-        });
-
-        document.getElementById('uploadDropZone').addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            this.classList.remove('drag-over');
-        });
-
-        document.getElementById('uploadDropZone').addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('drag-over');
-            const files = e.dataTransfer.files;
-            document.getElementById('mediaFileInput').files = files;
-            previewMediaFiles(files);
-        });
-
-        document.getElementById('mediaFileInput').addEventListener('change', function(e) {
-            previewMediaFiles(this.files);
-        });
-
-        function previewMediaFiles(files) {
-            const preview = document.getElementById('mediaFilePreview');
-            preview.innerHTML = '';
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const col = document.createElement('div');
-                col.className = 'col-md-3 col-4 mb-2';
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        col.innerHTML = `
-                            <div class="border rounded p-1 text-center">
-                                <img src="${e.target.result}" class="img-fluid rounded" style="height:70px;width:100%;object-fit:cover;">
-                                <small class="d-block text-muted text-truncate mt-1">${file.name}</small>
-                            </div>
-                        `;
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    col.innerHTML = `
-                        <div class="border rounded p-1 text-center">
-                            <i class="fas fa-file text-muted" style="font-size:2rem;"></i>
-                            <small class="d-block text-muted text-truncate mt-1">${file.name}</small>
-                        </div>
-                    `;
-                }
-                preview.appendChild(col);
-            }
-        }
-
-        function copyUrl() {
-            const input = document.getElementById('fileUrl');
-            input.select();
-            navigator.clipboard.writeText(input.value).then(() => {
-                showToast('URL copied to clipboard!', 'success');
-            });
-        }
-
-        document.querySelectorAll('.media-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                if (!e.target.closest('.media-actions')) {
-                    document.querySelectorAll('.media-item').forEach(i => i.classList.remove('selected'));
-                    this.classList.add('selected');
-                    new bootstrap.Modal(document.getElementById('mediaPreviewModal')).show();
-                }
-            });
-        });
-
-        document.getElementById('gridViewBtn').addEventListener('click', function() {
-            this.classList.add('active');
-            document.getElementById('listViewBtn').classList.remove('active');
-            document.getElementById('mediaGrid').className = 'media-grid';
-        });
-
-        document.getElementById('listViewBtn').addEventListener('click', function() {
-            this.classList.add('active');
-            document.getElementById('gridViewBtn').classList.remove('active');
-            document.getElementById('mediaGrid').className = '';
-        });
-    </script>
-}

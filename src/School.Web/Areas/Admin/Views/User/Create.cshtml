@@ -1,6 +1,8 @@
+@model School.Application.DTOs.Account.UserCreateDto
 @{
     ViewData["Title"] = "Create User";
     ViewBag.ActiveMenu = "Users";
+    var roles = ViewBag.Roles as IEnumerable<School.Application.DTOs.Account.RoleDto> ?? Enumerable.Empty<School.Application.DTOs.Account.RoleDto>();
 }
 
 <div class="page-header">
@@ -30,34 +32,33 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label required">Username</label>
-                            <input type="text" name="Username" class="form-control" required>
+                            <label asp-for="Email" class="form-label required">Email</label>
+                            <input asp-for="Email" type="email" class="form-control" required>
+                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label required">Email</label>
-                            <input type="email" name="Email" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="row g-3 mt-2">
-                        <div class="col-md-6">
-                            <label class="form-label required">Full Name</label>
-                            <input type="text" name="FullName" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label required">Phone</label>
-                            <input type="text" name="Phone" class="form-control">
+                            <label asp-for="FullName" class="form-label required">Full Name</label>
+                            <input asp-for="FullName" class="form-control" required>
+                            <span asp-validation-for="FullName" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row g-3 mt-2">
                         <div class="col-md-6">
-                            <label class="form-label required">Password</label>
+                            <label asp-for="Phone" class="form-label">Phone</label>
+                            <input asp-for="Phone" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label asp-for="Password" class="form-label required">Password</label>
                             <div class="input-group">
-                                <input type="password" name="Password" class="form-control" id="passwordInput" required>
+                                <input asp-for="Password" type="password" class="form-control" id="passwordInput" required>
                                 <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
                                     <i class="fas fa-eye" id="passwordToggle"></i>
                                 </button>
                             </div>
-                            <small class="text-muted">Min 8 characters, 1 uppercase, 1 number</small>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                            <small class="text-muted">Minimum 6 characters.</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label required">Confirm Password</label>
@@ -73,30 +74,20 @@
                 <div class="card-header"><i class="fas fa-user-tag me-2"></i>Role Assignment</div>
                 <div class="card-body">
                     <p class="text-muted small mb-3">Select one or more roles for this user.</p>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="Roles" value="SuperAdmin" id="roleSuperAdmin">
-                        <label class="form-check-label" for="roleSuperAdmin">Super Admin</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="Roles" value="Admin" id="roleAdmin">
-                        <label class="form-check-label" for="roleAdmin">Admin</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="Roles" value="Editor" id="roleEditor" checked>
-                        <label class="form-check-label" for="roleEditor">Editor</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="Roles" value="Moderator" id="roleModerator">
-                        <label class="form-check-label" for="roleModerator">Moderator</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="Roles" value="Author" id="roleAuthor">
-                        <label class="form-check-label" for="roleAuthor">Author</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="Roles" value="Teacher" id="roleTeacher">
-                        <label class="form-check-label" for="roleTeacher">Teacher</label>
-                    </div>
+                    @if (roles.Any())
+                    {
+                        foreach (var role in roles)
+                        {
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="Roles" value="@role.Name" id="role_@role.Name">
+                                <label class="form-check-label" for="role_@role.Name">@role.Name</label>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted small">No roles available.</p>
+                    }
                 </div>
             </div>
 
@@ -105,14 +96,8 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isActive" name="IsActive" value="true" checked>
-                            <label class="form-check-label" for="isActive">Active</label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="emailConfirmed" name="EmailConfirmed" value="true" checked>
-                            <label class="form-check-label" for="emailConfirmed">Email Confirmed</label>
+                            <input asp-for="IsActive" class="form-check-input" role="switch" checked>
+                            <label asp-for="IsActive" class="form-check-label">Active</label>
                         </div>
                     </div>
                 </div>

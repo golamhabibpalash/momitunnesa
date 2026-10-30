@@ -1,3 +1,4 @@
+@model IEnumerable<School.Application.DTOs.Achievement.AchievementDto>
 @{
     ViewData["Title"] = "Achievements";
     ViewBag.ActiveMenu = "Achievements";
@@ -18,119 +19,72 @@
     </a>
 </div>
 
-<div class="card mb-3">
+<div class="card">
     <div class="card-body">
-        <ul class="nav nav-pills" id="categoryTabs">
-            <li class="nav-item">
-                <a class="nav-link active" href="#" data-category="all">All</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-category="Academic">Academic</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-category="Sports">Sports</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-category="Cultural">Cultural</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-category="Science">Science</a>
-            </li>
-        </ul>
-    </div>
-</div>
-
-<div class="row g-3">
-    <div class="col-md-6 col-lg-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start gap-3">
-                    <div class="rounded-circle bg-warning bg-opacity-10 d-flex align-items-center justify-content-center" style="width:50px;height:50px;min-width:50px;">
-                        <i class="fas fa-trophy text-warning"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h6 class="mb-1">1st Place - National Science Olympiad</h6>
-                        <small class="text-muted d-block mb-1">Academic • 2026</small>
-                        <p class="small mb-2">Our students secured first position in the National Science Olympiad 2026.</p>
-                        <div class="d-flex gap-1">
-                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ } })"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-lg-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start gap-3">
-                    <div class="rounded-circle bg-success bg-opacity-10 d-flex align-items-center justify-content-center" style="width:50px;height:50px;min-width:50px;">
-                        <i class="fas fa-medal text-success"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h6 class="mb-1">Champion - Inter-School Debate</h6>
-                        <small class="text-muted d-block mb-1">Cultural • 2026</small>
-                        <p class="small mb-2">Our debate team won the Inter-School Debate Championship.</p>
-                        <div class="d-flex gap-1">
-                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-lg-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start gap-3">
-                    <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center" style="width:50px;height:50px;min-width:50px;">
-                        <i class="fas fa-running text-info"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h6 class="mb-1">Runner Up - Annual Sports Meet</h6>
-                        <small class="text-muted d-block mb-1">Sports • 2026</small>
-                        <p class="small mb-2">Overall runner-up position in the Divisional Annual Sports Meet.</p>
-                        <div class="d-flex gap-1">
-                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-lg-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start gap-3">
-                    <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width:50px;height:50px;min-width:50px;">
-                        <i class="fas fa-flask text-primary"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h6 class="mb-1">Best Project Award - Science Fair</h6>
-                        <small class="text-muted d-block mb-1">Science • 2025</small>
-                        <p class="small mb-2">Best project award for renewable energy model.</p>
-                        <div class="d-flex gap-1">
-                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-datatable">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Image</th>
+                        <th>Title (English)</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        var sl = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@(sl++)</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" class="preview-img" alt="@item.TitleEn" style="width:80px;height:60px;object-fit:cover;">
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>@item.TitleEn</td>
+                                <td><span class="badge bg-info">@item.AchievementCategory</span></td>
+                                <td>@item.Date.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="table-actions d-flex gap-1">
+                                        <a asp-area="Admin" asp-controller="Achievement" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                        <form asp-area="Admin" asp-controller="Achievement" asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline" onsubmit="return confirm('Are you sure you want to delete this achievement?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">No achievements found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        document.querySelectorAll('#categoryTabs .nav-link').forEach(tab => {
-            tab.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('#categoryTabs .nav-link').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    </script>
-}

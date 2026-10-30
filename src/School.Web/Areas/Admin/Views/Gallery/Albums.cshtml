@@ -1,3 +1,4 @@
+@model IEnumerable<School.Application.DTOs.Gallery.GalleryAlbumDto>
 @{
     ViewData["Title"] = "Gallery Albums";
     ViewBag.ActiveMenu = "Albums";
@@ -9,7 +10,6 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
-                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Gallery" asp-action="Albums">Gallery</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Albums</li>
             </ol>
         </nav>
@@ -20,107 +20,42 @@
 </div>
 
 <div class="row g-3">
-    <div class="col-lg-4 col-md-6">
-        <div class="album-card card">
-            <div class="album-cover" style="background-image: url('https://placehold.co/600x400/667eea/white?text=School+Event');">
-                <span class="album-count"><i class="fas fa-images me-1"></i>24</span>
-            </div>
-            <div class="album-body">
-                <h6>Annual Sports Day 2026</h6>
-                <small class="text-muted"><i class="far fa-calendar me-1"></i>Created: May 10, 2026</small>
-                <div class="mt-2 d-flex gap-1">
-                    <a asp-area="Admin" asp-controller="Gallery" asp-action="AlbumImages" asp-route-id="1" class="btn btn-sm btn-primary">
-                        <i class="fas fa-eye"></i> View
-                    </a>
-                    <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('Delete this album?').then(r => { if(r.isConfirmed) { } })">
-                        <i class="fas fa-trash"></i>
-                    </button>
+    @if (Model != null && Model.Any())
+    {
+        foreach (var album in Model)
+        {
+            <div class="col-lg-4 col-md-6">
+                <div class="album-card card">
+                    <div class="album-cover" style="background-image: url('@(string.IsNullOrEmpty(album.CoverImageUrl) ? "https://placehold.co/600x400/667eea/white?text=Album" : album.CoverImageUrl)'); background-size:cover; background-position:center; height:180px;">
+                        <span class="album-count"><i class="fas fa-images me-1"></i>@album.ImageCount</span>
+                    </div>
+                    <div class="album-body p-3">
+                        <h6>@album.TitleEn</h6>
+                        <small class="text-muted"><i class="far fa-calendar me-1"></i>Created: @album.CreatedAt.ToString("MMM dd, yyyy")</small>
+                        <div class="mt-2 d-flex gap-1">
+                            <a asp-area="Admin" asp-controller="Gallery" asp-action="AlbumImages" asp-route-id="@album.Id" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="album-card card">
-            <div class="album-cover" style="background-image: url('https://placehold.co/600x400/43e97b/white?text=Cultural+Program');">
-                <span class="album-count"><i class="fas fa-images me-1"></i>18</span>
-            </div>
-            <div class="album-body">
-                <h6>Cultural Program 2026</h6>
-                <small class="text-muted"><i class="far fa-calendar me-1"></i>Created: Apr 05, 2026</small>
-                <div class="mt-2 d-flex gap-1">
-                    <a asp-area="Admin" asp-controller="Gallery" asp-action="AlbumImages" asp-route-id="2" class="btn btn-sm btn-primary">
-                        <i class="fas fa-eye"></i> View
-                    </a>
-                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center text-muted py-4">No albums found.</div>
             </div>
         </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="album-card card">
-            <div class="album-cover" style="background-image: url('https://placehold.co/600x400/f6d365/white?text=Science+Fair');">
-                <span class="album-count"><i class="fas fa-images me-1"></i>32</span>
-            </div>
-            <div class="album-body">
-                <h6>Science Fair Exhibition</h6>
-                <small class="text-muted"><i class="far fa-calendar me-1"></i>Created: Mar 15, 2026</small>
-                <div class="mt-2 d-flex gap-1">
-                    <a asp-area="Admin" asp-controller="Gallery" asp-action="AlbumImages" asp-route-id="3" class="btn btn-sm btn-primary">
-                        <i class="fas fa-eye"></i> View
-                    </a>
-                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="album-card card">
-            <div class="album-cover" style="background-image: url('https://placehold.co/600x400/f093fb/white?text=Graduation');">
-                <span class="album-count"><i class="fas fa-images me-1"></i>45</span>
-            </div>
-            <div class="album-body">
-                <h6>Graduation Ceremony 2026</h6>
-                <small class="text-muted"><i class="far fa-calendar me-1"></i>Created: Feb 28, 2026</small>
-                <div class="mt-2 d-flex gap-1">
-                    <a asp-area="Admin" asp-controller="Gallery" asp-action="AlbumImages" asp-route-id="4" class="btn btn-sm btn-primary">
-                        <i class="fas fa-eye"></i> View
-                    </a>
-                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="album-card card">
-            <div class="album-cover" style="background-image: url('https://placehold.co/600x400/4facfe/white?text=Field+Trip');">
-                <span class="album-count"><i class="fas fa-images me-1"></i>15</span>
-            </div>
-            <div class="album-body">
-                <h6>Educational Field Trip</h6>
-                <small class="text-muted"><i class="far fa-calendar me-1"></i>Created: Jan 20, 2026</small>
-                <div class="mt-2 d-flex gap-1">
-                    <a asp-area="Admin" asp-controller="Gallery" asp-action="AlbumImages" asp-route-id="5" class="btn btn-sm btn-primary">
-                        <i class="fas fa-eye"></i> View
-                    </a>
-                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="album-card card border-dashed" style="border:2px dashed #dee2e6;">
-            <div class="album-body text-center py-4" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#createAlbumModal">
-                <i class="fas fa-plus-circle text-muted" style="font-size:3rem;"></i>
-                <h6 class="text-muted mt-2">Create New Album</h6>
-            </div>
-        </div>
-    </div>
+    }
 </div>
 
 <div class="modal fade" id="createAlbumModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-area="Admin" asp-controller="Gallery" asp-action="CreateAlbum" method="post" enctype="multipart/form-data">
+            <form asp-area="Admin" asp-controller="Gallery" asp-action="CreateAlbum" method="post">
                 @Html.AntiForgeryToken()
                 <div class="modal-header">
                     <h5 class="modal-title"><i class="fas fa-folder-plus me-2"></i>Create New Album</h5>
@@ -136,12 +71,16 @@
                         <input type="text" name="TitleBn" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea name="Description" class="form-control" rows="3"></textarea>
+                        <label class="form-label">Description (English)</label>
+                        <textarea name="DescriptionEn" class="form-control" rows="2"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Cover Image</label>
-                        <input type="file" name="CoverImage" class="form-control" accept="image/*">
+                        <label class="form-label">Description (Bangla)</label>
+                        <textarea name="DescriptionBn" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cover Image URL</label>
+                        <input type="text" name="CoverImageUrl" class="form-control" placeholder="/uploads/gallery/cover.jpg">
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">

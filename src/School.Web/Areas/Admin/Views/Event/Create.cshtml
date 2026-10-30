@@ -1,3 +1,4 @@
+@model School.Application.DTOs.Event.EventCreateDto
 @{
     ViewData["Title"] = "Create Event";
     ViewBag.ActiveMenu = "Events";
@@ -19,7 +20,7 @@
     </a>
 </div>
 
-<form asp-area="Admin" asp-controller="Event" asp-action="Create" method="post" enctype="multipart/form-data">
+<form asp-area="Admin" asp-controller="Event" asp-action="Create" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
@@ -29,34 +30,40 @@
                 <div class="card-header"><i class="fas fa-info-circle me-2"></i>Event Information</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label required">Title (English)</label>
-                        <input type="text" name="TitleEn" class="form-control" placeholder="Enter event title" required>
+                        <label asp-for="TitleEn" class="form-label required">Title (English)</label>
+                        <input asp-for="TitleEn" class="form-control" placeholder="Enter event title" required>
+                        <span asp-validation-for="TitleEn" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label required">Title (Bangla)</label>
-                        <input type="text" name="TitleBn" class="form-control" placeholder="বাংলায় ইভেন্টের শিরোনাম" required>
+                        <label asp-for="TitleBn" class="form-label required">Title (Bangla)</label>
+                        <input asp-for="TitleBn" class="form-control" placeholder="বাংলায় ইভেন্টের শিরোনাম" required>
+                        <span asp-validation-for="TitleBn" class="text-danger"></span>
                     </div>
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label required">Start Date &amp; Time</label>
-                            <input type="datetime-local" name="StartDate" class="form-control" required>
+                        <div class="col-md-4">
+                            <label asp-for="EventDate" class="form-label required">Event Date</label>
+                            <input asp-for="EventDate" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">End Date &amp; Time</label>
-                            <input type="datetime-local" name="EndDate" class="form-control">
+                        <div class="col-md-4">
+                            <label asp-for="StartTime" class="form-label">Start Time</label>
+                            <input asp-for="StartTime" type="time" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="EndTime" class="form-label">End Time</label>
+                            <input asp-for="EndTime" type="time" class="form-control">
                         </div>
                     </div>
                     <div class="mb-3 mt-3">
-                        <label class="form-label">Location</label>
-                        <input type="text" name="Location" class="form-control" placeholder="School Auditorium, Playground, etc.">
+                        <label asp-for="Location" class="form-label">Location</label>
+                        <input asp-for="Location" class="form-control" placeholder="School Auditorium, Playground, etc.">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description (English)</label>
-                        <textarea name="DescriptionEn" class="form-control tinymce" rows="8"></textarea>
+                        <label asp-for="DescriptionEn" class="form-label">Description (English)</label>
+                        <textarea asp-for="DescriptionEn" class="form-control tinymce" rows="8"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description (Bangla)</label>
-                        <textarea name="DescriptionBn" class="form-control tinymce" rows="8"></textarea>
+                        <label asp-for="DescriptionBn" class="form-label">Description (Bangla)</label>
+                        <textarea asp-for="DescriptionBn" class="form-control tinymce" rows="8"></textarea>
                     </div>
                 </div>
             </div>
@@ -67,36 +74,20 @@
                 <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select name="Status" class="form-select">
-                            <option value="Upcoming">Upcoming</option>
-                            <option value="Ongoing">Ongoing</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
+                        <label asp-for="ImageUrl" class="form-label">Event Image URL</label>
+                        <input asp-for="ImageUrl" class="form-control" placeholder="/uploads/events/photo.jpg">
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isFeatured" name="IsFeatured" value="true">
-                            <label class="form-check-label" for="isFeatured">Featured Event</label>
+                            <input asp-for="IsFeatured" class="form-check-input" role="switch">
+                            <label asp-for="IsFeatured" class="form-check-label">Featured Event</label>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isActive" name="IsActive" value="true" checked>
-                            <label class="form-check-label" for="isActive">Active</label>
+                            <input asp-for="IsActive" class="form-check-input" role="switch" checked>
+                            <label asp-for="IsActive" class="form-check-label">Active</label>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-3">
-                <div class="card-header"><i class="fas fa-image me-2"></i>Event Image</div>
-                <div class="card-body">
-                    <input type="file" name="Image" class="form-control" accept="image/*">
-                    <small class="text-muted">Recommended: 800x500px</small>
-                    <div id="imagePreview" class="mt-2 text-center d-none">
-                        <img src="#" alt="Preview" class="img-fluid rounded" style="max-height:150px;">
                     </div>
                 </div>
             </div>
@@ -120,18 +111,6 @@
             plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
             toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
             promotion: false
-        });
-
-        document.querySelector('input[name="Image"]').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('imagePreview').classList.remove('d-none');
-                    document.querySelector('#imagePreview img').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
         });
     </script>
 }

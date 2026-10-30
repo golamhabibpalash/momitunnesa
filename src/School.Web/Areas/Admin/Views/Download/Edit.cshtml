@@ -1,0 +1,93 @@
+@model School.Application.DTOs.Download.DownloadCreateDto
+@{
+    ViewData["Title"] = "Edit Download";
+    ViewBag.ActiveMenu = "Downloads";
+    var downloadId = ViewBag.DownloadId as int? ?? 0;
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-edit me-2"></i>Edit Download</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Download" asp-action="Index">Downloads</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="Download" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<form asp-area="Admin" asp-controller="Download" asp-action="Edit" asp-route-id="@downloadId" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-info-circle me-2"></i>Download Information</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="TitleEn" class="form-label required">Title (English)</label>
+                        <input asp-for="TitleEn" class="form-control" required>
+                        <span asp-validation-for="TitleEn" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="TitleBn" class="form-label required">Title (Bangla)</label>
+                        <input asp-for="TitleBn" class="form-control" required>
+                        <span asp-validation-for="TitleBn" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="DescriptionEn" class="form-label">Description (English)</label>
+                        <textarea asp-for="DescriptionEn" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="DescriptionBn" class="form-label">Description (Bangla)</label>
+                        <textarea asp-for="DescriptionBn" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="FileUrl" class="form-label required">File URL</label>
+                        <input asp-for="FileUrl" class="form-control" required>
+                        <span asp-validation-for="FileUrl" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="DownloadCategory" class="form-label required">Category</label>
+                        <select asp-for="DownloadCategory" class="form-select" asp-items="Html.GetEnumSelectList<DownloadCategory>()" required></select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="FileType" class="form-label">File Type</label>
+                        <input asp-for="FileType" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="FileSize" class="form-label">File Size (bytes)</label>
+                        <input asp-for="FileSize" type="number" class="form-control" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsActive" class="form-check-input" role="switch">
+                            <label asp-for="IsActive" class="form-check-label">Active</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <a asp-area="Admin" asp-controller="Download" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="fas fa-save me-1"></i>Update Download
+        </button>
+    </div>
+</form>

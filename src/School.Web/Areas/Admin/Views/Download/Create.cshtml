@@ -1,3 +1,4 @@
+@model School.Application.DTOs.Download.DownloadCreateDto
 @{
     ViewData["Title"] = "Add Download";
     ViewBag.ActiveMenu = "Downloads";
@@ -19,7 +20,7 @@
     </a>
 </div>
 
-<form asp-area="Admin" asp-controller="Download" asp-action="Create" method="post" enctype="multipart/form-data">
+<form asp-area="Admin" asp-controller="Download" asp-action="Create" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
@@ -29,21 +30,28 @@
                 <div class="card-header"><i class="fas fa-info-circle me-2"></i>Download Information</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label required">Title (English)</label>
-                        <input type="text" name="TitleEn" class="form-control" placeholder="Enter file title in English" required>
+                        <label asp-for="TitleEn" class="form-label required">Title (English)</label>
+                        <input asp-for="TitleEn" class="form-control" placeholder="Enter file title in English" required>
+                        <span asp-validation-for="TitleEn" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label required">Title (Bangla)</label>
-                        <input type="text" name="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম" required>
+                        <label asp-for="TitleBn" class="form-label required">Title (Bangla)</label>
+                        <input asp-for="TitleBn" class="form-control" placeholder="বাংলায় শিরোনাম" required>
+                        <span asp-validation-for="TitleBn" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea name="Description" class="form-control" rows="3" placeholder="Brief description of the file"></textarea>
+                        <label asp-for="DescriptionEn" class="form-label">Description (English)</label>
+                        <textarea asp-for="DescriptionEn" class="form-control" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label required">File</label>
-                        <input type="file" name="File" class="form-control" required>
-                        <small class="text-muted">Allowed: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, JPG, PNG, ZIP. Max 25MB.</small>
+                        <label asp-for="DescriptionBn" class="form-label">Description (Bangla)</label>
+                        <textarea asp-for="DescriptionBn" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="FileUrl" class="form-label required">File URL</label>
+                        <input asp-for="FileUrl" class="form-control" placeholder="/uploads/downloads/file.pdf" required>
+                        <span asp-validation-for="FileUrl" class="text-danger"></span>
+                        <small class="text-muted">Link to the uploaded file.</small>
                     </div>
                 </div>
             </div>
@@ -54,29 +62,21 @@
                 <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label required">Category</label>
-                        <select name="Category" class="form-select" required>
-                            <option value="">-- Select Category --</option>
-                            <option value="Forms">Forms</option>
-                            <option value="Prospectus">Prospectus</option>
-                            <option value="Results">Results</option>
-                            <option value="Calendar">Calendar</option>
-                            <option value="Routine">Routine</option>
-                            <option value="Syllabus">Syllabus</option>
-                            <option value="Notice">Notice</option>
-                            <option value="Others">Others</option>
-                        </select>
+                        <label asp-for="DownloadCategory" class="form-label required">Category</label>
+                        <select asp-for="DownloadCategory" class="form-select" asp-items="Html.GetEnumSelectList<DownloadCategory>()" required></select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="FileType" class="form-label">File Type</label>
+                        <input asp-for="FileType" class="form-control" placeholder="PDF, DOCX, XLSX...">
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="FileSize" class="form-label">File Size (bytes)</label>
+                        <input asp-for="FileSize" type="number" class="form-control" min="0">
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isActive" name="IsActive" value="true" checked>
-                            <label class="form-check-label" for="isActive">Active</label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isFeatured" name="IsFeatured" value="true">
-                            <label class="form-check-label" for="isFeatured">Featured</label>
+                            <input asp-for="IsActive" class="form-check-input" role="switch" checked>
+                            <label asp-for="IsActive" class="form-check-label">Active</label>
                         </div>
                     </div>
                 </div>

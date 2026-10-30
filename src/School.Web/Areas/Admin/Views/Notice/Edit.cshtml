@@ -1,6 +1,8 @@
+@model School.Application.DTOs.Notice.NoticeCreateDto
 @{
     ViewData["Title"] = "Edit Notice";
     ViewBag.ActiveMenu = "Notices";
+    var noticeId = ViewBag.NoticeId as int? ?? 0;
 }
 
 <div class="page-header">
@@ -19,9 +21,8 @@
     </a>
 </div>
 
-<form asp-area="Admin" asp-controller="Notice" asp-action="Edit" method="post" enctype="multipart/form-data">
+<form asp-area="Admin" asp-controller="Notice" asp-action="Edit" asp-route-id="@noticeId" method="post">
     @Html.AntiForgeryToken()
-    <input type="hidden" name="Id" value="1">
     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
     <div class="row g-3">
@@ -30,38 +31,26 @@
                 <div class="card-header"><i class="fas fa-info-circle me-2"></i>Notice Information</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label required">Title (English)</label>
-                        <input type="text" name="TitleEn" class="form-control" value="Summer Vacation 2026 Notice" required>
+                        <label asp-for="TitleEn" class="form-label required">Title (English)</label>
+                        <input asp-for="TitleEn" class="form-control" required>
+                        <span asp-validation-for="TitleEn" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label required">Title (Bangla)</label>
-                        <input type="text" name="TitleBn" class="form-control" value="গ্রীষ্মকালীন ছুটির নোটিশ ২০২৬" required>
+                        <label asp-for="TitleBn" class="form-label required">Title (Bangla)</label>
+                        <input asp-for="TitleBn" class="form-control" required>
+                        <span asp-validation-for="TitleBn" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description (English)</label>
-                        <textarea name="DescriptionEn" class="form-control" rows="5">Dear Parents and Guardians,
-
-This is to inform you that the school will remain closed for Summer Vacation from June 15 to July 10, 2026. School will reopen on July 11, 2026.
-
-Please ensure that your children complete their holiday assignments during this period.</textarea>
+                        <label asp-for="DescriptionEn" class="form-label">Description (English)</label>
+                        <textarea asp-for="DescriptionEn" class="form-control" rows="5"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description (Bangla)</label>
-                        <textarea name="DescriptionBn" class="form-control" rows="5">প্রিয় অভিভাবকবৃন্দ,
-
-এতদ্বারা জানানো যাচ্ছে যে, আগামী ১৫ জুন থেকে ১০ জুলাই ২০২৬ পর্যন্ত গ্রীষ্মকালীন ছুটির জন্য বিদ্যালয় বন্ধ থাকবে। ১১ জুলাই ২০২৬ থেকে বিদ্যালয় পুনরায় চালু হবে।</textarea>
+                        <label asp-for="DescriptionBn" class="form-label">Description (Bangla)</label>
+                        <textarea asp-for="DescriptionBn" class="form-control" rows="5"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Current Attachment</label>
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fas fa-file-pdf text-danger fs-4"></i>
-                            <span>summer_vacation_2026.pdf</span>
-                            <a href="#" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i> Remove</a>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Replace Attachment</label>
-                        <input type="file" name="Attachment" class="form-control">
+                        <label asp-for="AttachmentUrl" class="form-label">Attachment URL</label>
+                        <input asp-for="AttachmentUrl" class="form-control" placeholder="/uploads/notices/file.pdf">
                     </div>
                 </div>
             </div>
@@ -72,35 +61,27 @@ Please ensure that your children complete their holiday assignments during this 
                 <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label required">Category</label>
-                        <select name="Category" class="form-select" required>
-                            <option value="">-- Select Category --</option>
-                            <option value="Academic">Academic</option>
-                            <option value="Exam">Exam</option>
-                            <option value="Holiday" selected>Holiday</option>
-                            <option value="Admission">Admission</option>
-                            <option value="Sports">Sports</option>
-                            <option value="General">General</option>
-                        </select>
+                        <label asp-for="NoticeCategory" class="form-label required">Category</label>
+                        <select asp-for="NoticeCategory" class="form-select" asp-items="Html.GetEnumSelectList<NoticeCategory>()" required></select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Publish Date</label>
-                        <input type="date" name="PublishDate" class="form-control" value="2026-06-01">
+                        <label asp-for="PublishDate" class="form-label">Publish Date</label>
+                        <input asp-for="PublishDate" type="date" class="form-control" value="@Model.PublishDate.ToString("yyyy-MM-dd")">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Expiry Date</label>
-                        <input type="date" name="ExpiryDate" class="form-control" value="2026-07-15">
+                        <label asp-for="ExpiryDate" class="form-label">Expiry Date</label>
+                        <input asp-for="ExpiryDate" type="date" class="form-control" value="@(Model.ExpiryDate?.ToString("yyyy-MM-dd"))">
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isFeatured" name="IsFeatured" value="true" checked>
-                            <label class="form-check-label" for="isFeatured">Featured Notice</label>
+                            <input asp-for="IsFeatured" class="form-check-input" role="switch">
+                            <label asp-for="IsFeatured" class="form-check-label">Featured Notice</label>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="isActive" name="IsActive" value="true" checked>
-                            <label class="form-check-label" for="isActive">Active</label>
+                            <input asp-for="IsActive" class="form-check-input" role="switch">
+                            <label asp-for="IsActive" class="form-check-label">Active</label>
                         </div>
                     </div>
                 </div>

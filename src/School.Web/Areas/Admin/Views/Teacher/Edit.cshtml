@@ -1,0 +1,140 @@
+@model School.Application.DTOs.Teacher.TeacherCreateDto
+@{
+    ViewData["Title"] = "Edit Teacher";
+    ViewBag.ActiveMenu = "Teachers";
+    var teacherId = ViewBag.TeacherId as int? ?? 0;
+}
+
+<div class="page-header">
+    <div>
+        <h2><i class="fas fa-edit me-2"></i>Edit Teacher</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Teacher" asp-action="Index">Teachers</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="Teacher" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<form asp-area="Admin" asp-controller="Teacher" asp-action="Edit" asp-route-id="@teacherId" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-info-circle me-2"></i>Personal Information</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="NameEn" class="form-label required">Name (English)</label>
+                            <input asp-for="NameEn" class="form-control" required>
+                            <span asp-validation-for="NameEn" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="NameBn" class="form-label required">Name (Bangla)</label>
+                            <input asp-for="NameBn" class="form-control" required>
+                            <span asp-validation-for="NameBn" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label asp-for="Designation" class="form-label required">Designation</label>
+                            <select asp-for="Designation" class="form-select" asp-items="Html.GetEnumSelectList<Designation>()" required></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label">Email</label>
+                            <input asp-for="Email" type="email" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label asp-for="SubjectEn" class="form-label">Subject (English)</label>
+                            <input asp-for="SubjectEn" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="SubjectBn" class="form-label">Subject (Bangla)</label>
+                            <input asp-for="SubjectBn" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label asp-for="QualificationEn" class="form-label">Qualification (English)</label>
+                            <input asp-for="QualificationEn" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="QualificationBn" class="form-label">Qualification (Bangla)</label>
+                            <input asp-for="QualificationBn" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label">Phone</label>
+                            <input asp-for="Phone" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="JoiningDate" class="form-label">Joining Date</label>
+                            <input asp-for="JoiningDate" type="date" class="form-control" value="@(Model.JoiningDate?.ToString("yyyy-MM-dd"))">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-image me-2"></i>Photo</div>
+                <div class="card-body">
+                    <label asp-for="ImageUrl" class="form-label">Photo URL</label>
+                    <input asp-for="ImageUrl" class="form-control" placeholder="/uploads/teachers/photo.jpg">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mt-2 text-center">
+                            <img src="@Model.ImageUrl" class="rounded" style="max-height:120px;" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><i class="fas fa-cog me-2"></i>Settings</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="SortOrder" class="form-label">Display Order</label>
+                        <input asp-for="SortOrder" type="number" class="form-control" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsActive" class="form-check-input" role="switch">
+                            <label asp-for="IsActive" class="form-check-label">Active</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsHeadTeacher" class="form-check-input" role="switch">
+                            <label asp-for="IsHeadTeacher" class="form-check-label">Head Teacher</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsAssistantHeadTeacher" class="form-check-input" role="switch">
+                            <label asp-for="IsAssistantHeadTeacher" class="form-check-label">Assistant Head Teacher</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <a asp-area="Admin" asp-controller="Teacher" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="fas fa-save me-1"></i>Update Teacher
+        </button>
+    </div>
+</form>

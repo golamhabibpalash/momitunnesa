@@ -1,6 +1,9 @@
+@model IEnumerable<School.Application.DTOs.Account.UserDto>
 @{
     ViewData["Title"] = "Users";
     ViewBag.ActiveMenu = "Users";
+    var currentPage = ViewBag.CurrentPage as int? ?? 1;
+    var totalPages = ViewBag.TotalPages as int? ?? 1;
 }
 
 <div class="page-header">
@@ -25,10 +28,9 @@
                 <thead>
                     <tr>
                         <th>SL</th>
-                        <th>Avatar</th>
-                        <th>Username</th>
                         <th>Email</th>
                         <th>Full Name</th>
+                        <th>Phone</th>
                         <th>Roles</th>
                         <th>Status</th>
                         <th>Last Login</th>
@@ -36,72 +38,68 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td><img src="https://ui-avatars.com/api/?name=Admin&background=667eea&color=fff&size=36" class="avatar-sm"></td>
-                        <td>admin</td>
-                        <td>admin@school.com</td>
-                        <td>Admin User</td>
-                        <td><span class="badge bg-danger">Super Admin</span></td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>Jul 06, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete().then(r => { if(r.isConfirmed){ } })"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td><img src="https://ui-avatars.com/api/?name=Moderator&background=43e97b&color=fff&size=36" class="avatar-sm"></td>
-                        <td>moderator</td>
-                        <td>mod@school.com</td>
-                        <td>Content Moderator</td>
-                        <td><span class="badge bg-primary">Editor</span> <span class="badge bg-info">Moderator</span></td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>Jul 05, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td><img src="https://ui-avatars.com/api/?name=Teacher&background=f6d365&color=fff&size=36" class="avatar-sm"></td>
-                        <td>teacher1</td>
-                        <td>teacher@school.com</td>
-                        <td>Mr. Rahim</td>
-                        <td><span class="badge bg-info">Teacher</span></td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>Jul 04, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td><img src="https://ui-avatars.com/api/?name=Writer&background=f093fb&color=fff&size=36" class="avatar-sm"></td>
-                        <td>writer1</td>
-                        <td>writer@school.com</td>
-                        <td>Content Writer</td>
-                        <td><span class="badge bg-secondary">Author</span></td>
-                        <td><span class="badge bg-warning">Inactive</span></td>
-                        <td>Jun 20, 2026</td>
-                        <td>
-                            <div class="table-actions">
-                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
+                    @if (Model != null && Model.Any())
+                    {
+                        var sl = (currentPage - 1) * 20 + 1;
+                        foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@(sl++)</td>
+                                <td>@user.Email</td>
+                                <td>@user.FullName</td>
+                                <td>@(string.IsNullOrEmpty(user.Phone) ? "-" : user.Phone)</td>
+                                <td>
+                                    @foreach (var role in user.Roles)
+                                    {
+                                        <span class="badge bg-info me-1">@role</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td>@(user.LastLoginAt?.ToString("MMM dd, yyyy") ?? "-")</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a asp-area="Admin" asp-controller="User" asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">No users found.</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
+        @if (totalPages > 1)
+        {
+            <nav class="mt-3">
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                        <a class="page-link" asp-area="Admin" asp-controller="User" asp-action="Index" asp-route-page="@(currentPage - 1)"><i class="fas fa-chevron-left"></i></a>
+                    </li>
+                    @for (int p = 1; p <= totalPages; p++)
+                    {
+                        <li class="page-item @(p == currentPage ? "active" : "")">
+                            <a class="page-link" asp-area="Admin" asp-controller="User" asp-action="Index" asp-route-page="@p">@p</a>
+                        </li>
+                    }
+                    <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                        <a class="page-link" asp-area="Admin" asp-controller="User" asp-action="Index" asp-route-page="@(currentPage + 1)"><i class="fas fa-chevron-right"></i></a>
+                    </li>
+                </ul>
+            </nav>
+        }
     </div>
 </div>
